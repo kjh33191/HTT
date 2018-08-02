@@ -166,6 +166,12 @@ namespace HHT
             return premises.souko_nm;
         }
         */
+
+        internal static void ReqeustTUMIKOMI230(Dictionary<string, string> param)
+        {
+            
+        }
+
     }
 
 }

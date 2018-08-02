@@ -16,6 +16,9 @@ namespace HHT
 {
     public class TsumikomiSelectFragment : BaseFragment
     {
+        ISharedPreferences prefs;
+        ISharedPreferencesEditor editor;
+
         EditText etSyukaDate, etCourse, etBinNo;
         TextView txtConfirmMsg, txtConfirmBin;
 
@@ -27,6 +30,8 @@ namespace HHT
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.fragment_tsumikomi_select, container, false);
+            prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
+            editor = prefs.Edit();
             
             SetTitle("積込検品");
             
@@ -45,11 +50,11 @@ namespace HHT
 
             Dictionary<string, string> param = new Dictionary<string, string>
             {
-                { "souko_cd", souko_cd },
-                { "kitaku_cd", kitaku_cd },
-                { "shuka_date", shuka_date },
-                { "bin_no", souko_cd },
-                { "course", course },
+                { "souko_cd",  prefs.GetString("souko_cd", "103")},
+                { "kitaku_cd", prefs.GetString("kitaku_cd", "2") },
+                { "shuka_date", prefs.GetString("shuka_date", "180310") },
+                { "bin_no", prefs.GetString("bin_no", "1") },
+                { "course", prefs.GetString("course", "310") },
             };
 
             WebService.ReqeustTUMIKOMI230(param);

@@ -97,16 +97,16 @@
     <Compile Include="NyukaMenuFragment.cs" />
     <Compile Include="Resources\DataHelper\LoginHelper.cs" />
     <Compile Include="Resources\DataHelper\DataBase.cs" />
-    <Compile Include="Resources\Model\KOSU131.cs" />
-    <Compile Include="Resources\Model\KOSU200.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU131.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU200.cs" />
     <Compile Include="Resources\Model\Kosukenpin.cs" />
     <Compile Include="Resources\Model\Login.cs" />
-    <Compile Include="Resources\Model\LOGIN030.cs" />
-    <Compile Include="Resources\Model\LOGIN020.cs" />
+    <Compile Include="Resources\Model\WebService\Login\LOGIN030.cs" />
+    <Compile Include="Resources\Model\WebService\Login\LOGIN020.cs" />
     <Compile Include="Resources\Model\Person.cs" />
-    <Compile Include="Resources\Model\LOGIN010.cs" />
+    <Compile Include="Resources\Model\WebService\Login\LOGIN010.cs" />
     <Compile Include="Resources\Model\Matehan.cs" />
-    <Compile Include="Resources\Model\KOSU110.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU110.cs" />
     <Compile Include="Resources\Model\Tantohsya.cs" />
     <Compile Include="Resources\Model\WebService\Input\KOSU131_I.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
@@ -254,6 +254,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Model\WebService\Output\" />
+    <Folder Include="Resources\Model\WebService\Tumikomi\" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\fragment_menu_tsumikae.axml">
