@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:gravity="center_vertical|left">
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gridLayout1"
+        android:columnCount="3">
+        <TextView
+            android:text="配送日"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginRight="10dp"
+            android:id="@+id/textView1" />
+        <EditText
+            android:inputType="date"
+            android:layout_width="120dp"
+            android:id="@+id/todoke_et_deliveryDate"
+            android:focusable="true"
+            android:hint="yyMMdd"
+            android:layout_columnSpan="2"
+            android:layout_gravity="fill_horizontal" />
+    </GridLayout>
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_kosuSelect_Todoke"
+        android:visibility="gone"
+        android:columnCount="3">
+        <TextView
+            android:text="得意先"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView2" />
+        <EditText
+            android:text=""
+            android:inputType="numberSigned"
+            android:layout_width="120dp"
+            android:id="@+id/et_todoke_tokuisaki"
+            android:layout_columnSpan="2"
+            android:layout_gravity="fill_horizontal" />
+        <TextView
+            android:text="届先"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView3" />
+        <EditText
+            android:text=""
+            android:inputType="numberSigned"
+            android:layout_width="120dp"
+            android:id="@+id/et_todoke_todokesaki" />
+        <Button
+            android:text="検索"
+            android:textSize="15sp"
+            android:id="@+id/btn_search_todoke" />
+    </GridLayout>
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_kosuSelect_Vendor"
+        android:visibility="gone"
+        android:columnCount="3">
+        <TextView
+            android:text="ﾍﾞﾝﾀﾞｰ"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView3" />
+        <EditText
+            android:text="000021"
+            android:inputType="numberSigned"
+            android:layout_width="120dp"
+            android:id="@+id/et_kosuSelect_vendorCode" />
+        <Button
+            android:text="検索"
+            android:textSize="15sp"
+            android:id="@+id/btn_kosuSelect_vendorSearch" />
+    </GridLayout>
+    <TextView
+        android:text="よろしいですか？"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:id="@+id/txt_kosuSelect_confirmMsg" />
+    <Button
+        android:text="確定"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:id="@+id/btn_todoke_confirm"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:gravity="center_vertical|left">
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_kosuSelect_Todoke"
+        android:columnCount="2">
+        <TextView
+            android:text="配送日"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginRight="10dp"
+            android:id="@+id/textView1" />
+        <EditText
+            android:inputType="date"
+            android:layout_width="120dp"
+            android:id="@+id/et_tsumikomiSelect_syukaDate"
+            android:focusable="true"
+            android:hint="yyMMdd"
+            android:layout_gravity="fill_horizontal" />
+        <TextView
+            android:text="コース"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView2" />
+        <EditText
+            android:text=""
+            android:inputType="numberSigned"
+            android:layout_width="120dp"
+            android:id="@+id/et_tsumikomiSelect_course"
+            android:layout_gravity="fill_horizontal" />
+        <TextView
+            android:text="便No."
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView2" />
+        <EditText
+            android:text=""
+            android:inputType="numberSigned"
+            android:layout_marginTop="30dp"
+            android:layout_width="120dp"
+            android:id="@+id/et_tsumikomiSelect_binNo"
+            android:layout_gravity="fill_horizontal" />
+    </GridLayout>
+    <TextView
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="textStart"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:id="@+id/tv_tsumikomiSelect_confirmBin" />
+    <TextView
+        android:text="よろしいですか？"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:id="@+id/tv_tsumikomiSelect_confirmMsg" />
+    <Button
+        android:text="確定"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/btn_tsumikomiSelect_confirm" />
+</LinearLayout>

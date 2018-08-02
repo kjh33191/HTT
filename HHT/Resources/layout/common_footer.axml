@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:minWidth="25px"
+    android:minHeight="25px"
+    android:layout_width="fill_parent"
+    android:id="@+id/linearLayout2"
+    android:layout_weight="1"
+    android:background="#ff0277bd"
+    android:layout_height="48dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="(c) Xamarin 2016"
+        android:id="@+id/tv_foot_body"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:layout_gravity="left"
+        android:layout_marginLeft="20dp"
+        android:gravity="left|center_vertical"
+        android:textStyle="normal" />
+</LinearLayout>

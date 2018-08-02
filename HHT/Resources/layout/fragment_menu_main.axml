@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="false"
+    android:measureAllChildren="true"
+    android:nestedScrollingEnabled="true">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
+        <LinearLayout
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/kounaiLayout"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="30dp">
+            <Button
+                android:text="1:入荷検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/inStockButton"
+                android:onClick="GoNyuka"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="2:積替移動"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_menu_tsumikaeIdou"
+                android:onClick="GoTsumikae"
+                android:layout_weight="1"
+                android:textSize="18sp"
+                style="@style/Widget.AppCompat.Button.Colored" />
+            <Button
+                android:text="3:マテハン管理"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button3"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button.Borderless" />
+            <Button
+                android:text="4:メールバッグ"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button4"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored" />
+            <Button
+                android:text="5:移動先店舗登録"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:textSize="18sp"
+                android:background="@drawable/menu_button"
+                android:id="@+id/button5" />
+            <Button
+                android:text="6:TC2型"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:textSize="18sp"
+                android:id="@+id/button6"
+                android:background="@drawable/menu_button"
+                android:layout_marginBottom="30dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/driverLayout"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="30dp">
+            <Button
+                android:text="1:入荷検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button1"
+                android:layout_weight="1" />
+            <Button
+                android:text="2:積替移動"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button2"
+                android:layout_weight="1" />
+            <Button
+                android:text="3:積込検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button3" />
+            <Button
+                android:text="4:納品検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button4" />
+            <Button
+                android:text="5:データ送信"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button5" />
+            <Button
+                android:text="6:移動先店舗納品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button6" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/managerLayout"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="30dp">
+            <Button
+                android:text="1:入荷検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_nyuka"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:layout_weight="1"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="2:積替移動"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_tsumikae"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="3:積込検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_tsumikomi"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="4:納品検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_nohin"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="5:データ送信"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_dataSend"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="6:マテハン登録"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_idousakiNohin"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="7:メールバッグ"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_mailBag"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="8:移動先店舗登録"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_idousakiRegist"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="9:移動先店舗納品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_idousakiNohin"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text="0:TC2型"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_tc2"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+            <Button
+                android:text=".:在庫集約"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/btn_main_manager_zaikou"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button" />
+        </LinearLayout>
+        <LinearLayout
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/tc2Layout"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="30dp">
+            <Button
+                android:text="1:ＴＣ２型入荷検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button1"
+                android:layout_weight="1" />
+            <Button
+                android:text="2:ＴＣ２型出荷検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button2"
+                android:layout_weight="1" />
+            <Button
+                android:text="3:ＴＣ２型ケース検品"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/button3" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

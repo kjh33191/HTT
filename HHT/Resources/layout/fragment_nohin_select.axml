@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:gravity="center_vertical|left">
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_kosuSelect_Todoke"
+        android:columnCount="2">
+        <TextView
+            android:text="得意先"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView2" />
+        <EditText
+            android:text=""
+            android:inputType="numberSigned"
+            android:layout_width="120dp"
+            android:id="@+id/et_todoke_tokuisaki"
+            android:layout_gravity="fill_horizontal" />
+        <TextView
+            android:text="届先"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView2" />
+        <EditText
+            android:text=""
+            android:inputType="numberSigned"
+            android:layout_marginTop="30dp"
+            android:layout_width="120dp"
+            android:id="@+id/et_todoke_tokuisaki"
+            android:layout_gravity="fill_horizontal" />
+        <TextView
+            android:text="受領書No."
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginTop="30dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView2"
+            android:layout_columnSpan="2" />
+        <EditText
+            android:text=""
+            android:inputType="numberSigned"
+            android:id="@+id/et_todoke_tokuisaki"
+            android:layout_gravity="fill_horizontal"
+            android:layout_columnSpan="2" />
+    </GridLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/ly_nohinSelect_confirm">
+        <TextView
+            android:text="よろしいですか？"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_marginTop="30dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_kosuSelect_confirmMsg" />
+    </LinearLayout>
+    <Button
+        android:text="確定"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:id="@+id/button1" />
+</LinearLayout>
