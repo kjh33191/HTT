@@ -120,10 +120,10 @@
             android:focusable="false" />
     </GridLayout>
     <Button
-        android:text="確定"
-        android:layout_width="150dp"
+        android:text="移動"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/et_tsumikomiWork_confirm" />
+        android:id="@+id/et_tsumikomiWork_idou" />
 </LinearLayout>

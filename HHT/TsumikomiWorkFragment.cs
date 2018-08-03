@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -18,9 +19,12 @@ namespace HHT
 {
     public class TsumikomiWorkFragment : BaseFragment
     {
+        ISharedPreferences prefs;
+        ISharedPreferencesEditor editor;
+
         private View view;
         private EditText etKosu, etCarLabel, etCarry, etKargo, etCard, etBara, etSonata;
-        private Button btnConfirm;
+        private Button btnIdou;
         private int kansen_kbn;
         private bool isSagyo5;
 
@@ -35,9 +39,11 @@ namespace HHT
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             view = inflater.Inflate(Resource.Layout.fragment_tsumikomi_work, container, false);
+            prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
+            editor = prefs.Edit();
 
             SetTitle("積込検品");
-            SetFooterText("");
+            SetFooterText("F3：移動");
 
             etKosu = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_kosu);
             etCarLabel = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_carLabel);
@@ -47,13 +53,18 @@ namespace HHT
             etBara = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_bara);
             etSonata = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_sonota);
 
-            btnConfirm = view.FindViewById<Button>(Resource.Id.et_tsumikomiWork_confirm);
-
+            btnIdou = view.FindViewById<Button>(Resource.Id.et_tsumikomiWork_idou);
+            btnIdou.Click += delegate { };
             // temp
             kansen_kbn = 0;
             isSagyo5 = true;
 
-            // kansenFlag == 0 then TUMIKOMI040
+            // kansenFlag == 0 then TUMIKOMI040 // 該当店舗の各マテハン数を取得(定番コース)
+            if(kansen_kbn == 0)
+            {
+                GetTenpoMatehanInfo();
+
+            }
             // TUMIKOMI300
 
             /*
@@ -73,6 +84,80 @@ namespace HHT
         }
 
 
+        private void GetTenpoMatehanInfo()
+        {
+            var progress = ProgressDialog.Show(this.Activity, "Please wait...", "Contacting server. Please wait...", true);
+
+            new Thread(new ThreadStart(delegate {
+
+                Activity.RunOnUiThread(() =>
+                {
+                    Thread.Sleep(1500);
+
+                    Dictionary<string, string> param = new Dictionary<string, string>
+                {
+                    { "kenpin_souko",  prefs.GetString("souko_cd", "103")},
+                    { "kitaku_cd", prefs.GetString("kitaku_cd", "2") },
+                    { "syuka_date", prefs.GetString("shuka_date", "180310") },
+                    { "nohin_date", prefs.GetString("nohin_date", "1") },
+                    { "tokuisaki_cd", prefs.GetString("tokuisaki_cd", "1") },
+                    { "todokesaki_cd", prefs.GetString("todokesaki_cd", "1") },
+                    { "bin_no", prefs.GetString("bin_no", "310") },
+                };
+
+                    if (kansen_kbn == 0)
+                    {
+                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI040, param);
+                        //List<TUMIKOMI040> result = JsonConvert.DeserializeObject<List<TUMIKOMI010>>(resultJson);
+                    }
+                    else
+                    {
+                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI300, param);
+                        //List<TUMIKOMI300> result = JsonConvert.DeserializeObject<List<TUMIKOMI300>>(resultJson);
+                    }
+
+                    List<Dictionary<string, string>> resultList = new List<Dictionary<string, string>>();
+
+                    foreach (Dictionary<string, string> result in resultList)
+                    {
+                        string btvCategory = result["name_cd"];
+                        string btvCategoryNm = result["category_nm"];
+                        string btvKosu = result["cnt"];
+
+                        if (btvCategory == "00")
+                        {
+                            // キャリーラベル
+                            // category1_nm = btvCategoryNm
+                            // category1_su = btvKosu
+                        }
+                        else if (btvCategory == "00") {
+                            // category2_nm = btvCategoryNm
+                            // category2_su = btvKosu
+                        }
+                        else if (btvCategory == "01") {
+
+                        }
+                        else if (btvCategory == "02") { }
+                        else if (btvCategory == "03") { }
+                        else if (btvCategory == "04") { }
+                        else if (btvCategory == "05") { }
+                        else if (btvCategory == "06") { }
+                        else if (btvCategory == "07") { }
+                        else if (btvCategory == "08") { }
+
+
+
+
+
+                    }
+                );
+                Activity.RunOnUiThread(() => progress.Hide());
+
+            }
+        )).Start();
+
+        }
+
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
         {
             // When Scanner read some data
@@ -87,13 +172,6 @@ namespace HHT
                 
                 this.Activity.RunOnUiThread(() =>
                 {
-
-                    if (IsQRCode(densoSymbology))
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "QRコードはスキャン出来ません。。", null);
-                        return;
-                    }
-
                     if (isSagyo5 == true)
                     {
                         int ret = 0;

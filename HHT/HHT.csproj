@@ -80,10 +80,12 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\TenpoAdapter.cs" />
     <Compile Include="Adapters\Adapter1.cs" />
     <Compile Include="Common\BaseFragment.cs" />
     <Compile Include="Common\BootComplete.cs" />
     <Compile Include="Common\CommonUtils.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI020.cs" />
     <Compile Include="TsumikomiCompleteFragment.cs" />
     <Compile Include="TsumikomiWorkFragment.cs" />
     <Compile Include="TsumikomiSearchFragment.cs" />
@@ -254,7 +256,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Model\WebService\Output\" />
-    <Folder Include="Resources\Model\WebService\Tumikomi\" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\fragment_menu_tsumikae.axml">
@@ -288,6 +289,18 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\fragment_tsumikomi_complete.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_menu_tsumikomi_idou.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_tsumikomi_course_update.axml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>

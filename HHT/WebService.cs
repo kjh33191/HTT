@@ -9,7 +9,52 @@ namespace HHT
 {
     public class WebService
     {
-        private readonly static string WEB_SERVICE_URL = "http://192.168.0.18:8787/";
+        public readonly static string WEB_SERVICE_URL = "http://192.168.0.18:8787/";
+
+        public class LOGIN {
+            public string LOGIN001 = WEB_SERVICE_URL + "ReqeustLogin001?hht_id={0}";
+            public readonly static string LOGIN010 = WEB_SERVICE_URL + "ReqeustLogin010?souko_cd={0}";
+            public readonly static string LOGIN020 = WEB_SERVICE_URL + "ReqeustLogin020?hht_id={0}";
+            public readonly static string LOGIN030 = WEB_SERVICE_URL + "ReqeustLogin030?driver_cd={0}";
+            public readonly static string LOGIN040 = WEB_SERVICE_URL + "ReqeustLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
+            public readonly static string LOGIN050 = WEB_SERVICE_URL + "ReqeustLogin050";
+        };
+
+        public class KOSU
+        {
+            public readonly static string KOSU010 = WEB_SERVICE_URL + "ReqeustKosu010?hht_id={0}";
+            public readonly static string KOSU020 = WEB_SERVICE_URL + "ReqeustLogin010?souko_cd={0}";
+            public readonly static string KOSU030 = WEB_SERVICE_URL + "ReqeustLogin020?hht_id={0}";
+            public readonly static string KOSU040 = WEB_SERVICE_URL + "ReqeustLogin030?driver_cd={0}";
+            public readonly static string KOSU050 = WEB_SERVICE_URL + "ReqeustLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
+            public readonly static string KOSU060 = WEB_SERVICE_URL + "ReqeustLogin050";
+            public readonly static string KOSU065 = WEB_SERVICE_URL + "ReqeustLogin050";
+        };
+
+        public class IDOU
+        {
+            public readonly static string IDOU010 = WEB_SERVICE_URL + "ReqeustIdou010?kenpin_souko={0}&kitaku_cd={1}&kamotsu_no={2}";
+            public readonly static string KOSU020 = WEB_SERVICE_URL + "ReqeustLogin010?souko_cd={0}";
+            public readonly static string KOSU030 = WEB_SERVICE_URL + "ReqeustLogin020?hht_id={0}";
+            public readonly static string KOSU040 = WEB_SERVICE_URL + "ReqeustLogin030?driver_cd={0}";
+            public readonly static string KOSU050 = WEB_SERVICE_URL + "ReqeustLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
+            public readonly static string KOSU060 = WEB_SERVICE_URL + "ReqeustLogin050";
+            public readonly static string KOSU065 = WEB_SERVICE_URL + "ReqeustLogin050";
+        };
+
+        public class TUMIKOMI
+        {
+            public readonly static string TUMIKOMI010 = WEB_SERVICE_URL + "ReqeustTumikomi010"; // 便検索 
+            public readonly static string TUMIKOMI020 = WEB_SERVICE_URL + "ReqeustTumikomi020"; // 該当コース内の店舗一覧取得
+            public readonly static string TUMIKOMI030 = WEB_SERVICE_URL + "ReqeustTumikomi030"; // 該当店舗が何コース分あるか取得(1件であれば定番コース。2件以上あれば増便コース)
+            public readonly static string TUMIKOMI040 = WEB_SERVICE_URL + "ReqeustTumikomi040"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI300 = WEB_SERVICE_URL + "ReqeustTumikomi300"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string KOSU050 = WEB_SERVICE_URL + "ReqeustLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
+            public readonly static string KOSU060 = WEB_SERVICE_URL + "ReqeustLogin050";
+            public readonly static string KOSU065 = WEB_SERVICE_URL + "ReqeustLogin050";
+        };
+
+
 
         private readonly static string LOGIN001 = "Login001?hht_id={0}"; // ハンディマスタデータを取得する。（新規）
         private readonly static string LOGIN010 = "Login010?souko_cd={0}"; // 倉庫マスタデータ取得

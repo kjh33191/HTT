@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Preferences;
 using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Util;
@@ -30,7 +28,7 @@ namespace HHT
         private BarcodeScanner_ mBarcodeScanner = null;
         private BarcodeScannerSettings_ mSettings = null;
         private BarcodeScannerInfo_.BarcodeScannerType_ mScannerType = null;
-         
+
         private bool mResumed = false;
 
         readonly ReadOnlyCollection<ScanSettings_.TriggerMode_> TRIGGER_MODE = Array.AsReadOnly(new ScanSettings_.TriggerMode_[] {
@@ -63,14 +61,13 @@ namespace HHT
             }
             catch (Java.Lang.NullPointerException ex)
             {
-                // Set to default if Wrong Parameters has been reloaded.
                 mScannerType = null;
                 mSettings = null;
             }
 
             FragmentManager.BeginTransaction().Replace(Resource.Id.fragmentContainer, new LoginFragment()).Commit();
             //FragmentManager.BeginTransaction().Replace(Resource.Id.fragmentContainer, new TsumikomiWorkFragment()).Commit();
-            
+
         }
 
         public void InitProgresBar()
@@ -80,8 +77,6 @@ namespace HHT
             progress.SetMessage("Contacting server. Please wait...");
             progress.SetProgressStyle(ProgressDialogStyle.Spinner);
             progress.SetCancelable(false);
-            //progress.Show();
-            //progress.Dismiss();
         }
 
         public static void ShowProgressBar()
@@ -97,11 +92,9 @@ namespace HHT
         public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
         {
             Fragment localFragment = FragmentManager.FindFragmentById(Resource.Id.fragmentContainer);
-            BaseFragment baseFragment = localFragment as BaseFragment;
 
-            if ((baseFragment != null) && (((BaseFragment)localFragment).OnKeyDown(keyCode, e)))
+            if ((localFragment is BaseFragment baseFragment) && (((BaseFragment)localFragment).OnKeyDown(keyCode, e)))
             {
-                //return true;
                 return base.OnKeyDown(keyCode, e);
             }
             return base.OnKeyDown(keyCode, e);
@@ -472,7 +465,7 @@ namespace HHT
             {
 
                 // QR Code
-                settings.Decode.Symbologies.QrCode.Enabled = true;
+                settings.Decode.Symbologies.QrCode.Enabled = false;
 
                 if (mScannerType == BarcodeScannerInfo_.BarcodeScannerType_.Type2d)
                 {
