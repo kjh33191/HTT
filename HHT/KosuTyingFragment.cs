@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using HHT.Resources.Model;
 using Android.Content;
 using Android.Preferences;
+using System.Threading;
 
 namespace HHT
 {
@@ -123,129 +124,200 @@ namespace HHT
 
         }
 
-        public void SetBarcodeSetting()
-        {
-            /*
-             If JOB:menu_flg == JOB:MENU_TODOKE Then
-                OutputText("")
-            Else
-                OutputText(JOB:vendor_nm)
-            End If
-
-            OutputText(tokuisaki_nm)
-            "店舗ロケ：" + loca_cd
-
-            If btvQtyDisp == 0 Then
-                OutputText(" F1:中断            ")
-            Else
-                OutputText(" F2 :取消  F3:満タン ")
-            End If
-
-            ///// barcode setting 
-            // CODE128･ITFを有効
-            JAN:enable = False
-            CODE39:enable = False
-            With EAN128
-            :enable = True :useCD = True :includeCD = False :separator = 32//' '
-            If ( :max > 1) Then  :min = 1 :max = 100  Else  :max = 100:min = 1  EndIf
-            EndWith
-            CODE128:enable = True
-            ITF:enable = True
-            NW7:enable = False
-            CODE93:enable = False
-            TOF:enable = False
-            COOP:enable = False
-            QR:enable = True
-            DataMatrix:enable = False
-            Maxi:enable = False
-            PDF417:enable = False
-            RSS:enable = False
-            Composite:enable = False
-             */
-        }
-
         public override void OnResume()
         {
             base.OnResume();
             SetKosuMax();
         }
 
-        public void CountItem(IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData)
+        private void CheckCategoryMixed()
         {
-            foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
-            {
-                this.Activity.RunOnUiThread(() =>
+            var progress = ProgressDialog.Show(this.Activity, null, "検品情報を確認しています。", true);
+
+            new Thread(new ThreadStart(delegate {
+                Activity.RunOnUiThread(() =>
                 {
+                    Thread.Sleep(1000);
+                    Dictionary<string, string> param = new Dictionary<string, string>
+                    {
+                        { "souko_cd",  prefs.GetString("tokuisaki_cd", "103")},
+                        { "kitaku_cd",  prefs.GetString("tokuisaki_cd", "103")},
+                        { "syuka_date",  prefs.GetString("tokuisaki_cd", "103")},
+                        { "bin_no",  prefs.GetString("tokuisaki_cd", "103")}
+                    };
 
-                    // Apply data to UI
-                    string densoSymbology = barcodeData.SymbologyDenso;
-                    string kamotsu_no = barcodeData.Data;
+                    string resultJson = "";
 
-                    string result = "";
-
-                    // カテゴリ・定特混在チェック
                     if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                     {
-                        result = ""; //proc_kosukenpin("070")
+                        //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU077, param);
                     }
-                    else if(kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
+                    else
                     {
-                        result = ""; //proc_kosukenpin("150")
+                        //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU078, param);
                     }
-                    else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
-                    {
-                        //何もしない？
-                    }
-                    
-                    
 
-                    string resultData = "{" +
-                        "labelType:'0'" +
-                        "}";
+                    //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU040, param);
+                    //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
 
-                    // if(erRet == 0)
-                    KosuKenpin kosuKenpin = JsonConvert.DeserializeObject<KosuKenpin>(resultData);
-                    if (kosuKenpin != null)
+                    int status = 0; // result["state"]
+                    if (status == 1)
                     {
-                        switch (kosuKenpin.labelType)
+                        CommonUtils.AlertDialog(view, "エラー", "他の作業者が作業中データが含まれています", null);
+                    }
+                    else if (status == 2)
+                    {
+                        CommonUtils.AlertDialog(view, "エラー", "既に検品済データが含まれています", null);
+                    }
+                    else if (status == 3)
+                    {
+                        CommonUtils.AlertDialog(view, "エラー", "他の便の貨物Noです", null);
+                    }
+                    else if (status == 8)
+                    {
+                        CommonUtils.AlertDialog(view, "エラー", "他の届先の貨物Noデータが含まれています", null);
+                    }
+                    else if (status == 7)
+                    {
+                        CommonUtils.AlertDialog(view, "エラー", "貨物Noが見つからないデータが含まれています", null);
+                    }
+                    else if (status == 9)
+                    {
+                        CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                    }
+                    else
+                    {
+                        string btvMsg = "";
+                        if (status == 11)
                         {
-                            case 0:
-                                txtCase.Text = (Int32.Parse(txtCase.Text) + 1).ToString();
-                                break;
-                            case 1:
-                                txtOricon.Text = (Int32.Parse(txtOricon.Text) + 1).ToString();
-                                break;
-                            case 2:
-                                txtHuteikei.Text = (Int32.Parse(txtHuteikei.Text) + 1).ToString();
-                                break;
-                            case 3:
-                                txtMiseidou.Text = (Int32.Parse(txtMiseidou.Text) + 1).ToString();
-                                break;
-                            case 4:
-                                txtHazai.Text = (Int32.Parse(txtHazai.Text) + 1).ToString();
-                                break;
-                            case 5:
-                                txtHenpin.Text = (Int32.Parse(txtHenpin.Text) + 1).ToString();
-                                break;
-                            case 6:
-                                txtHansoku.Text = (Int32.Parse(txtHansoku.Text) + 1).ToString();
-                                break;
-                            case 7:
-                                txtKaisyu.Text = (Int32.Parse(txtKaisyu.Text) + 1).ToString();
-                                break;
+                                // 両方混在
+                                btvMsg = "カテゴリ・定特区分の違う貨物Noが混在しています。\nよろしいですか？";
+                            }
+                        else if (status == 12)
+                        {
+                                // カテゴリ混在
+                                btvMsg = "カテゴリの違う貨物Noが混在しています。\nよろしいですか？";
+                            }
+                        else if (status == 13)
+                        {
+                            // 定特区分混在
+                            btvMsg = "定特区分の違う貨物Noが混在しています。\nよろしいですか？";
+                        }
+                        else
+                        {
+                            // 正常
+                            //item_category eq "" OR JOB:teitoku_kbn eq "" Then
+                            //item_category = arrData[1] 積込分類コード
+                            //teitoku_kbn = arrData[2] //定特区分
                         }
 
-                        txtTotal.Text = (Int32.Parse(txtTotal.Text) + 1).ToString();
-                        //JOB: scan_ko_su = JOB:scan_ko_su + 1	// スキャンした個数
-                        gdTyingCanman.Visibility = ViewStates.Visible;
-                        btnStop.Visibility = ViewStates.Gone;
-                        SetFooterText("  F2 :取消                    F3:満タン");
-                        // if(erRet != 0)
-                        // 
+                        CommonUtils.AlertConfirm(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", 
+                            (flag) => {
+                                if (flag)
+                                {
+                                    // 正常
+                                    //item_category eq "" OR JOB:teitoku_kbn eq "" Then
+                                    //item_category = arrData[1]
+                                    //teitoku_kbn = arrData[2]
+                                }
+                            });
                     }
-
-                });
+                }
+                );
+                Activity.RunOnUiThread(() => progress.Dismiss());
             }
+            )).Start();
+        }
+
+        public void CountItem(IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData)
+        {
+            var progress = ProgressDialog.Show(this.Activity, null, "検品情報を確認しています。", true);
+            
+            new Thread(new ThreadStart(delegate {
+                Activity.RunOnUiThread(() =>
+                {
+                    foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
+                    {
+                        // Apply data to UI
+                        string densoSymbology = barcodeData.SymbologyDenso;
+                        string kamotsu_no = barcodeData.Data;
+
+                        string result = "";
+
+                        Dictionary<string, string> param = new Dictionary<string, string>
+                        {
+                            { "souko_cd",  prefs.GetString("tokuisaki_cd", "103")},
+                            { "kitaku_cd",  prefs.GetString("tokuisaki_cd", "103")},
+                            { "syuka_date",  prefs.GetString("tokuisaki_cd", "103")},
+                            { "bin_no",  prefs.GetString("tokuisaki_cd", "103")}
+                        };
+
+                        string resultJson = "";
+
+                        if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
+                        {
+                            //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU070, param);
+                        }
+                        else
+                        {
+                            //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU150, param);
+                        }
+
+                        //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU040, param);
+                        //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
+                        
+                        string resultData = "{" +
+                            "labelType:'0'" +
+                            "}";
+
+                        // if(erRet == 0)
+                        KosuKenpin kosuKenpin = JsonConvert.DeserializeObject<KosuKenpin>(resultData);
+                        if (kosuKenpin != null)
+                        {
+                            switch (kosuKenpin.labelType)
+                            {
+                                case 0:
+                                    txtCase.Text = (Int32.Parse(txtCase.Text) + 1).ToString();
+                                    break;
+                                case 1:
+                                    txtOricon.Text = (Int32.Parse(txtOricon.Text) + 1).ToString();
+                                    break;
+                                case 2:
+                                    txtHuteikei.Text = (Int32.Parse(txtHuteikei.Text) + 1).ToString();
+                                    break;
+                                case 3:
+                                    txtMiseidou.Text = (Int32.Parse(txtMiseidou.Text) + 1).ToString();
+                                    break;
+                                case 4:
+                                    txtHazai.Text = (Int32.Parse(txtHazai.Text) + 1).ToString();
+                                    break;
+                                case 5:
+                                    txtHenpin.Text = (Int32.Parse(txtHenpin.Text) + 1).ToString();
+                                    break;
+                                case 6:
+                                    txtHansoku.Text = (Int32.Parse(txtHansoku.Text) + 1).ToString();
+                                    break;
+                                case 7:
+                                    txtKaisyu.Text = (Int32.Parse(txtKaisyu.Text) + 1).ToString();
+                                    break;
+                            }
+
+                            txtTotal.Text = (Int32.Parse(txtTotal.Text) + 1).ToString();
+                            //JOB: scan_ko_su = JOB:scan_ko_su + 1	// スキャンした個数
+                            gdTyingCanman.Visibility = ViewStates.Visible;
+                            btnStop.Visibility = ViewStates.Gone;
+                            SetFooterText("  F2 :取消                    F3:満タン");
+                            // if(erRet != 0)
+                            // 
+                        }
+
+                }
+                }
+                );
+                Activity.RunOnUiThread(() => progress.Dismiss());
+            }
+            )).Start();
+
         }
 
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)

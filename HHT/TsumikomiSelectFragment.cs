@@ -68,15 +68,9 @@ namespace HHT
 
         private void SearchBinNo()
         {
-            ProgressDialog progress = new ProgressDialog(this.Activity)
-            {
-                Indeterminate = true
-            };
-            progress.SetMessage("Contacting server. Please wait...");
-            progress.SetProgressStyle(ProgressDialogStyle.Spinner);
-            progress.SetCancelable(false);
-            progress.Show();
-            
+            //var progress = ProgressDialog.Show(this.Activity, null, "便情報を確認しています。", true);
+            ((MainActivity)this.Activity).ShowProgress("便情報を確認しています。");
+
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
                 {
@@ -112,7 +106,7 @@ namespace HHT
 
                 }
                 );
-                Activity.RunOnUiThread(() => progress.Hide());
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
 

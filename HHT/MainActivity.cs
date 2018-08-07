@@ -53,7 +53,6 @@ namespace HHT
             footerLayout = FindViewById<LinearLayout>(Resource.Id.footerLayout);
             txtFooterBody = FindViewById<TextView>(Resource.Id.tv_foot_body);
 
-            InitProgresBar();
             try
             {
                 MainActivity mainActivity = this;
@@ -68,25 +67,6 @@ namespace HHT
             FragmentManager.BeginTransaction().Replace(Resource.Id.fragmentContainer, new LoginFragment()).Commit();
             //FragmentManager.BeginTransaction().Replace(Resource.Id.fragmentContainer, new TsumikomiWorkFragment()).Commit();
 
-        }
-
-        public void InitProgresBar()
-        {
-            progress = new ProgressDialog(this);
-            progress.Indeterminate = true;
-            progress.SetMessage("Contacting server. Please wait...");
-            progress.SetProgressStyle(ProgressDialogStyle.Spinner);
-            progress.SetCancelable(false);
-        }
-
-        public static void ShowProgressBar()
-        {
-            progress.Show();
-        }
-
-        public static void HideProgressBar()
-        {
-            progress.Dismiss();
         }
 
         public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
@@ -113,6 +93,24 @@ namespace HHT
         public static void SetTextFooter(string content)
         {
             txtFooterBody.Text = content;
+        }
+
+        public void ShowProgress(string message)
+        {
+            if (progress == null)
+            {
+                progress = new ProgressDialog(this);
+            }
+            progress.Indeterminate = true;
+            progress.SetMessage(message);
+            progress.SetCancelable(false);
+            progress.Show();
+        }
+
+        public void DismissDialog()
+        {
+            if (progress != null && progress.IsShowing)
+                progress.Dismiss();
         }
 
         protected override void OnResume()

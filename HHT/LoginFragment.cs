@@ -160,7 +160,7 @@ namespace HHT
                 return;
             }
 
-            MainActivity.ShowProgressBar();
+            var progress = ProgressDialog.Show(this.Activity, null, "ログインしています。", true);
 
             view.ClearFocus();
             view.Focusable = false;
@@ -191,7 +191,7 @@ namespace HHT
             view.Focusable = true;
             view.FocusableInTouchMode = true;
 
-            MainActivity.HideProgressBar();
+            progress.Dismiss();
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)

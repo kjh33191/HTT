@@ -48,7 +48,17 @@ namespace HHT
             public readonly static string TUMIKOMI020 = WEB_SERVICE_URL + "ReqeustTumikomi020"; // 該当コース内の店舗一覧取得
             public readonly static string TUMIKOMI030 = WEB_SERVICE_URL + "ReqeustTumikomi030"; // 該当店舗が何コース分あるか取得(1件であれば定番コース。2件以上あれば増便コース)
             public readonly static string TUMIKOMI040 = WEB_SERVICE_URL + "ReqeustTumikomi040"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI050 = WEB_SERVICE_URL + "ReqeustTumikomi050"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI060 = WEB_SERVICE_URL + "ReqeustTumikomi060"; // 積込検品用Proc sagyou5
+            public readonly static string TUMIKOMI070 = WEB_SERVICE_URL + "ReqeustTumikomi070"; // 貨物Noスキャン時、各分類のカウントを取得
+            public readonly static string TUMIKOMI080 = WEB_SERVICE_URL + "ReqeustTumikomi080"; // 積込検品用Proc sagyou7
+            public readonly static string TUMIKOMI090 = WEB_SERVICE_URL + "ReqeustTumikomi090"; // Back
+
+            public readonly static string TUMIKOMI210 = WEB_SERVICE_URL + "ReqeustTumikomi210"; // 積込検品用Proc(配車テーブル実績数更新) sagyou5
+
             public readonly static string TUMIKOMI300 = WEB_SERVICE_URL + "ReqeustTumikomi300"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI312 = WEB_SERVICE_URL + "ReqeustTumikomi312"; // Back
+            public readonly static string TUMIKOMI314 = WEB_SERVICE_URL + "ReqeustTumikomi314"; // 積込検品用Proc(配車テーブル実績数更新) sagyou7
             public readonly static string KOSU050 = WEB_SERVICE_URL + "ReqeustLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
             public readonly static string KOSU060 = WEB_SERVICE_URL + "ReqeustLogin050";
             public readonly static string KOSU065 = WEB_SERVICE_URL + "ReqeustLogin050";

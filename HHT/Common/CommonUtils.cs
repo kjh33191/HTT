@@ -17,6 +17,7 @@ using Android.Telephony;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
+using Java.Lang;
 using Java.Util;
 using Newtonsoft.Json;
 
@@ -134,7 +135,7 @@ namespace HHT
             return networkInfo != null && networkInfo.IsConnectedOrConnecting;
         }
 
-        public static String GetDeviceUUID(Context context)
+        public static string GetDeviceUUID(Context context)
         {
             TelephonyManager tm = (TelephonyManager)context.GetSystemService(Context.TelephonyService);
 
@@ -153,6 +154,8 @@ namespace HHT
             alertDialog.SetMessage(message);
             alertDialog.SetButton("確認", (senderAlert, args) => { callback?.Invoke(); });
             alertDialog.Show();
+
+            //alertDialog.SetOnShowListener(new IDialogInterfaceOnShowListener() {  })
         }
 
         public static void ShowAlertDialog(View view, string title, string message)
@@ -176,7 +179,7 @@ namespace HHT
             return true;
         }
 
-        public static string GetDateYYMMDDwithSlash(String dateString)
+        public static string GetDateYYMMDDwithSlash(string dateString)
         {
             string ymd = Regex.Replace(Convert.ToString(dateString), @"[^\u0000-\u007F]|/", string.Empty);
             DateTime dt = DateTime.ParseExact(ymd.ToString(), "yyMMdd", CultureInfo.InvariantCulture);

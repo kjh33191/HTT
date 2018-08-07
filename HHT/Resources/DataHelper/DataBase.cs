@@ -26,6 +26,7 @@ namespace HHT.Resources.DataHelper
                 {
                     connection.CreateTable<Tantohsya>();
                     connection.CreateTable<Login>();
+                    connection.CreateTable<Tokuisaki>();
                     return true;
                 }
             }

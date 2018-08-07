@@ -85,6 +85,11 @@
     <Compile Include="Common\BaseFragment.cs" />
     <Compile Include="Common\BootComplete.cs" />
     <Compile Include="Common\CommonUtils.cs" />
+    <Compile Include="Resources\DataHelper\TokuisakiHelper.cs" />
+    <Compile Include="Resources\Model\Tokuisaki.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI311.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI310.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI060.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI020.cs" />
     <Compile Include="TsumikomiCompleteFragment.cs" />
     <Compile Include="TsumikomiWorkFragment.cs" />

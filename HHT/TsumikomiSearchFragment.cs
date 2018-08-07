@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -56,13 +57,14 @@ namespace HHT
 
         private void GetTenpoList()
         {
-            var progress = ProgressDialog.Show(this.Activity, "Please wait...", "Contacting server. Please wait...", true);
+            //var progress = ProgressDialog.Show(this.Activity, "Please wait...", "Contacting server. Please wait...", true);
+            ((MainActivity)this.Activity).ShowProgress("Contacting server. Please wait...");
 
             new Thread(new ThreadStart(delegate {
 
             Activity.RunOnUiThread(() =>
             {
-                Thread.Sleep(1500);
+                Thread.Sleep(3000);
 
                 Dictionary<string, string> param = new Dictionary<string, string>
                 {
@@ -73,7 +75,7 @@ namespace HHT
                     { "bin_no", prefs.GetString("bin_no", "310") },
                     { "course", prefs.GetString("course", "310") },
                 };
-
+                
                 //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI010, param);
                 //List<TUMIKOMI010> result = JsonConvert.DeserializeObject<List<TUMIKOMI010>>(resultJson);
                 result = new List<TUMIKOMI020>();
@@ -89,11 +91,11 @@ namespace HHT
                 result.Add(new TUMIKOMI020());
 
                 tenpoAdapter = new TenpoAdapter(result);
-                listView.Adapter = tenpoAdapter;
+                //listView.Adapter = tenpoAdapter;
                 
             }
             );
-            Activity.RunOnUiThread(() => progress.Hide());
+            Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
 
         }
         )).Start();
@@ -141,18 +143,18 @@ namespace HHT
 
                     //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI030, param);
                     //int result = JsonConvert.DeserializeObject<List<TUMIKOMI010>>(resultJson);
-                    int result = 1;
-                    if (result == 0)
+                    int zoubin_flg = 1;
+                    if (zoubin_flg == 0)
                     {
                         CommonUtils.AlertDialog(view, "エラー", "定番・増便データはありません。", null);
                     }
-                    else if (result == 1)
+                    else if (zoubin_flg == 1)
                     {
                         //JOB: scan_flg = false	//スキャン済みフラグ
                         // Return("sagyou5")積込作業
                         StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
                     }
-                    else if (result >= 2)
+                    else if (zoubin_flg >= 2)
                     {
                         // Return("sagyou7") 積込作業画面だけど。。。
                         StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
@@ -160,7 +162,7 @@ namespace HHT
 
                 }
                 );
-                Activity.RunOnUiThread(() => progress.Hide());
+                Activity.RunOnUiThread(() => progress.Dismiss());
 
             }
             )).Start();
