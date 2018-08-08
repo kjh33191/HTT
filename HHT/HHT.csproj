@@ -85,7 +85,11 @@
     <Compile Include="Common\BaseFragment.cs" />
     <Compile Include="Common\BootComplete.cs" />
     <Compile Include="Common\CommonUtils.cs" />
+    <Compile Include="Resources\DataHelper\TantoHelper.cs" />
     <Compile Include="Resources\DataHelper\TokuisakiHelper.cs" />
+    <Compile Include="Resources\Model\Mail.cs" />
+    <Compile Include="Resources\Model\Password.cs" />
+    <Compile Include="Resources\Model\Tsumikomi.cs" />
     <Compile Include="Resources\Model\Tokuisaki.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI311.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI310.cs" />
@@ -110,11 +114,10 @@
     <Compile Include="Resources\Model\Login.cs" />
     <Compile Include="Resources\Model\WebService\Login\LOGIN030.cs" />
     <Compile Include="Resources\Model\WebService\Login\LOGIN020.cs" />
-    <Compile Include="Resources\Model\Person.cs" />
     <Compile Include="Resources\Model\WebService\Login\LOGIN010.cs" />
     <Compile Include="Resources\Model\Matehan.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU110.cs" />
-    <Compile Include="Resources\Model\Tantohsya.cs" />
+    <Compile Include="Resources\Model\Tanto.cs" />
     <Compile Include="Resources\Model\WebService\Input\KOSU131_I.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

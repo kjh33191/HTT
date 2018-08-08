@@ -7,19 +7,26 @@ using HHT.Resources.Model;
 using Android.App;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Android.Content;
+using Android.Preferences;
+using System.Threading.Tasks;
 
 namespace HHT
 {
     public class LoginFragment : BaseFragment
     {
         View view;
-        
+
         private LoginHelper loginHelper;
-        //private bool btvIniflg = false;
+        private TantoHelper tantoHelper;
+
         private EditText etSoukoCode, etDriverCode;
         private TextView txtSoukoName;
         private Button btnLogin;
-
+        ISharedPreferences prefs;
+        ISharedPreferencesEditor editor;
+        
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -28,9 +35,11 @@ namespace HHT
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             view = inflater.Inflate(Resource.Layout.fragment_login, container, false);
-            
+            prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
+            editor = prefs.Edit();
+
             loginHelper = new LoginHelper();
-            
+
             SetTitle("ログイン");
             SetFooterText("");
 
@@ -48,107 +57,109 @@ namespace HHT
 
             btnLogin.Click += delegate { Login(); };
 
-            if (CommonUtils.IsOnline(this.Activity))
-            {
-                //ログイン情報をサーバから取得ーーーでも必要？
-                //LOGIN020 login020 = WebService.ExecuteLogin020(Handyid);
-            }
-            else
-            {
-                //btvIniflg = false;
-            }
-
-            SetLastLoginInfo();
-            
-            
-            //db.DeleteAllTantoshya();
-            // 担当者マスタ取得
-            // LOGIN050
-            /*
-            Tantohsya tantohsya = new Tantohsya()
-            {
-                sagyogroup_cd = "104010",
-                tantohsya_cd = "10007",
-                tantohsya_nm = "熊谷　悟司",
-                menu_kbn = "1",
-                default_souko = "104"
-
+            btnLogin.FocusChange += delegate {
+                if (btnLogin.IsFocused)
+                {
+                    CommonUtils.HideKeyboard(this.Activity);
+                }
             };
 
-            db.InsertIntoTablePerson(tantohsya);
-            */
-            /*
-             * if(IsOnline()){
-             * 
-             * // ログイン情報の存在有無によって、処理が分岐される
-             * 最初ログインの場合、LOGIN001
-             * 最初ログインではない場合、ローカルから取得
-             * LOGIN050
-             * 
-             * }else{
-             * ローカルから前回のログイン情報を取得する。
-             * 取得OKの場合、センターCD、センター名を設定する。
-             * 取得NGの場合、空白でする
-             * OFFLINEフラグ設定（必要あるのか？）
-             * }
-             * 
-             */
+            // 以前ログイン情報を設定する。
+            SetLastLoginInfo();
 
-            // ローカルからログイン情報取得
-            // その後、最初の場合、サーバからデータを取得し、ロカールDBに保存する。
+            // 担当者マスタ情報をロカールDBに保存する。
+            SaveTantoMaster();
 
             return view;
         }
 
-        public override void OnResume()
+        private void RegistMusenKanri()
         {
-            base.OnResume();
-            MainActivity.SetTextFooter("");
+            //ログイン情報をサーバから取得ーーーでも必要？
+            Dictionary<string, string> param = new Dictionary<string, string>
+                        {
+                            { "driver_cd",  etDriverCode.Text},
+                            { "souko_cd",  etSoukoCode.Text},
+                            { "htt_id",  "11101"}
+                        };
+
+            CommonUtils.Post(WebService.LOGIN.LOGIN040, param);
+        }
+
+        private async Task<LOGIN030> GetLOGIN030(string driver_cd)
+        {
+            LOGIN030 login030 = new LOGIN030();
+            //ログイン情報をサーバから取得ーーーでも必要？
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                { "tantohsya_cd",  driver_cd}
+            };
+
+            string resultJson030 = await CommonUtils.PostAsync(WebService.LOGIN.LOGIN030, param);
+            login030 = JsonConvert.DeserializeObject<LOGIN030>(resultJson030);
+
+            return login030;
         }
 
         public void Login()
         {
-            if(etSoukoCode.Text == "" || txtSoukoName.Text == "")
-            {
-                string alertTitle = Resources.GetString(Resource.String.error);
-                string alertBody = Resources.GetString(Resource.String.errorMsg002);
+            ((MainActivity)this.Activity).ShowProgress("ログイン情報を確認しています。");
+            
+            new Thread(new ThreadStart(delegate {
+                Activity.RunOnUiThread(async () =>
+                {
+                    Thread.Sleep(2000);
 
-                CommonUtils.AlertDialog(view, alertTitle, alertBody, () => {
-                    etSoukoCode.Text = "";
-                    txtSoukoName.Text = "";
-                    etSoukoCode.RequestFocus();
+                    if (etSoukoCode.Text == "" || txtSoukoName.Text == "")
+                    {
+                        string alertTitle = Resources.GetString(Resource.String.error);
+                        string alertBody = Resources.GetString(Resource.String.errorMsg002);
+
+                        CommonUtils.AlertDialog(view, alertTitle, alertBody, () => {
+                            etSoukoCode.Text = "";
+                            txtSoukoName.Text = "";
+                            etSoukoCode.RequestFocus();
+                        });
+
+                        return;
+                    }
+                    
+                    if (CommonUtils.IsOnline(this.Activity))
+                    {
+                        // 無線管理テーブルへ情報を登録する。
+                        RegistMusenKanri();
+
+                        // 担当者名取得
+                        LOGIN030 login030 = await GetLOGIN030(etDriverCode.Text);
+                        editor.PutString("menu_kbn", login030.menu_kbn);
+                        editor.PutString("driver_nm", login030.tantohsya_nm);
+                    }
+                    else
+                    {
+                        Tanto tanto = tantoHelper.SelectTantoInfo(etDriverCode.Text);
+                        editor.PutString("menu_kbn", tanto.menu_kbn);
+                        editor.PutString("driver_nm", tanto.tantohsya_nm);
+                    }
+
+                    // 正常の場合、前回ログイン情報を保存する
+                    Login loginInfo = new Login
+                    {
+                        souko_cd = etSoukoCode.Text,
+                        souko_nm = txtSoukoName.Text,
+                        tantousha_cd = etDriverCode.Text
+                    };
+
+                    loginHelper.InsertIntoTableLoginInfo(loginInfo);
+                }
+                );
+                Activity.RunOnUiThread(() => {
+                    ((MainActivity)this.Activity).DismissDialog();
+                    StartFragment(FragmentManager, typeof(MainMenuFragment));
                 });
-
-                return;
+                //Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
+                //Activity.RunOnUiThread(() => StartFragment(FragmentManager, typeof(MainMenuFragment)));
             }
-
-            // 無線管理テーブルへ情報を登録する。
-            // LOGIN040
-
-            // 担当者名取得
-
-            if (CommonUtils.IsOnline(this.Activity))
-            {
-                // btvData = LOGIN030(driver_cd)
-                // if btvData is null => "認証できませんでした。\n入力内容をご確認下さい。"
-                // not null => JOB:menu_kbn = JOB:arrData[1], JOB: driver_nm = JOB:arrData[0]
-            }
-            else
-            {
-                // local dbから担当者情報を取得して判断する
-                // if btvData is null => "認証できませんでした。\n入力内容をご確認下さい。"
-            }
-
-            // 正常の場合、前回ログイン情報を保存する
-            Login loginInfo = new Login
-            {
-                souko_cd = etSoukoCode.Text,
-                souko_nm = txtSoukoName.Text,
-                tantousha_cd = etDriverCode.Text
-            };
-
-            loginHelper.InsertIntoTableLoginInfo(loginInfo);
-            StartFragment(FragmentManager, typeof(MainMenuFragment));
+            )).Start();
         }
 
         // センター名取得（倉庫名）LOGIN010
@@ -159,9 +170,7 @@ namespace HHT
                 txtSoukoName.Text = "";
                 return;
             }
-
-            var progress = ProgressDialog.Show(this.Activity, null, "ログインしています。", true);
-
+            
             view.ClearFocus();
             view.Focusable = false;
             view.FocusableInTouchMode = false;
@@ -175,6 +184,14 @@ namespace HHT
 
                 LOGIN010 login010 = await WebService.ExecuteLogin010(param);
                 txtSoukoName.Text = login010.souko_nm;
+
+                editor.PutString("kitaku_cd", login010.kitaku_cd);
+                editor.PutString("def_tokuisaki_cd", login010.def_tokuisaki_cd);
+                editor.PutString("souko_nm", login010.souko_nm);
+                editor.PutString("tsuhshin_kbn", login010.tsuhshin_kbn);
+                editor.PutString("souko_kbn", login010.souko_kbn);
+                editor.Apply();
+
             }
             catch
             {
@@ -190,8 +207,6 @@ namespace HHT
 
             view.Focusable = true;
             view.FocusableInTouchMode = true;
-
-            progress.Dismiss();
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -213,22 +228,54 @@ namespace HHT
             return false;
         }
 
+        // 以前ログイン情報を設定する。
         private void SetLastLoginInfo()
         {
-            // ログイン情報の存在有無によって、処理が分岐される
-            Login lastLoginInfo = loginHelper.SelectLastLoginInfo();
-
-            if (lastLoginInfo == null)
+            if (CommonUtils.IsOnline(this.Activity))
             {
-                // 最初ログインではない場合、LOGIN050
+                //ログイン情報をサーバから取得ーーーでも必要？
+                Dictionary<string, string> param = new Dictionary<string, string>
+                        {
+                            { "hht_id",  "11101"}
+                        };
+
+                string resultJson020 = CommonUtils.Post(WebService.LOGIN.LOGIN020, param);
+                LOGIN020 loginInfo = JsonConvert.DeserializeObject<LOGIN020>(resultJson020);
+
+                editor.PutString("souko_cd", loginInfo.souko_cd);
+                editor.Apply();
+                etSoukoCode.Text = loginInfo.souko_cd;
+                SetSoukoName(loginInfo.souko_cd);
+                etDriverCode.RequestFocus();
+
+                //btvIniflg = true;
             }
             else
             {
-                etSoukoCode.Text = lastLoginInfo.souko_cd;
-                txtSoukoName.Text = lastLoginInfo.souko_nm;
-                etDriverCode.RequestFocus();
-                // 最初ログインの場合、LOGIN001
+                //btvIniflg = false;
+
+                // ログイン情報の存在有無によって、処理が分岐される
+                Login lastLoginInfo = loginHelper.SelectLastLoginInfo();
+
+                if (lastLoginInfo != null)
+                {
+                    etSoukoCode.Text = lastLoginInfo.souko_cd;
+                    txtSoukoName.Text = lastLoginInfo.souko_nm;
+                    etDriverCode.RequestFocus();
+                }
+
             }
+
+        }
+
+        // 担当者マスタ情報をロカールDBに保存する。
+        private void SaveTantoMaster()
+        {
+            string resultJson050 = CommonUtils.Post(WebService.LOGIN.LOGIN050, new Dictionary<string, string>());
+            List<Tanto> result = JsonConvert.DeserializeObject<List<Tanto>>(resultJson050);
+
+            tantoHelper = new TantoHelper();
+            tantoHelper.InsertTantoList(result);
         }
     }
 }

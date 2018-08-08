@@ -26,13 +26,13 @@ namespace HHT
 
             var view = inflater.Inflate(Resource.Layout.fragment_menu_kosu, container, false);
             Button button1 = view.FindViewById<Button>(Resource.Id.todokeInspButton);
-            button1.Click += delegate { GoTodokeSelect(); };
+            button1.Click += delegate { GoTodokeSelect(); }; // sagyou2
 
             Button button2 = view.FindViewById<Button>(Resource.Id.vendaInspButton);
-            button2.Click += delegate { GoVendorSelect(); };
+            button2.Click += delegate { GoVendorSelect(); }; // sagyou7
 
             Button button3 = view.FindViewById<Button>(Resource.Id.baraInspButton);
-            button3.Click += delegate { GoBaraSelect(); };
+            button3.Click += delegate { GoBaraSelect(); }; // sagyou20_1
 
             return view;
         }

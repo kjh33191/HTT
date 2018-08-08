@@ -129,106 +129,7 @@ namespace HHT
             base.OnResume();
             SetKosuMax();
         }
-
-        private void CheckCategoryMixed()
-        {
-            var progress = ProgressDialog.Show(this.Activity, null, "検品情報を確認しています。", true);
-
-            new Thread(new ThreadStart(delegate {
-                Activity.RunOnUiThread(() =>
-                {
-                    Thread.Sleep(1000);
-                    Dictionary<string, string> param = new Dictionary<string, string>
-                    {
-                        { "souko_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                        { "kitaku_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                        { "syuka_date",  prefs.GetString("tokuisaki_cd", "103")},
-                        { "bin_no",  prefs.GetString("tokuisaki_cd", "103")}
-                    };
-
-                    string resultJson = "";
-
-                    if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
-                    {
-                        //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU077, param);
-                    }
-                    else
-                    {
-                        //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU078, param);
-                    }
-
-                    //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU040, param);
-                    //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-
-                    int status = 0; // result["state"]
-                    if (status == 1)
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "他の作業者が作業中データが含まれています", null);
-                    }
-                    else if (status == 2)
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "既に検品済データが含まれています", null);
-                    }
-                    else if (status == 3)
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "他の便の貨物Noです", null);
-                    }
-                    else if (status == 8)
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "他の届先の貨物Noデータが含まれています", null);
-                    }
-                    else if (status == 7)
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "貨物Noが見つからないデータが含まれています", null);
-                    }
-                    else if (status == 9)
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
-                    }
-                    else
-                    {
-                        string btvMsg = "";
-                        if (status == 11)
-                        {
-                                // 両方混在
-                                btvMsg = "カテゴリ・定特区分の違う貨物Noが混在しています。\nよろしいですか？";
-                            }
-                        else if (status == 12)
-                        {
-                                // カテゴリ混在
-                                btvMsg = "カテゴリの違う貨物Noが混在しています。\nよろしいですか？";
-                            }
-                        else if (status == 13)
-                        {
-                            // 定特区分混在
-                            btvMsg = "定特区分の違う貨物Noが混在しています。\nよろしいですか？";
-                        }
-                        else
-                        {
-                            // 正常
-                            //item_category eq "" OR JOB:teitoku_kbn eq "" Then
-                            //item_category = arrData[1] 積込分類コード
-                            //teitoku_kbn = arrData[2] //定特区分
-                        }
-
-                        CommonUtils.AlertConfirm(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", 
-                            (flag) => {
-                                if (flag)
-                                {
-                                    // 正常
-                                    //item_category eq "" OR JOB:teitoku_kbn eq "" Then
-                                    //item_category = arrData[1]
-                                    //teitoku_kbn = arrData[2]
-                                }
-                            });
-                    }
-                }
-                );
-                Activity.RunOnUiThread(() => progress.Dismiss());
-            }
-            )).Start();
-        }
-
+        
         public void CountItem(IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData)
         {
             var progress = ProgressDialog.Show(this.Activity, null, "検品情報を確認しています。", true);
@@ -265,12 +166,15 @@ namespace HHT
 
                         //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU040, param);
                         //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
+
+                        // result["poTenpoLocaCD"]
+                        // result["poTokuisakiNm"]
+                        // result["poLabelType"] 0：ケース、1：オリコン、2：不定形、3：店移動、4：破材、5：返品、6：販促物、7：回収
                         
                         string resultData = "{" +
                             "labelType:'0'" +
                             "}";
 
-                        // if(erRet == 0)
                         KosuKenpin kosuKenpin = JsonConvert.DeserializeObject<KosuKenpin>(resultData);
                         if (kosuKenpin != null)
                         {
@@ -307,8 +211,6 @@ namespace HHT
                             gdTyingCanman.Visibility = ViewStates.Visible;
                             btnStop.Visibility = ViewStates.Gone;
                             SetFooterText("  F2 :取消                    F3:満タン");
-                            // if(erRet != 0)
-                            // 
                         }
 
                 }

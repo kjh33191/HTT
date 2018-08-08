@@ -12,17 +12,17 @@ namespace HHT
         public readonly static string WEB_SERVICE_URL = "http://192.168.0.18:8787/";
 
         public class LOGIN {
-            public string LOGIN001 = WEB_SERVICE_URL + "ReqeustLogin001?hht_id={0}";
-            public readonly static string LOGIN010 = WEB_SERVICE_URL + "ReqeustLogin010?souko_cd={0}";
-            public readonly static string LOGIN020 = WEB_SERVICE_URL + "ReqeustLogin020?hht_id={0}";
-            public readonly static string LOGIN030 = WEB_SERVICE_URL + "ReqeustLogin030?driver_cd={0}";
-            public readonly static string LOGIN040 = WEB_SERVICE_URL + "ReqeustLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
-            public readonly static string LOGIN050 = WEB_SERVICE_URL + "ReqeustLogin050";
+            public string LOGIN001 = WEB_SERVICE_URL + "login/ReqeustLogin001";
+            public readonly static string LOGIN010 = WEB_SERVICE_URL + "login/ReqeustLogin010";
+            public readonly static string LOGIN020 = WEB_SERVICE_URL + "login/ReqeustLogin020";
+            public readonly static string LOGIN030 = WEB_SERVICE_URL + "login/ReqeustLogin030";
+            public readonly static string LOGIN040 = WEB_SERVICE_URL + "login/ReqeustLogin040";
+            public readonly static string LOGIN050 = WEB_SERVICE_URL + "login/ReqeustLogin050";
         };
 
         public class KOSU
         {
-            public readonly static string KOSU010 = WEB_SERVICE_URL + "ReqeustKosu010?hht_id={0}";
+            public readonly static string KOSU010 = WEB_SERVICE_URL + "ReqeustKosu010";
             public readonly static string KOSU020 = WEB_SERVICE_URL + "ReqeustLogin010?souko_cd={0}";
             public readonly static string KOSU030 = WEB_SERVICE_URL + "ReqeustLogin020?hht_id={0}";
             public readonly static string KOSU040 = WEB_SERVICE_URL + "ReqeustLogin030?driver_cd={0}";
@@ -121,7 +121,7 @@ namespace HHT
 
         public static async Task<LOGIN010> ExecuteLogin010(Dictionary<string, string> param)
         {
-            string url = "http://192.168.0.18:8787/login/GetSoukoName";
+            string url = "http://192.168.0.18:8787/login/ReqeustLogin010";
             string resultData = await CommonUtils.PostAsync(url, param);
             LOGIN010 login010 = JsonConvert.DeserializeObject<LOGIN010>(resultData);
 

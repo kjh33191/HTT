@@ -378,7 +378,8 @@ namespace HHT
                             {
                                 editor.PutString("deliveryDate", etSyukaDate.Text);
                                 editor.PutBoolean("isConfirm", true); // 届先検索フラグ設定
-                                editor.PutString("tokuisaki", etTokuisaki.Text);
+                                editor.PutString("tokuisaki_cd", etTokuisaki.Text);
+                                editor.PutString("tokuisaki_nm", etTokuisaki.Text);
                                 editor.PutString("todokesaki", etTodokesaki.Text);
                                 editor.Apply();
 
