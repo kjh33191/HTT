@@ -67,14 +67,51 @@ namespace HHT
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
+            //管理者基準
             if (keycode == Keycode.Num1)
             {
                 StartFragment(FragmentManager, typeof(NyukaMenuFragment));
-            }else if (keycode == Keycode.Num2)
-            {
-                StartFragment(FragmentManager, typeof(NyukaMenuFragment));
             }
-
+            else if (keycode == Keycode.Num2)
+            {
+                StartFragment(FragmentManager, typeof(TsumikaeMenuFragment));
+            }
+            else if (keycode == Keycode.Num3)
+            {
+                StartFragment(FragmentManager, typeof(TsumikomiSelectFragment));
+            }
+            else if (keycode == Keycode.Num4)
+            {
+                StartFragment(FragmentManager, typeof(NohinSelectFragment));
+            }
+            else if (keycode == Keycode.Num5)
+            {
+                // データ送信
+            }
+            else if (keycode == Keycode.Num6)
+            {
+                // マテハン登録
+            }
+            else if (keycode == Keycode.Num7)
+            {
+                // メールバッグ
+            }
+            else if (keycode == Keycode.Num8)
+            {
+                // 移動先店舗登録
+            }
+            else if (keycode == Keycode.Num9)
+            {
+                // 移動先店舗納品
+            }
+            else if (keycode == Keycode.Num0)
+            {
+                // TC2
+            }
+            else if (keycode == Keycode.Period)
+            {
+                // 在庫集約
+            }
             return true;
         }
     }

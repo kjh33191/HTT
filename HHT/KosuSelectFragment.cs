@@ -24,6 +24,7 @@ namespace HHT
 {
     public class KosuSelectFragment : BaseFragment
     {
+        private readonly string TAG = "KosuSelectFragment";
         private View view;
 
         private int kosuMenuflag;
@@ -34,8 +35,6 @@ namespace HHT
         private Button btnVendorSearch, confirmButton;
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
-
-        TokuisakiHelper tokuisakiHelper;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -53,55 +52,8 @@ namespace HHT
             kitakuCd = prefs.GetString("kitakuCd", "");
 
             InitComponent();
-
-            // GetTokuisakiMasterInfo();
             
-            // ret = get_master()	// マスタ検索
-            // ret = 2 then error todoke=> sagyou4 , vendor=> sagyou9
-
             return view;
-        }
-
-        private void GetTokuisakiMasterInfo()
-        {
-            // Handy:serialId.MTP
-            var progress = ProgressDialog.Show(this.Activity, null, "得意先を確認しています。", true);
-
-            new Thread(new ThreadStart(delegate
-            {
-                Activity.RunOnUiThread(() =>
-                {
-                    Thread.Sleep(5000);
-                    Dictionary<string, string> param = new Dictionary<string, string>
-                    {
-                        { "souko_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                        { "kitaku_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                        { "syuka_date",  prefs.GetString("tokuisaki_cd", "103")},
-                        { "bin_no",  prefs.GetString("tokuisaki_cd", "103")}
-                    };
-
-                    string resultJson = "";
-                    if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
-                    {
-                        //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU060, param);
-                    }
-                    else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
-                    {
-                        //string resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU065, param);
-                    }
-
-                    //List<Tokuisaki> result = JsonConvert.DeserializeObject<List<Tokuisaki>>(resultJson);
-                    List<Tokuisaki> resultList = new List<Tokuisaki>();
-
-                    tokuisakiHelper = new TokuisakiHelper();
-
-                    foreach (Tokuisaki tokuisaki in resultList)
-                    {
-                        tokuisakiHelper.InsertIntoTableTokuisakiInfo(tokuisaki);
-                    }
-
-                });
-            }));
         }
 
         private void InitComponent()
@@ -136,7 +88,11 @@ namespace HHT
                 };
 
                 //初期フォーカス
-                etTokuisaki.RequestFocus();
+                if (etTokuisaki.Text == "")
+                {
+                    etTokuisaki.Text = prefs.GetString("def_tokuisaki_cd", "");
+                    etTodokesaki.RequestFocus();
+                }
 
             }
             else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
@@ -151,7 +107,7 @@ namespace HHT
 
                 btnVendorSearch = view.FindViewById<Button>(Resource.Id.btn_kosuSelect_vendorSearch);
                 btnVendorSearch.Click += delegate { GoVendorSearchPage(); };
-                btnVendorSearch.Visibility = ViewStates.Gone;
+                btnVendorSearch.Visibility = ViewStates.Visible;
 
                 //初期フォーカス
                 etVendorCode.RequestFocus();
@@ -160,52 +116,26 @@ namespace HHT
             txtConfirm = view.FindViewById<TextView>(Resource.Id.txt_kosuSelect_confirmMsg);
 
             etSyukaDate = view.FindViewById<EditText>(Resource.Id.todoke_et_deliveryDate);
-            etSyukaDate.Text = DateTime.Now.ToString("yy/MM/dd");
-            etSyukaDate.FocusChange += (sender, e) => { if (!e.HasFocus) CheckDate(); };
+
+            //etSyukaDate.Text = DateTime.Now.ToString("yy/MM/dd");
+            etSyukaDate.Text = "18/03/20"; // テスト用
+
+            etSyukaDate.FocusChange += (sender, e) => {
+                if (e.HasFocus)
+                {
+                    etSyukaDate.Text = etSyukaDate.Text.Replace("/", "");
+                }
+                else
+                {
+                    CheckDate();
+                }
+
+            };
 
             confirmButton = view.FindViewById<Button>(Resource.Id.btn_todoke_confirm);
             confirmButton.Click += delegate { Confirm(); };
         }
-
-        private void GetVendorInfo()
-        {
-            string syukaDate = etSyukaDate.Text;
-            string errTitle = "";
-            string errMsg = "";
-
-            KOSU131 result = WebService.ExecuteKosu131(soukoCd, kitakuCd, syukaDate.Remove('/'), etVendorCode.Text);
-
-            if (result == null)
-            {
-                errTitle = "Error";
-                errMsg = "ベンダーコードがみつかりません。";
-            }
-            else if (!(result.state == "00" || result.state == "01" || result.state == "99"))
-            {
-                errTitle = "確認";
-                errMsg = "全ての検品が完了しています。";
-            }
-            else if (result.state != "00")
-            {
-                errTitle = "確認";
-                errMsg = "検品可能なベンダーではありません。";
-            }
-
-            if (errMsg.Length > 0)
-            {
-                CommonUtils.AlertDialog(view, errTitle, errMsg, () => {
-                    etVendorCode.Text = "";
-                    etVendorCode.RequestFocus();
-                    return;
-                });
-            }
-            else
-            {
-                vendorNm = result.vendor_nm;
-            }
-
-        }
-
+    
         private void CheckTokuisaki()
         {
             var progress = ProgressDialog.Show(this.Activity, null, "得意先を確認しています。", true);
@@ -220,10 +150,9 @@ namespace HHT
                         { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", "103")}
                     };
 
-                    //string resultJson = CommonUtils.Post(WebService.KOSU.KOSU010, param);
-                    //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-                    Dictionary<string, string> result = new Dictionary<string, string>();
-                    //string count = result["cnt"];
+                    string resultJson = CommonUtils.Post(WebService.KOSU.KOSU010, param);
+                    Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
+                    string count = result["cnt"];
 
                 }
                 );
@@ -235,17 +164,26 @@ namespace HHT
         private async Task<bool> IsExistTokuisaki()
         {
             bool isExist = false;
-            Dictionary<string, string> param = new Dictionary<string, string>
+            try
             {
-                { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", "103")}
-            };
+                Dictionary<string, string> param = new Dictionary<string, string>
+                {
+                    { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", etTokuisaki.Text)}
+                };
 
-            //string resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU010, param);
-            //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            //string count = result["cnt"];
+                //string resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU010, param);
+                //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
+                //int count = int.Parse(result["cnt"]);
+                int count = 1;
+                if (count >= 1)
+                {
+                    isExist = true;
+                }
+            }
+            catch
+            {
 
-            isExist = true;
+            }
             
             return isExist;
         }
@@ -254,17 +192,29 @@ namespace HHT
         {
             bool isExist = false;
 
-            Dictionary<string, string> param = new Dictionary<string, string>
+            try
             {
-                { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", "103")}
-            };
+                Dictionary<string, string> param = new Dictionary<string, string>
+                {
+                    { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", etTokuisaki.Text)},
+                    { "todokesaki_cd",  prefs.GetString("todokesaki_cd", etTodokesaki.Text)}
+                };
 
-            //string resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU020, param);
-            //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            //string count = result["cnt"];
-            isExist = true;
+                string resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU020, param);
+                Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
 
+                int count = 1;// result["cnt"];
+                if(count >= 1)
+                {
+                    isExist = true;
+                }
+                
+            }
+            catch(Exception e)
+            {
+                Log.Debug(TAG, e.StackTrace.ToString());
+            }
+            
             return isExist;
         }
 
@@ -312,41 +262,7 @@ namespace HHT
             {
                 if (etTodokesaki.IsFocused)
                 {
-                    var progress = ProgressDialog.Show(this.Activity, null, "届先情報確認しています。", true);
-
-                    if (etSyukaDate.Text == "")
-                    {
-                        CommonUtils.ShowAlertDialog(view, "エラー", "配送日を入力してください。");
-                        etSyukaDate.RequestFocus();
-                        return false;
-                    }
-
-                    if (etTokuisaki.Text == "")
-                    {
-                        CommonUtils.ShowAlertDialog(view, "エラー", "得意先コードを入力してください。");
-                        etTokuisaki.RequestFocus();
-                        return false;
-                    }
-
-                    this.Activity.RunOnUiThread(async () => {
-                        if (!await IsExistTokuisaki())
-                        {
-                            CommonUtils.ShowAlertDialog(view, "エラー", "得意先コードがみつかりません。");
-                            etTokuisaki.Text = "";
-                            etTokuisaki.RequestFocus();
-                        }
-                        else
-                        {
-                            editor.PutString("deliveryDate", etSyukaDate.Text);
-                            editor.PutString("tokuisaki", etTokuisaki.Text);
-                            editor.PutString("deliveryDate", etSyukaDate.Text);
-                            editor.PutBoolean("isConfirm", false); // 届先検索フラグ設定
-                            editor.Apply();
-
-                            progress.Dismiss();
-                            StartFragment(FragmentManager, typeof(KosuBinInputFragment));
-                        }
-                    });
+                    SearchTodokesaki();
                 }
 
                 if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
@@ -377,10 +293,10 @@ namespace HHT
                             if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                             {
                                 editor.PutString("deliveryDate", etSyukaDate.Text);
-                                editor.PutBoolean("isConfirm", true); // 届先検索フラグ設定
                                 editor.PutString("tokuisaki_cd", etTokuisaki.Text);
                                 editor.PutString("tokuisaki_nm", etTokuisaki.Text);
-                                editor.PutString("todokesaki", etTodokesaki.Text);
+                                editor.PutString("todokesaki_cd", etTodokesaki.Text);
+                                editor.PutInt("menuKbn", 1); // 届先検索フラグ設定
                                 editor.Apply();
 
                                 StartFragment(FragmentManager, typeof(KosuBinInputFragment));
@@ -395,6 +311,7 @@ namespace HHT
                                 {
                                     editor.PutString("vendor_cd", etVendorCode.Text);
                                     editor.PutString("vendor_nm", vendorNm);
+                                    editor.PutString("tokuisaki_nm", vendorNm);
 
                                     editor.PutString("deliveryDate", etSyukaDate.Text);
                                     editor.Apply();
@@ -404,6 +321,7 @@ namespace HHT
                             }
                             else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
                             {
+                                editor.PutString("tokuisaki_nm", "");
                                 StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
                             }
                         }
@@ -444,6 +362,7 @@ namespace HHT
                 {
                     CommonUtils.ShowAlertDialog(view, "エラー", "得意先コードがみつかりません。");
                     etTokuisaki.Text = "";
+                    etTodokesaki.Text = "";
                     etTokuisaki.RequestFocus();
                     return false;
                 }
@@ -451,7 +370,7 @@ namespace HHT
                 
                 if (!await IsExistTodokesaki())
                 {
-                    CommonUtils.ShowAlertDialog(view, "エラー", "届先コードがみつかりません。");
+                    CommonUtils.ShowAlertDialog(view, "エラー", "得意先コードがみつかりません。");
                     etTodokesaki.Text = "";
                     etTodokesaki.RequestFocus();
                     return false;
@@ -472,45 +391,51 @@ namespace HHT
                     etVendorCode.RequestFocus();
                     return false;
                 }
+                string syukaDate = etSyukaDate.Text;
+                string errTitle = "";
+                string errMsg = "";
 
-                if (vendorNm == "")
+                Dictionary<string, string> param = new Dictionary<string, string>
+                    {
+                        { "kenpin_souko",  "108"},
+                        { "kitaku_cd",  "2"},
+                        { "syuka_date",  "20180320"},
+                        { "vendor_cd",  etVendorCode.Text}
+                    };
+
+                string resultJson131 = await CommonUtils.PostAsync(WebService.KOSU.KOSU131, param);
+                Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson131);
+                string resultState = result["state"];
+
+                if (resultState == null)
                 {
-                    string syukaDate = etSyukaDate.Text;
-                    string errTitle = "";
-                    string errMsg = "";
+                    errTitle = "Error";
+                    errMsg = "ベンダーコードがみつかりません。";
+                }
+                else if (!(resultState == "00" || resultState == "01" || resultState == "99"))
+                {
+                    errTitle = "確認";
+                    errMsg = "全ての検品が完了しています。";
+                }
+                else if (resultState != "00")
+                {
+                    errTitle = "確認";
+                    errMsg = "検品可能なベンダーではありません。";
+                }
 
-                    KOSU131 result = WebService.ExecuteKosu131(soukoCd, kitakuCd, syukaDate.Remove('/'), etVendorCode.Text);
-
-                    if (result == null)
-                    {
-                        errTitle = "Error";
-                        errMsg = "ベンダーコードがみつかりません。";
-                    }
-                    else if (!(result.state == "00" || result.state == "01" || result.state == "99"))
-                    {
-                        errTitle = "確認";
-                        errMsg = "全ての検品が完了しています。";
-                    }
-                    else if (result.state != "00")
-                    {
-                        errTitle = "確認";
-                        errMsg = "検品可能なベンダーではありません。";
-                    }
-
-                    if (errMsg.Length > 0)
-                    {
-                        CommonUtils.AlertDialog(view, errTitle, errMsg, () => {
-                            etVendorCode.Text = "";
-                            etVendorCode.RequestFocus();
-                            return;
-                        });
-                        return false;
-                    }
-                    else
-                    {
-                        vendorNm = result.vendor_nm;
-                        return true;
-                    }
+                if (errMsg.Length > 0)
+                {
+                    CommonUtils.AlertDialog(view, errTitle, errMsg, () => {
+                        etVendorCode.Text = "";
+                        etVendorCode.RequestFocus();
+                        return;
+                    });
+                    return false;
+                }
+                else
+                {
+                    vendorNm = result["vendor_nm"];
+                    return true;
                 }
             }
             else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
@@ -547,8 +472,8 @@ namespace HHT
             editor.PutString("deliveryDate", etSyukaDate.Text);
             editor.PutString("tokuisaki", etTokuisaki.Text);
             editor.PutString("deliveryDate", etSyukaDate.Text);
-
-            editor.PutBoolean("isConfirm", false); // 届先検索フラグ設定
+            
+            editor.PutInt("menuKbn", 2); // 届先検索フラグ設定
             editor.Apply();
 
             StartFragment(FragmentManager, typeof(KosuBinInputFragment));

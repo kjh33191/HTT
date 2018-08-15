@@ -61,7 +61,7 @@ namespace HHT
                 { "course", prefs.GetString("course", "310") },
             };
 
-            WebService.ReqeustTUMIKOMI230(param);
+            //WebService.RequestTUMIKOMI230(param);
 
             return view;
         }

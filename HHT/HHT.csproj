@@ -81,7 +81,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adapters\TenpoAdapter.cs" />
-    <Compile Include="Adapters\Adapter1.cs" />
+    <Compile Include="Adapters\TodokesakiAdapter.cs" />
+    <Compile Include="Common\AlertDialog.cs" />
     <Compile Include="Common\BaseFragment.cs" />
     <Compile Include="Common\BootComplete.cs" />
     <Compile Include="Common\CommonUtils.cs" />
@@ -89,8 +90,10 @@
     <Compile Include="Resources\DataHelper\TokuisakiHelper.cs" />
     <Compile Include="Resources\Model\Mail.cs" />
     <Compile Include="Resources\Model\Password.cs" />
-    <Compile Include="Resources\Model\Tsumikomi.cs" />
     <Compile Include="Resources\Model\Tokuisaki.cs" />
+    <Compile Include="Resources\Model\Tsumikomi.cs" />
+    <Compile Include="Resources\Model\Todokesaki.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU070.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI311.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI310.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI060.cs" />

@@ -6,8 +6,6 @@ using Com.Densowave.Bhtsdk.Barcode;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text.RegularExpressions;
 using HHT.Resources.Model;
 using Android.Content;
 using Android.Preferences;
@@ -101,8 +99,7 @@ namespace HHT
             btnCancel.Click += delegate { Cancel(); };　// 取消
             btnMantan.Click += delegate { GoMantanPage(); }; // 満タン
 
-            string miseName = "株）ＰＡＬＴＡＣ";
-            txtMiseName.Text = "■　" + miseName + "店";
+            txtMiseName.Text = prefs.GetString("tokuisaki_nm", "");
 
             txtCase.Text = prefs.GetString("case_su", "0");
             txtOricon.Text = prefs.GetString("oricon_su", "0");
@@ -122,11 +119,6 @@ namespace HHT
                 btnStop.Visibility = ViewStates.Gone;
             }
 
-        }
-
-        public override void OnResume()
-        {
-            base.OnResume();
             SetKosuMax();
         }
         
@@ -139,69 +131,99 @@ namespace HHT
                 {
                     foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
                     {
-                        // Apply data to UI
                         string densoSymbology = barcodeData.SymbologyDenso;
                         string kamotsu_no = barcodeData.Data;
 
-                        string result = "";
+                        string pTeminalID = "";
+                        string pProgramID = "";
+                        string pSagyosyaCD = prefs.GetString("driver_cd", "");
+                        string pSoukoCD = prefs.GetString("souko_cd", "");
+                        string pSyukaDate = prefs.GetString("syuka_date", "");
+                        string pTokuisakiCD = prefs.GetString("tokuisaki_cd", "");
+                        string pTodokesakiCD = prefs.GetString("todokesaki_cd", "");
+                        string pVendorCD = prefs.GetString("vender_cd", "");
+                        string pTsumiVendorCD = "";
+                        string pKamotsuNo = kamotsu_no;
+                        string pBinNo = prefs.GetString("bin_no", "");
+                        string pHHT_No = "11101";
+
+                        string pMatehan = "";
+                        string pJskCaseSu = "";
+                        string pJskOriconSu = "";
+                        string pJskFuteikeiSu = "";
+                        string pJskTcSu = "";
+                        string pJskMailbinSu = "";
+                        string pJskHazaiSu = "";
+                        string pJskIdoSu = "";
+                        string pJskHenpinSu = "";
+                        string pJskHansokuSu = "";
 
                         Dictionary<string, string> param = new Dictionary<string, string>
                         {
-                            { "souko_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                            { "kitaku_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                            { "syuka_date",  prefs.GetString("tokuisaki_cd", "103")},
-                            { "bin_no",  prefs.GetString("tokuisaki_cd", "103")}
+                            { "pTerminalID",  pTeminalID},
+                            { "pProgramID",  "KOS"},
+                            { "pSagyosyaCD",  pSagyosyaCD},
+                            { "pSoukoCD",  pSoukoCD},
+                            { "pSyukaDate",  pSyukaDate},
+                            { "pTokuisakiCD" ,  pTokuisakiCD},
+                            { "pTodokesakiCD" ,  pTodokesakiCD},
+                            { "pVendorCD",  pVendorCD},
+                            { "pTsumiVendorCD",  pTsumiVendorCD},
+                            { "pKamotsuNo",  pKamotsuNo},
+                            { "pBinNo",  pBinNo},
+                            { "pHHT_No",  pHHT_No},
+                            { "pMatehan",  pMatehan},
+                            { "pJskCaseSu",  pJskCaseSu},
+                            { "pJskOriconSu",  pJskOriconSu},
+                            { "pJskFuteikeiSu",  pJskFuteikeiSu},
+                            { "pJskTcSu",  "0"},
+                            { "pJskMailbinSu",  "0"},
+                            { "pJskHazaiSu",  pJskHazaiSu},
+                            { "pJskIdoSu",  pJskIdoSu},
+                            { "pJskHenpinSu",  pJskHenpinSu},
+                            { "pJskHansokuSu",  pJskHansokuSu}
                         };
 
                         string resultJson = "";
 
                         if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                         {
-                            //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU070, param);
+                            resultJson = CommonUtils.Post(WebService.KOSU.KOSU070, param);
                         }
                         else
                         {
-                            //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU150, param);
+                            resultJson = CommonUtils.Post(WebService.KOSU.KOSU150, param);
                         }
 
-                        //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU040, param);
-                        //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
+                        KOSU070 kosuKenpin = JsonConvert.DeserializeObject<KOSU070>(resultJson);
 
-                        // result["poTenpoLocaCD"]
-                        // result["poTokuisakiNm"]
                         // result["poLabelType"] 0：ケース、1：オリコン、2：不定形、3：店移動、4：破材、5：返品、6：販促物、7：回収
-                        
-                        string resultData = "{" +
-                            "labelType:'0'" +
-                            "}";
-
-                        KosuKenpin kosuKenpin = JsonConvert.DeserializeObject<KosuKenpin>(resultData);
                         if (kosuKenpin != null)
                         {
-                            switch (kosuKenpin.labelType)
+                            switch (kosuKenpin.poLabelType)
                             {
-                                case 0:
+                                case "0":
                                     txtCase.Text = (Int32.Parse(txtCase.Text) + 1).ToString();
                                     break;
-                                case 1:
+                                case "1":
                                     txtOricon.Text = (Int32.Parse(txtOricon.Text) + 1).ToString();
                                     break;
-                                case 2:
+                                case "2":
                                     txtHuteikei.Text = (Int32.Parse(txtHuteikei.Text) + 1).ToString();
                                     break;
-                                case 3:
+                                case "3":
                                     txtMiseidou.Text = (Int32.Parse(txtMiseidou.Text) + 1).ToString();
                                     break;
-                                case 4:
+                                case "4":
                                     txtHazai.Text = (Int32.Parse(txtHazai.Text) + 1).ToString();
                                     break;
-                                case 5:
+                                case "5":
                                     txtHenpin.Text = (Int32.Parse(txtHenpin.Text) + 1).ToString();
                                     break;
-                                case 6:
+                                case "6":
                                     txtHansoku.Text = (Int32.Parse(txtHansoku.Text) + 1).ToString();
                                     break;
-                                case 7:
+                                case "7":
                                     txtKaisyu.Text = (Int32.Parse(txtKaisyu.Text) + 1).ToString();
                                     break;
                             }
@@ -312,18 +334,25 @@ namespace HHT
 
         private void SetKosuMax()
         {
-            //TODO
-            //SearchLine("KOSU210", 4, "")
-            string result = "result";
-            
-            if (result.Length <= 0)
-            {
-                CommonUtils.ShowAlertDialog(View, "エラー", "個数上限値がみつかりません。");
+            new Thread(new ThreadStart(delegate {
+                Activity.RunOnUiThread(() =>
+                {
+                    string resultJson210 = CommonUtils.Post(WebService.KOSU.KOSU210, new Dictionary<string, string>());
+                    Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson210);
+                    string kohmoku = result["kohmoku"];
+
+                    if (kohmoku.Length <= 0)
+                    {
+                        CommonUtils.ShowAlertDialog(View, "エラー", "個数上限値がみつかりません。");
+                    }
+                    else
+                    {
+                        kosuMax = int.Parse(kohmoku);
+                    }
+                }
+                );
             }
-            else
-            {
-                kosuMax = 10;
-            }
+            )).Start();
         }
 
         public void SetSumQty()
@@ -350,11 +379,22 @@ namespace HHT
 
             CommonUtils.AlertConfirm(view, "確認", "スキャンデータを取り消します。\nよろしいですか？", (flag) =>
             {
-                // TODOKE(proc_kosukenpin(085))
-                // vendor(proc_kosukenpin(165))
+                new Thread(new ThreadStart(delegate {
+                    Activity.RunOnUiThread(() =>
+                    {
+                        if (flag)
+                        {
 
-                // erRet == 0 Then
-                ScanCntReset();
+                        }
+
+
+                    });
+                }));
+                        // TODOKE(proc_kosukenpin(085))
+                        // vendor(proc_kosukenpin(165))
+
+                        // erRet == 0 Then
+                        ScanCntReset();
                 // loca_cd= "";
                 // If JOB:menu_flg == JOB:MENU_VENDOR THEN
                 // JOB: tokuisaki_cd = ""

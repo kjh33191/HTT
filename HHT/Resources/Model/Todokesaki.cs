@@ -1,7 +1,7 @@
 ﻿
 namespace HHT.Resources.Model
 {
-    public class Tokuisaki
+    public class Todokesaki
     {
         public string tsumikomi_yti_time { get; set; }
         public string tokuisaki_cd { get; set; }

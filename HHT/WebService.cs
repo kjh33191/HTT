@@ -9,59 +9,64 @@ namespace HHT
 {
     public class WebService
     {
-        public readonly static string WEB_SERVICE_URL = "http://192.168.0.18:8787/";
-
+        public readonly static string WEB_SERVICE_URL = "http://192.168.0.19:8787/";
+        
         public class LOGIN {
-            public string LOGIN001 = WEB_SERVICE_URL + "login/ReqeustLogin001";
-            public readonly static string LOGIN010 = WEB_SERVICE_URL + "login/ReqeustLogin010";
-            public readonly static string LOGIN020 = WEB_SERVICE_URL + "login/ReqeustLogin020";
-            public readonly static string LOGIN030 = WEB_SERVICE_URL + "login/ReqeustLogin030";
-            public readonly static string LOGIN040 = WEB_SERVICE_URL + "login/ReqeustLogin040";
-            public readonly static string LOGIN050 = WEB_SERVICE_URL + "login/ReqeustLogin050";
+            readonly string LOGIN001 = WEB_SERVICE_URL + "login/RequestLogin001";
+            readonly static string LOGIN010 = WEB_SERVICE_URL + "login/RequestLogin010";
+            public readonly static string LOGIN020 = WEB_SERVICE_URL + "login/RequestLogin020";
+            public readonly static string LOGIN030 = WEB_SERVICE_URL + "login/RequestLogin030";
+            public readonly static string LOGIN040 = WEB_SERVICE_URL + "login/RequestLogin040";
+            public readonly static string LOGIN050 = WEB_SERVICE_URL + "login/RequestLogin050";
         };
 
         public class KOSU
         {
-            public readonly static string KOSU010 = WEB_SERVICE_URL + "ReqeustKosu010";
-            public readonly static string KOSU020 = WEB_SERVICE_URL + "ReqeustLogin010?souko_cd={0}";
-            public readonly static string KOSU030 = WEB_SERVICE_URL + "ReqeustLogin020?hht_id={0}";
-            public readonly static string KOSU040 = WEB_SERVICE_URL + "ReqeustLogin030?driver_cd={0}";
-            public readonly static string KOSU050 = WEB_SERVICE_URL + "ReqeustLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
-            public readonly static string KOSU060 = WEB_SERVICE_URL + "ReqeustLogin050";
-            public readonly static string KOSU065 = WEB_SERVICE_URL + "ReqeustLogin050";
+            public readonly static string KOSU010 = WEB_SERVICE_URL + "RequestKosu010";
+            public readonly static string KOSU020 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu020";
+            public readonly static string KOSU030 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu030";
+            public readonly static string KOSU040 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu040";
+            public readonly static string KOSU050 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu050";
+            public readonly static string KOSU060 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu060";
+            public readonly static string KOSU065 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu065";
+            public readonly static string KOSU070 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu070";
+            public readonly static string KOSU131 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu131";
+            public readonly static string KOSU150 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu150";
+            public readonly static string KOSU210 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu210";
         };
 
         public class IDOU
         {
-            public readonly static string IDOU010 = WEB_SERVICE_URL + "ReqeustIdou010?kenpin_souko={0}&kitaku_cd={1}&kamotsu_no={2}";
-            public readonly static string KOSU020 = WEB_SERVICE_URL + "ReqeustLogin010?souko_cd={0}";
-            public readonly static string KOSU030 = WEB_SERVICE_URL + "ReqeustLogin020?hht_id={0}";
-            public readonly static string KOSU040 = WEB_SERVICE_URL + "ReqeustLogin030?driver_cd={0}";
-            public readonly static string KOSU050 = WEB_SERVICE_URL + "ReqeustLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
-            public readonly static string KOSU060 = WEB_SERVICE_URL + "ReqeustLogin050";
-            public readonly static string KOSU065 = WEB_SERVICE_URL + "ReqeustLogin050";
+            public readonly static string IDOU010 = WEB_SERVICE_URL + "RequestIdou010?kenpin_souko={0}&kitaku_cd={1}&kamotsu_no={2}";
+            public readonly static string KOSU020 = WEB_SERVICE_URL + "RequestLogin010?souko_cd={0}";
+            public readonly static string KOSU030 = WEB_SERVICE_URL + "RequestLogin020?hht_id={0}";
+            public readonly static string KOSU040 = WEB_SERVICE_URL + "RequestLogin030?driver_cd={0}";
+            public readonly static string KOSU050 = WEB_SERVICE_URL + "RequestLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
+            public readonly static string KOSU060 = WEB_SERVICE_URL + "RequestLogin050";
+            public readonly static string KOSU065 = WEB_SERVICE_URL + "RequestLogin050";
+            
         };
 
         public class TUMIKOMI
         {
-            public readonly static string TUMIKOMI010 = WEB_SERVICE_URL + "ReqeustTumikomi010"; // 便検索 
-            public readonly static string TUMIKOMI020 = WEB_SERVICE_URL + "ReqeustTumikomi020"; // 該当コース内の店舗一覧取得
-            public readonly static string TUMIKOMI030 = WEB_SERVICE_URL + "ReqeustTumikomi030"; // 該当店舗が何コース分あるか取得(1件であれば定番コース。2件以上あれば増便コース)
-            public readonly static string TUMIKOMI040 = WEB_SERVICE_URL + "ReqeustTumikomi040"; // 該当店舗の各マテハン数を取得(定番コース)
-            public readonly static string TUMIKOMI050 = WEB_SERVICE_URL + "ReqeustTumikomi050"; // 該当店舗の各マテハン数を取得(定番コース)
-            public readonly static string TUMIKOMI060 = WEB_SERVICE_URL + "ReqeustTumikomi060"; // 積込検品用Proc sagyou5
-            public readonly static string TUMIKOMI070 = WEB_SERVICE_URL + "ReqeustTumikomi070"; // 貨物Noスキャン時、各分類のカウントを取得
-            public readonly static string TUMIKOMI080 = WEB_SERVICE_URL + "ReqeustTumikomi080"; // 積込検品用Proc sagyou7
-            public readonly static string TUMIKOMI090 = WEB_SERVICE_URL + "ReqeustTumikomi090"; // Back
+            public readonly static string TUMIKOMI010 = WEB_SERVICE_URL + "RequestTumikomi010"; // 便検索 
+            public readonly static string TUMIKOMI020 = WEB_SERVICE_URL + "RequestTumikomi020"; // 該当コース内の店舗一覧取得
+            public readonly static string TUMIKOMI030 = WEB_SERVICE_URL + "RequestTumikomi030"; // 該当店舗が何コース分あるか取得(1件であれば定番コース。2件以上あれば増便コース)
+            public readonly static string TUMIKOMI040 = WEB_SERVICE_URL + "RequestTumikomi040"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI050 = WEB_SERVICE_URL + "RequestTumikomi050"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI060 = WEB_SERVICE_URL + "RequestTumikomi060"; // 積込検品用Proc sagyou5
+            public readonly static string TUMIKOMI070 = WEB_SERVICE_URL + "RequestTumikomi070"; // 貨物Noスキャン時、各分類のカウントを取得
+            public readonly static string TUMIKOMI080 = WEB_SERVICE_URL + "RequestTumikomi080"; // 積込検品用Proc sagyou7
+            public readonly static string TUMIKOMI090 = WEB_SERVICE_URL + "RequestTumikomi090"; // Back
 
-            public readonly static string TUMIKOMI210 = WEB_SERVICE_URL + "ReqeustTumikomi210"; // 積込検品用Proc(配車テーブル実績数更新) sagyou5
+            public readonly static string TUMIKOMI210 = WEB_SERVICE_URL + "RequestTumikomi210"; // 積込検品用Proc(配車テーブル実績数更新) sagyou5
 
-            public readonly static string TUMIKOMI300 = WEB_SERVICE_URL + "ReqeustTumikomi300"; // 該当店舗の各マテハン数を取得(定番コース)
-            public readonly static string TUMIKOMI312 = WEB_SERVICE_URL + "ReqeustTumikomi312"; // Back
-            public readonly static string TUMIKOMI314 = WEB_SERVICE_URL + "ReqeustTumikomi314"; // 積込検品用Proc(配車テーブル実績数更新) sagyou7
-            public readonly static string KOSU050 = WEB_SERVICE_URL + "ReqeustLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
-            public readonly static string KOSU060 = WEB_SERVICE_URL + "ReqeustLogin050";
-            public readonly static string KOSU065 = WEB_SERVICE_URL + "ReqeustLogin050";
+            public readonly static string TUMIKOMI300 = WEB_SERVICE_URL + "RequestTumikomi300"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI312 = WEB_SERVICE_URL + "RequestTumikomi312"; // Back
+            public readonly static string TUMIKOMI314 = WEB_SERVICE_URL + "RequestTumikomi314"; // 積込検品用Proc(配車テーブル実績数更新) sagyou7
+            public readonly static string KOSU050 = WEB_SERVICE_URL + "RequestLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
+            public readonly static string KOSU060 = WEB_SERVICE_URL + "RequestLogin050";
+            public readonly static string KOSU065 = WEB_SERVICE_URL + "RequestLogin050";
         };
 
 
@@ -121,7 +126,7 @@ namespace HHT
 
         public static async Task<LOGIN010> ExecuteLogin010(Dictionary<string, string> param)
         {
-            string url = "http://192.168.0.18:8787/login/ReqeustLogin010";
+            string url = "http://192.168.0.19:8787/login/RequestLogin010";
             string resultData = await CommonUtils.PostAsync(url, param);
             LOGIN010 login010 = JsonConvert.DeserializeObject<LOGIN010>(resultData);
 
@@ -176,55 +181,6 @@ namespace HHT
 
             List<KOSU200> resultDataSet = JsonConvert.DeserializeObject<List<KOSU200>>(resultData);
             return resultDataSet;
-        }
-
-        public static KOSU131 ExecuteKosu131(string soukoCd, string kitaku_cd, string syukaDate, string vendorCd)
-        {
-            string url = string.Format(@"http://192.168.0.33:8787/GetSoukoName?souko_cd={0}", soukoCd);
-
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                { "souko_cd", soukoCd }
-            };
-
-            //string url = string.Format(@WEB_SERVICE_URL + LOGIN010, soukoCd);
-            //string resultData = await CommonUtils.PostAsync(url, param);
-            string resultData = CommonUtils.GetJsonData(url);
-            resultData =
-            "{" +
-                "state: '00'," +
-                "vendor_nm : 'アルフレッサヘルスケア（パピコム）'," +
-             "},"
-             ;
-            
-            KOSU131 resultDataSet = JsonConvert.DeserializeObject<KOSU131>(resultData);
-            return resultDataSet;
-        }
-
-        internal static bool ExecuteKosu020(string text)
-        {
-            return true;
-        }
-
-        // 得意先コード検索
-        internal static bool ExecuteKosu010(string text)
-        {
-            return true;
-        }
-
-        /*
-        public async Task<string> GetTodokesakiName(string soukoCd)
-        {
-            string url = string.Format(@WEB_SERVICE_ADDRESS + KOSU020, soukoCd);
-            string resultData = await CommonUtils.GetJsonDataAsync(url);
-            Premises premises = JsonConvert.DeserializeObject<Premises>(resultData);
-            return premises.souko_nm;
-        }
-        */
-
-        internal static void ReqeustTUMIKOMI230(Dictionary<string, string> param)
-        {
-            
         }
 
     }

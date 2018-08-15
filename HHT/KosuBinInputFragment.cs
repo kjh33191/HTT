@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Preferences;
 using Android.Views;
 using Android.Widget;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -12,7 +13,7 @@ namespace HHT
     public class KosuBinInputFragment : BaseFragment
     {
         private View view;
-        private bool confirmFlag;
+        private int menuKbn;
         private string deliveryDate, tokuisaki, todokesaki;
         private EditText etDeliveryDate, etBinNo;
         private Button btnConfirm;
@@ -34,11 +35,11 @@ namespace HHT
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 
-            // parameter setting 
-            confirmFlag = prefs.GetBoolean("isConfirm", false);
             deliveryDate = prefs.GetString("deliveryDate", "");
             tokuisaki = prefs.GetString("tokuisaki", "");
             todokesaki = prefs.GetString("todokesaki", "");
+            menuKbn = prefs.GetInt("menuKbn", 1);
+
             etDeliveryDate = view.FindViewById<EditText>(Resource.Id.et_binInput_deliveryDate);
             etDeliveryDate.Text = deliveryDate;
             
@@ -46,45 +47,60 @@ namespace HHT
             etBinNo.RequestFocus();
 
             btnConfirm = view.FindViewById<Button>(Resource.Id.btn_binInput_confirm);
-            btnConfirm.Click += delegate {
-                if(etBinNo.Text== "")
+            btnConfirm.Click += delegate { Confirm(); };
+
+            return view;
+        }
+
+        private void Confirm()
+        {
+            if (etBinNo.Text == "")
+            {
+                CommonUtils.AlertDialog(view, "エラー", "便番号が入力されていません。", null);
+            }
+            else
+            {
+                if (menuKbn == 2) // 届先検索の場合
                 {
-                    CommonUtils.AlertDialog(view, "エラー", "便番号が入力されていません。", null);
+                    editor.PutString("syuka_date", "20" + etDeliveryDate.Text.Replace("/", ""));
+                    editor.PutString("bin_no", etBinNo.Text);
+
+                    editor.Apply();
+
+                    StartFragment(FragmentManager, typeof(KosuSearchFragment));
                 }
                 else
                 {
                     GetTokuisakiMasterInfo();
                 }
-                
-            };
-
-            return view;
+            }
         }
-
-
 
         private void GetTokuisakiMasterInfo()
         {
-            // if(ret_menukbn == "2") sagyou5
-            
             var progress = ProgressDialog.Show(this.Activity, null, "検品情報を確認しています。", true);
 
             new Thread(new ThreadStart(delegate {
-                Activity.RunOnUiThread( () =>
+                Activity.RunOnUiThread(() =>
                 {
                     Thread.Sleep(1000);
+
                     Dictionary<string, string> param = new Dictionary<string, string>
                     {
-                        { "souko_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                        { "kitaku_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                        { "syuka_date",  prefs.GetString("tokuisaki_cd", "103")},
-                        { "bin_no",  prefs.GetString("tokuisaki_cd", "103")}
+                        { "kenpin_souko",  prefs.GetString("souko_cd", "108")},
+                        { "kitaku_cd",  prefs.GetString("kitaku_cd", "2")},
+                        { "syuka_date",  "20" + etDeliveryDate.Text.Replace("/","")},
+                        { "bin_no",  etBinNo.Text},
+                        { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", "0000")},
+                        { "todokesaki_cd",  prefs.GetString("todokesaki_cd", "0374")}
                     };
 
                     string resultJson = "";
-                    //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU040, param);
-                    //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-                    int status = 0; // result["state"]
+                    resultJson = CommonUtils.Post(WebService.KOSU.KOSU040, param);
+                    Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
+
+                    int status = int.Parse(result["state"]);
+
                     if (status == 99)
                     {
                         CommonUtils.AlertDialog(view, "エラー", "検品可能なデータがありません。", null);
@@ -95,37 +111,29 @@ namespace HHT
                     }
                     else
                     {
-                        param = new Dictionary<string, string>
-                        {
-                            { "souko_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                            { "kitaku_cd",  prefs.GetString("tokuisaki_cd", "103")},
-                            { "syuka_date",  prefs.GetString("tokuisaki_cd", "103")},
-                            { "bin_no",  prefs.GetString("tokuisaki_cd", "103")}
-                        };
+                        resultJson = CommonUtils.Post(WebService.KOSU.KOSU050, param);
+                        result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
 
-                        //resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU050, param);
-                        //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
+                        editor.PutString("tokuisaki_nm", result["tokuisaki_rk"]);
+                        editor.PutString("default_vendor", result["default_vendor"]);
+                        editor.PutString("vendor_nm", result["vendor_nm"]);
 
-                        editor.PutString("tokuisaki_nm", etBinNo.Text); // result["tokuisaki_rk"]
-                        editor.PutString("tsumi_vendor_cd", etBinNo.Text); // result["default_vendor"]
-                        editor.PutString("tsumi_vendor_nm", etBinNo.Text); // result["vendor_nm"]
-                        editor.PutString("binNo", etBinNo.Text);
+                        editor.PutString("syuka_date", "20" + etDeliveryDate.Text.Replace("/", ""));
+                        editor.PutString("bin_no", etBinNo.Text);
+
                         editor.Apply();
 
-                        if (confirmFlag)
-                        {
-                            StartFragment(FragmentManager, typeof(KosuConfirmFragment));
-                        }
-                        else
-                        {
-                            StartFragment(FragmentManager, typeof(KosuSearchFragment));
-                        }
+                        StartFragment(FragmentManager, typeof(KosuConfirmFragment));
                     }
                 }
                 );
-                Activity.RunOnUiThread(() => progress.Dismiss());
+            Activity.RunOnUiThread(() =>
+            {
+                progress.Dismiss();
+            });
             }
             )).Start();
+
         }
 
 
@@ -137,19 +145,10 @@ namespace HHT
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-            if (keycode == Keycode.F1)
+            if (keycode == Keycode.F4)
             {
-                
+                Confirm();
             }
-            else if (keycode == Keycode.F3)
-            {
-               
-            }
-            else if (keycode == Keycode.Back)
-            {
-               
-            }
-
             return true;
         }
     }

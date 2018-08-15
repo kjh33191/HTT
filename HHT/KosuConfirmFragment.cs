@@ -28,16 +28,15 @@ namespace HHT
             confirmButton.Click += delegate { StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment)); };
 
             txtDeliveryDate = view.FindViewById<EditText>(Resource.Id.et_confirm_deliveryDate);
-            txtTodokesaki = view.FindViewById<EditText>(Resource.Id.et_confirm_tokuisaki);
-            txtTokuisaki = view.FindViewById<EditText>(Resource.Id.et_confirm_todokesaki);
+            txtTodokesaki = view.FindViewById<EditText>(Resource.Id.et_confirm_todokesaki);
+            txtTokuisaki = view.FindViewById<EditText>(Resource.Id.et_confirm_tokuisaki);
             txtBinNo = view.FindViewById<EditText>(Resource.Id.et_confirm_binNo);
-
 
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             txtDeliveryDate.Text = prefs.GetString("deliveryDate", "");
-            txtTodokesaki.Text = prefs.GetString("tokuisaki", "");
-            txtTokuisaki.Text = prefs.GetString("todokesaki", "");
-            txtBinNo.Text = prefs.GetString("binNo", "");
+            txtTodokesaki.Text = prefs.GetString("todokesaki_cd", "");
+            txtTokuisaki.Text = prefs.GetString("tokuisaki_cd", "");
+            txtBinNo.Text = prefs.GetString("bin_no", "");
 
             return view;
         }

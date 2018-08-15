@@ -30,6 +30,31 @@ namespace HHT.Resources.DataHelper
             }
         }
 
+        public bool InsertALL(List<Tokuisaki> tokuisakiList)
+        {
+            try
+            {
+                if(tokuisakiList.Count > 0)
+                {
+                    using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                    {
+                        connection.InsertAll(tokuisakiList);
+                        return true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+                
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+        }
+
         public Tokuisaki SelectLastLoginInfo()
         {
             try
