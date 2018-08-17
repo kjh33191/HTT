@@ -54,11 +54,11 @@ namespace HHT
             return view;
         }
 
-        private async void SetTodokesakiAsync()
+        private void SetTodokesakiAsync()
         {
             var progress = ProgressDialog.Show(this.Activity, null, "届先検索中。。。", true);
 
-            List<Todokesaki> todokeList = await GetTokuisakiMasterInfo();
+            List<Todokesaki> todokeList = GetTokuisakiMasterInfo();
 
             if(todokeList.Count > 0)
             {
@@ -92,28 +92,23 @@ namespace HHT
             )).Start();
         }
 
-        private async Task<List<Todokesaki>> GetTokuisakiMasterInfo()
+        private List<Todokesaki> GetTokuisakiMasterInfo()
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                { "kenpin_souko",  prefs.GetString("souko_cd", "108")},
-                { "kitaku_cd",  prefs.GetString("kitaku_cd", "2")},
-                { "syuka_date",  prefs.GetString("syuka_date", "20180320")},
-                { "bin_no",  prefs.GetString("bin_no", "1")}
-            };
-
-            string resultJson = "";
+            List<Todokesaki> resultList = new List<Todokesaki>(); ;
+            string soukoCd = prefs.GetString("souko_cd", "108");
+            string kitakuCd = prefs.GetString("kitaku_cd", "2");
+            string syuka_date = prefs.GetString("syuka_date", "20180320");
+            string bin_no = prefs.GetString("bin_no", "1");
+            
             if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
             {
-                resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU060, param);
+                resultList = WebService.RequestKosu060(soukoCd, kitakuCd, syuka_date, bin_no);
             }
             else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
             {
-                resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU065, param);
+                resultList = WebService.RequestKosu065(soukoCd, kitakuCd, syuka_date, bin_no);
             }
-
-            List<Todokesaki> resultList = JsonConvert.DeserializeObject<List<Todokesaki>>(resultJson);
-
+            
             return resultList;
         }
 

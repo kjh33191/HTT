@@ -144,16 +144,11 @@ namespace HHT
                 Activity.RunOnUiThread(() =>
                 {
                     Thread.Sleep(1500);
-
-                    Dictionary<string, string> param = new Dictionary<string, string>
+                    int count = WebService.RequestKosu010(etTokuisaki.Text);
+                    if (count == 0)
                     {
-                        { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", "103")}
-                    };
-
-                    string resultJson = CommonUtils.Post(WebService.KOSU.KOSU010, param);
-                    Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-                    string count = result["cnt"];
-
+                        // 得意先コードがみつかりません。
+                    }
                 }
                 );
                 Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
@@ -166,15 +161,7 @@ namespace HHT
             bool isExist = false;
             try
             {
-                Dictionary<string, string> param = new Dictionary<string, string>
-                {
-                    { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", etTokuisaki.Text)}
-                };
-
-                //string resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU010, param);
-                //Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-                //int count = int.Parse(result["cnt"]);
-                int count = 1;
+                int count = WebService.RequestKosu010(etTokuisaki.Text);
                 if (count >= 1)
                 {
                     isExist = true;
@@ -185,7 +172,7 @@ namespace HHT
 
             }
             
-            return isExist;
+            return await Task.FromResult(isExist);
         }
 
         private async Task<bool> IsExistTodokesaki()
@@ -194,16 +181,7 @@ namespace HHT
 
             try
             {
-                Dictionary<string, string> param = new Dictionary<string, string>
-                {
-                    { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", etTokuisaki.Text)},
-                    { "todokesaki_cd",  prefs.GetString("todokesaki_cd", etTodokesaki.Text)}
-                };
-
-                string resultJson = await CommonUtils.PostAsync(WebService.KOSU.KOSU020, param);
-                Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-
-                int count = 1;// result["cnt"];
+                int count = WebService.RequestKosu020(etTokuisaki.Text, etTodokesaki.Text);
                 if(count >= 1)
                 {
                     isExist = true;
@@ -214,8 +192,8 @@ namespace HHT
             {
                 Log.Debug(TAG, e.StackTrace.ToString());
             }
-            
-            return isExist;
+
+            return await Task.FromResult(isExist);
         }
 
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)

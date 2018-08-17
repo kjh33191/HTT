@@ -4,8 +4,7 @@ using Android.OS;
 using Android.Preferences;
 using Android.Views;
 using Android.Widget;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+using HHT.Resources.Model;
 using System.Threading;
 
 namespace HHT
@@ -85,21 +84,14 @@ namespace HHT
                 {
                     Thread.Sleep(1000);
 
-                    Dictionary<string, string> param = new Dictionary<string, string>
-                    {
-                        { "kenpin_souko",  prefs.GetString("souko_cd", "108")},
-                        { "kitaku_cd",  prefs.GetString("kitaku_cd", "2")},
-                        { "syuka_date",  "20" + etDeliveryDate.Text.Replace("/","")},
-                        { "bin_no",  etBinNo.Text},
-                        { "tokuisaki_cd",  prefs.GetString("tokuisaki_cd", "0000")},
-                        { "todokesaki_cd",  prefs.GetString("todokesaki_cd", "0374")}
-                    };
-
-                    string resultJson = "";
-                    resultJson = CommonUtils.Post(WebService.KOSU.KOSU040, param);
-                    Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-
-                    int status = int.Parse(result["state"]);
+                    string souko_cd = prefs.GetString("souko_cd", "108");
+                    string kitaku_cd = prefs.GetString("kitaku_cd", "108");
+                    string syuka_date = "20" + etDeliveryDate.Text.Replace("/", "");
+                    string bin_no = etBinNo.Text;
+                    string tokuisaki_cd = prefs.GetString("tokuisaki_cd", "108");
+                    string todokesaki_cd = prefs.GetString("todokesaki_cd", "108");
+                    
+                    int status = WebService.RequestKosu040(souko_cd, kitaku_cd, syuka_date, bin_no, tokuisaki_cd, todokesaki_cd);
 
                     if (status == 99)
                     {
@@ -111,15 +103,12 @@ namespace HHT
                     }
                     else
                     {
-                        resultJson = CommonUtils.Post(WebService.KOSU.KOSU050, param);
-                        result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
-
-                        editor.PutString("tokuisaki_nm", result["tokuisaki_rk"]);
-                        editor.PutString("default_vendor", result["default_vendor"]);
-                        editor.PutString("vendor_nm", result["vendor_nm"]);
-
-                        editor.PutString("syuka_date", "20" + etDeliveryDate.Text.Replace("/", ""));
-                        editor.PutString("bin_no", etBinNo.Text);
+                        KOSU050 kosu050 = WebService.RequestKosu050(tokuisaki_cd, todokesaki_cd);
+                        editor.PutString("tokuisaki_nm", kosu050.tokuisaki_rk);
+                        editor.PutString("default_vendor", kosu050.default_vendor);
+                        editor.PutString("vendor_nm", kosu050.vendor_nm);
+                        editor.PutString("syuka_date", syuka_date);
+                        editor.PutString("bin_no", bin_no);
 
                         editor.Apply();
 

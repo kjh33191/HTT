@@ -18,6 +18,7 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using Java.Lang;
+using Java.Net;
 using Java.Util;
 using Newtonsoft.Json;
 
@@ -93,7 +94,7 @@ namespace HHT
             
             var response = client.PostAsync(url, content).Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
-         
+            
             return responseString;
         }
 
@@ -134,6 +135,56 @@ namespace HHT
 
             return networkInfo != null && networkInfo.IsConnectedOrConnecting;
         }
+
+        public static bool IsHostReachable(string host)
+        {
+            if (string.IsNullOrEmpty(host))
+                return false;
+
+            bool isReachable = true;
+
+            Thread thread = new Thread(() =>
+            {
+                try
+                {
+                    //isReachable = InetAddress.GetByName(host).IsReachable(2000);
+
+                    /* 
+                     * It's important to note that isReachable tries ICMP ping and then TCP echo (port 7).
+                     * These are often closed down on HTTP servers.
+                     * So a perfectly good working API with a web server on port 80 will be reported as unreachable
+                     * if ICMP and TCP port 7 are filtered out!
+                     */
+
+                    //if (!isReachable){
+                    URL url = new URL("http://" + host);
+
+                    URLConnection connection = url.OpenConnection();
+
+                    //if(connection.ContentLength != -1){
+                    //isReachable = true;
+                    if (connection.ContentLength == -1)
+                    {
+                        isReachable = false;
+                    }
+                    //}
+
+                }
+                catch (UnknownHostException e)
+                {
+                    isReachable = false;
+                }
+                catch (IOException e)
+                {
+                    isReachable = false;
+                }
+
+            });
+            thread.Start();
+
+            return isReachable;
+        }
+
 
         public static string GetDeviceUUID(Context context)
         {

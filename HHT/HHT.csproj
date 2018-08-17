@@ -73,6 +73,7 @@
     <Reference Include="bhtsdk_r1000600_v1.00.06">
       <HintPath>..\..\..\..\Users\kim junghan\Desktop\BHT-1700、1800用SDK（Ver1.0)\BHT-1700、1800用SDK（Ver1.0)\Library\Xamarin\bhtsdk_r1000600_v1.00.06.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.Android.Export" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -90,10 +91,13 @@
     <Compile Include="Resources\DataHelper\TokuisakiHelper.cs" />
     <Compile Include="Resources\Model\Mail.cs" />
     <Compile Include="Resources\Model\Password.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU050.cs" />
+    <Compile Include="Resources\Model\WebService\ResponseData.cs" />
     <Compile Include="Resources\Model\Tokuisaki.cs" />
     <Compile Include="Resources\Model\Tsumikomi.cs" />
     <Compile Include="Resources\Model\Todokesaki.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU070.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI010.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI311.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI310.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI060.cs" />

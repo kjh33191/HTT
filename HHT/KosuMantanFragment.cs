@@ -127,8 +127,18 @@ namespace HHT
                 string msg = matehanList[index].matehan_nm + "でよろしいですか？";
                 CommonUtils.AlertConfirm(view, "確認", msg, (flag) =>
                 {
-                    // MENU_TODOKE -> proc_kosukenpin("080")
-                    // MENU_VENDOR -> proc_kosukenpin("160")
+                    
+                    /* TODO まだプロシージャが動かない
+                        if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
+                        {
+                            kosuKenpin = WebService.RequestKosu080(param);
+                        }
+                        else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
+                        {
+                            kosuKenpin = WebService.RequestKosu160(param);
+                        }
+                        
+                    */
 
                     int resultCode = 0;
                     // 全完了OK
@@ -143,10 +153,9 @@ namespace HHT
                         editor.PutString("dai_su", dai_su_intValue.ToString());
                         editor.Apply();
 
-
                         if (resultCode == 0)
                         {
-                            // Return("sagyou18") 完了画面
+                            StartFragment(FragmentManager, typeof(KosuCompleteFragment));
                         }
                         else if (resultCode == 1)
                         {
@@ -157,7 +166,7 @@ namespace HHT
                             JOB: tokuisaki_nm = ""
                             Return("sagyou15")
                             */
-
+                            // 前の画面に遷移するけど、変更された値を考える必要がある
                             // Return("sagyou15") 紐付画面
                             this.Activity.FragmentManager.PopBackStack();
                         }

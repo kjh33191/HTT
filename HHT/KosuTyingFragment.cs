@@ -124,8 +124,8 @@ namespace HHT
         
         public void CountItem(IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData)
         {
-            var progress = ProgressDialog.Show(this.Activity, null, "検品情報を確認しています。", true);
-            
+            ((MainActivity)this.Activity).ShowProgress("検品情報を確認しています。");
+
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
                 {
@@ -184,18 +184,20 @@ namespace HHT
                             { "pJskHansokuSu",  pJskHansokuSu}
                         };
 
-                        string resultJson = "";
-
+                        KOSU070 kosuKenpin = new KOSU070();
+                        kosuKenpin.poLabelType = "0";
+                        
+                        /* TODO まだプロシージャが動かない
                         if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                         {
-                            resultJson = CommonUtils.Post(WebService.KOSU.KOSU070, param);
+                            kosuKenpin = WebService.RequestKosu070(param);
                         }
                         else
                         {
-                            resultJson = CommonUtils.Post(WebService.KOSU.KOSU150, param);
+                            kosuKenpin = WebService.RequestKosu150(param);
                         }
-
-                        KOSU070 kosuKenpin = JsonConvert.DeserializeObject<KOSU070>(resultJson);
+                        
+                        */
 
                         // result["poLabelType"] 0：ケース、1：オリコン、2：不定形、3：店移動、4：破材、5：返品、6：販促物、7：回収
                         if (kosuKenpin != null)
@@ -238,7 +240,7 @@ namespace HHT
                 }
                 }
                 );
-                Activity.RunOnUiThread(() => progress.Dismiss());
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
 
@@ -334,25 +336,13 @@ namespace HHT
 
         private void SetKosuMax()
         {
-            new Thread(new ThreadStart(delegate {
-                Activity.RunOnUiThread(() =>
-                {
-                    string resultJson210 = CommonUtils.Post(WebService.KOSU.KOSU210, new Dictionary<string, string>());
-                    Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson210);
-                    string kohmoku = result["kohmoku"];
-
-                    if (kohmoku.Length <= 0)
-                    {
-                        CommonUtils.ShowAlertDialog(View, "エラー", "個数上限値がみつかりません。");
-                    }
-                    else
-                    {
-                        kosuMax = int.Parse(kohmoku);
-                    }
-                }
-                );
+            try {
+                kosuMax = WebService.RequestKosu210();
             }
-            )).Start();
+            catch {
+                CommonUtils.ShowAlertDialog(View, "エラー", "個数上限値がみつかりません。");
+                kosuMax = 10;
+            }
         }
 
         public void SetSumQty()
