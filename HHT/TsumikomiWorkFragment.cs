@@ -7,6 +7,7 @@ using Android.Preferences;
 using Android.Views;
 using Android.Widget;
 using Com.Densowave.Bhtsdk.Barcode;
+using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
 
 namespace HHT
@@ -30,7 +31,6 @@ namespace HHT
         {
             base.OnCreate(savedInstanceState);
         }
-
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             view = inflater.Inflate(Resource.Layout.fragment_tsumikomi_work, container, false);
@@ -49,36 +49,33 @@ namespace HHT
             etSonata = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_sonota);
 
             btnIdou = view.FindViewById<Button>(Resource.Id.et_tsumikomiWork_idou);
-            btnIdou.Click += delegate { };
+            btnIdou.Click += delegate { GoToIdouMenu(); };
             
             kansen_kbn = 0;
             
             carLabelInputMode = false;
             zoubin_flg = prefs.GetString("zoubin_flg", "1");
 
-            // 참고. TODO 삭제할것.
-            // 사교5,6,7은 같은 화면에 처리방식이 다름. 
-            // 사교5는 定番コース단골코스(zoubin_flg = 1)
-            // 사교5은 사교5의車両ラベル入力화면 (sagyou5에서 납품바코드가 한번 읽히면 이동)
-            // 사교7은 増便コース증편코스(zoubin_flg >= 2)
-            // 그렇다면 zoubin_flg로 일단 로직을 갈라내는게 좋을거같다. 
-
             if (zoubin_flg == "1")
             {
-                GetTenpoMatehanInfo();  // 作業5
+                GetTenpoMatehanInfo();  // 作業5, 6 定番コース단골코스(zoubin_flg = 1)
             }
             else
             {
-                GetCountSouko(); // 作業7
+                GetCountSouko(); // 作業7, 8 増便コース증편코스(zoubin_flg >= 2)
             }
             
             return view;
         }
-        
+        private void GoToIdouMenu()
+        {
+            StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment));
+        }
+
         // 総個数取得 TUMIKOMI050
         private int GetCountSouko()
         {
-            var progress = ProgressDialog.Show(this.Activity, "Please wait...", "Contacting server. Please wait...", true);
+            ((MainActivity)this.Activity).ShowProgress("");
             int count = 0;
 
             new Thread(new ThreadStart(delegate {
@@ -104,9 +101,9 @@ namespace HHT
                     Dictionary<string, string> result = new Dictionary<string, string>();
                     int.TryParse(result["kosu_kei"], out count);
                     
-                    }
+                 }
                     );
-                    Activity.RunOnUiThread(() => progress.Dismiss());
+                    Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
 
                 }
             )).Start();
@@ -413,7 +410,7 @@ namespace HHT
         // マテハン情報取得 TUMIKOMI040,TUMIKOMI300
         private void GetTenpoMatehanInfo()
         {
-            var progress = ProgressDialog.Show(this.Activity, "", "マテハン情報取得しています。", true);
+            ((MainActivity)this.Activity).ShowProgress("マテハン情報取得しています。");
 
             new Thread(new ThreadStart(delegate {
 
@@ -476,7 +473,7 @@ namespace HHT
                     }
                 }
                 );
-                Activity.RunOnUiThread(() => progress.Dismiss());
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
         )).Start();
 
@@ -615,8 +612,14 @@ namespace HHT
                     return false;
                 }
             }
+            else if (keycode == Keycode.F1)
+            {
+                GoToIdouMenu();
+            }
             else if (keycode == Keycode.F3)
             {
+                
+
                 if (!carLabelInputMode)
                 {
                     if (zoubin_flg == "1")
@@ -721,35 +724,115 @@ namespace HHT
 
         private void CompleteTsumiKomi()
         {
-            //scan_flg = true;
-            //btvOkFlag == 0 then
-            // 
+
+            new Thread(new ThreadStart(delegate {
+                Activity.RunOnUiThread(() =>
+                {
+                    // TUMIKOMI100 -> main file
+                    //MFile mFile = WebService.RequestTumikomi100();
+                    MFile mFile = new MFile
+                    {
+                        kenpin_souko = "108",
+                        kitaku_cd = "2",
+                        syuka_date = "20180320",
+                        bin_no = "1",
+                        course = "101",
+                        driver_cd = "832",
+                        butsuryu_no = "1",
+                        nohin_yti_time = "1605",
+                        tokuisaki_cd = "0000",
+                        todokesaki_cd = "0374",
+                        tokuisaki_rk = "新白岡店",
+                        vendor_cd = "10041",
+                        vendor_nm = "【ＤＣ】㈱ＰＡＬＴＡＣ",
+                        default_vendor = "999999",
+                        default_vendor_nm = "※旭丘　クスリのアオキ",
+                        bunrui = "1",
+                        kamotsu_no = "9800000001940005404809700021",
+                        matehan = "99111010000037400228816",
+                        category = "3",
+                        category_nm = "バラ",
+                        state = "4"
+                    };
+
+                    new MFileHelper().Insert(mFile);
+
+                    // TUMIKOMI180 -> ps file
+                    //PsFile psFile = WebService.RequestTumikomi180();
+                    PsFile psFile = new PsFile{ pass = "" };
+                    new PsFileHelper().Insert(psFile);
+
+                    // TUMIKOMI140 -> mail bag file
+                    //MbFile mbFile = WebService.RequestTumikomi140();
+                    //MbFile mbFile = new MbFile();
+                    //new MbFileHelper().Insert(mbFile);
+
+                    //SoFile soFile = WebService.RequestTumikomi160();
+                    SoFile soFile = new SoFile { def_tokuisaki_cd = "0000", ido_vendor_cd = "999999" };
+                    new SoFileHelper().Insert(soFile);
+
+                    // TUMIKOMI190 -> ftp file ? 
+                    //FtpFile ftpFile = WebService.RequestTumikomi190();
+                    //FtpFile ftpFile = new FtpFile {  };
+                    //new FtpFileHelper().Insert(ftpFile);
+
+                    // TUMIKOMI260 -> vendor file
+                    List<MateFile> mateFile = WebService.RequestTumikomi260();
+                    new MateFileHelper().InsertAll(mateFile);
+
+                    // TUMIKOMI270 -> tokuisaki file
+                    List<TokuiFile> tokuiFile = WebService.RequestTumikomi270();
+                    new TokuiFileHelper().InsertAll(tokuiFile);
+
+
+                    // 9. 配車テーブルの該当コースの各数量を実績数で更新する
+                    /*
+                    int result = 0;
+                    if (kansen_kbn == 0)
+                    {
+                        // ret =  proc_tumikomikenpin TUMIKOMI210
+                        result = WebService.RequestTumikomi210();
+                    }
+                    else
+                    {
+                        // ret =proc_tumikomikenpin TUMIKOMI314
+                        result = WebService.RequestTumikomi314();
+                    }
+
+                    if(result == "0" || result == "99"){
+                        if(result == "99"){
+                            JOB:tenpo_zan_flg = true
+                        }else{
+                            JOB:tenpo_zan_flg = false
+                        }
+                        Return("msg1")
+                    }else{
+                        // error
+                        // btvOkFlg = 1 <-- 파일 만드는 처리 스킵
+
+                    }
+
+
+                       ret = 0 or 99 -> comp_OK(),iniZero(4),
+                       99 -> tenpo_zan_flg = true or false;
+                       alert msg1;
+
+                        not 0, 99 -> btvOkFlg = 1
+                     */
+
+                }
+                );
+                Activity.RunOnUiThread(() =>
+                {
+
+                }
+                );
+
+            }
+            )).Start();
+
+
             
-
-            // 2．メインファイル取得
-            // 3．パスワード取得
-            // 4．メールバック取得
-            // 5．倉庫マスタ取得
-            // 6. FTP接続情報＆BDアドレス取得
-            // 7. ベンダーマテハンマスタ取得
-            // 8. 得意先マスタ取得
-            // 9. 配車テーブルの該当コースの各数量を実績数で更新する
-            /*
-            if (kansen_kbn == 0)
-            {
-                // ret =  proc_tumikomikenpin TUMIKOMI210
-            }
-            else
-            {
-                // ret =proc_tumikomikenpin TUMIKOMI314
-            }
-
-               ret = 0 or 99 -> comp_OK(),iniZero(4),
-               99 -> tenpo_zan_flg = true or false;
-               alert msg1;
-
-                not 0, 99 -> btvOkFlg = 1
-             */
         }
     }
 }

@@ -87,14 +87,44 @@
     <Compile Include="Common\BaseFragment.cs" />
     <Compile Include="Common\BootComplete.cs" />
     <Compile Include="Common\CommonUtils.cs" />
+    <Compile Include="NohinKaisyuShohinFragment.cs" />
+    <Compile Include="NohinKaisyuMatehanFragment.cs" />
+    <Compile Include="NohinMailBagKaisyuFragment.cs" />
+    <Compile Include="NohinKaisyuMenuFragment.cs" />
+    <Compile Include="NohinCompleteFragment.cs" />
+    <Compile Include="NohinWorkFragment.cs" />
+    <Compile Include="NohinMailBagNohinFragment.cs" />
+    <Compile Include="NohinMenuFragment.cs" />
+    <Compile Include="NohinMailBagPasswordFragment.cs" />
+    <Compile Include="Resources\DataHelper\MateFileHelper.cs" />
+    <Compile Include="Resources\DataHelper\FtpFileHelper.cs" />
+    <Compile Include="Resources\DataHelper\TokuiFileHelper.cs" />
+    <Compile Include="Resources\DataHelper\SoFileHelper.cs" />
+    <Compile Include="Resources\DataHelper\PsFileHelper.cs" />
+    <Compile Include="Resources\DataHelper\MbFileHelper.cs" />
+    <Compile Include="Resources\DataHelper\SndNohinWorkHelper.cs" />
+    <Compile Include="Resources\DataHelper\MFileHelper.cs" />
+    <Compile Include="Resources\Model\File\FtpFile.cs" />
+    <Compile Include="Resources\Model\File\TokuiFile.cs" />
+    <Compile Include="Resources\Model\File\MateFile.cs" />
+    <Compile Include="Resources\Model\File\SoFile.cs" />
+    <Compile Include="Resources\Model\File\MbFile.cs" />
+    <Compile Include="Resources\Model\File\PsFile.cs" />
+    <Compile Include="Resources\Model\SndNohinWork.cs" />
+    <Compile Include="TsumikomiIdouMenuFragment.cs" />
+    <Compile Include="MatehanSearchFragment.cs" />
+    <Compile Include="MatehanMenuFragment.cs" />
     <Compile Include="Resources\DataHelper\TantoHelper.cs" />
     <Compile Include="Resources\DataHelper\TokuisakiHelper.cs" />
     <Compile Include="Resources\Model\Mail.cs" />
     <Compile Include="Resources\Model\Password.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU050.cs" />
+    <Compile Include="Resources\Model\WebService\Matehan\MATE060.cs" />
+    <Compile Include="Resources\Model\WebService\Matehan\MATE030.cs" />
+    <Compile Include="Resources\Model\WebService\Matehan\MATE020.cs" />
     <Compile Include="Resources\Model\WebService\ResponseData.cs" />
     <Compile Include="Resources\Model\Tokuisaki.cs" />
-    <Compile Include="Resources\Model\Tsumikomi.cs" />
+    <Compile Include="Resources\Model\File\MFile.cs" />
     <Compile Include="Resources\Model\Todokesaki.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU070.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI010.cs" />
@@ -103,6 +133,8 @@
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI060.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI020.cs" />
     <Compile Include="TsumikomiCompleteFragment.cs" />
+    <Compile Include="MatehanSelectFragment.cs" />
+    <Compile Include="TsumikomiManagerFragment.cs" />
     <Compile Include="TsumikomiWorkFragment.cs" />
     <Compile Include="TsumikomiSearchFragment.cs" />
     <Compile Include="NohinSelectFragment.cs" />
@@ -316,6 +348,90 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\fragment_tsumikomi_course_update.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_tsumikomi_search.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_menu_matehan.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_matehan_lending.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_matehan_search.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_tsumikomi_manager.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_menu_nohin.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_nohin_mailBag_nohin.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_nohin_mailBag_kaisyu.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_nohin_work.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_nohin_kaisyu_shohin.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_menu_nohin_kaisyu.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_nohin_kaisyu_matehan.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_nohin_complete.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_nohin_mailBag_password.axml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>

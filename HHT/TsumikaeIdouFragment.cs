@@ -30,7 +30,6 @@ namespace HHT
             var view = inflater.Inflate(Resource.Layout.fragment_tsumikae_Idou, container, false);
 
             SetTitle("移動元マテハン");
-            menuFlag = Arguments.GetInt("menuFlag");
             
             txtCase = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_case);
             txtOricon = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_oricon);

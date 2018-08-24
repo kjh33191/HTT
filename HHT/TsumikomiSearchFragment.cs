@@ -22,6 +22,7 @@ namespace HHT
     {
         private View view;
         private TenpoAdapter tenpoAdapter;
+        private TodokesakiAdapter todokesakiAdapter;
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
         
@@ -35,7 +36,7 @@ namespace HHT
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            view = inflater.Inflate(Resource.Layout.fragment_kosu_search, container, false);
+            view = inflater.Inflate(Resource.Layout.fragment_tsumikomi_search, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 
@@ -43,7 +44,7 @@ namespace HHT
             SetFooterText("");
             
             listView = view.FindViewById<ListView>(Resource.Id.listView1);
-            listView.ItemClick += listView_ItemClick;
+            //listView.ItemClick += listView_ItemClick;
             
             return view;
         }
@@ -52,12 +53,12 @@ namespace HHT
         {
             base.OnResume();
 
-            GetTenpoList();
+            //GetTenpoList();
+            SetTodokesakiAsync();
         }
 
         private void GetTenpoList()
         {
-            //var progress = ProgressDialog.Show(this.Activity, "Please wait...", "Contacting server. Please wait...", true);
             ((MainActivity)this.Activity).ShowProgress("Contacting server. Please wait...");
 
             new Thread(new ThreadStart(delegate {
@@ -91,8 +92,6 @@ namespace HHT
                 result.Add(new TUMIKOMI020());
 
                 tenpoAdapter = new TenpoAdapter(result);
-                //listView.Adapter = tenpoAdapter;
-                
             }
             );
             Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
@@ -102,20 +101,74 @@ namespace HHT
 
         }
 
+
+        private void SetTodokesakiAsync()
+        {
+            var progress = ProgressDialog.Show(this.Activity, null, "届先検索中。。。", true);
+
+            List<Todokesaki> todokeList = GetTokuisakiMasterInfo();
+
+            if (todokeList.Count > 0)
+            {
+                ListView listView = view.FindViewById<ListView>(Resource.Id.listView1);
+                listView.ItemClick += listView_ItemClick;
+
+                todokesakiAdapter = new TodokesakiAdapter(todokeList);
+                listView.Adapter = todokesakiAdapter;
+            }
+
+            new Thread(new ThreadStart(delegate
+            {
+                Activity.RunOnUiThread(() => progress.Dismiss());
+            }
+            )).Start();
+        }
+
+        private List<Todokesaki> GetTokuisakiMasterInfo()
+        {
+            List<Todokesaki> resultList = new List<Todokesaki>(); ;
+            string soukoCd = prefs.GetString("souko_cd", "108");
+            string kitakuCd = prefs.GetString("kitaku_cd", "2");
+            string syuka_date = prefs.GetString("syuka_date", "20180320");
+            string bin_no = prefs.GetString("bin_no", "1");
+
+            resultList = WebService.RequestKosu060(soukoCd, kitakuCd, syuka_date, bin_no);
+
+            return resultList;
+        }
+
         void listView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
+            
+            var item = todokesakiAdapter[e.Position];
 
-            var item = this.tenpoAdapter.GetItem(e.Position);
-
-            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
-            ISharedPreferencesEditor editor = prefs.Edit();
-
-            //editor.PutString("todokesaki", item.ToString());
+            editor.PutString("todokesaki_cd", item.todokesaki_cd);
+            editor.PutString("tokuisaki_cd", item.tokuisaki_cd);
+            editor.PutString("tokuisaki_nm", item.tokuisaki_rk);
+            editor.PutString("tsumi_vendor_cd", "");
+            editor.PutString("tsumi_vendor_nm", "");
+            editor.PutString("vendor_cd", "");
+            editor.PutString("vendor_nm", "");
+            editor.PutString("start_vendor_cd", "");
 
             editor.Apply();
 
-            CheckTenpo(e.Position);
-            
+            //int count = WebService.RequestTumikomi030();
+            int count = 1;
+
+            if(count == 0)
+            {
+                CommonUtils.AlertDialog(view, "Error", "定番・増便データはありません。", ()=> { return; });
+            }else if(count == 1)
+            {
+                //Return("sagyou5") //積込作業の場合(積込検品)定番コース
+                StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
+            }
+            else
+            {
+                //Return("sagyou7") //積込作業(増便コース)入力の場合(積込検品) 増便コース
+                StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
+            }
         }
 
         private void CheckTenpo(int pos)

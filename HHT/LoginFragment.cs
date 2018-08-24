@@ -10,6 +10,7 @@ using System.Threading;
 using Android.Content;
 using Android.Preferences;
 using Android.Util;
+using Android.Media;
 
 namespace HHT
 {
@@ -179,7 +180,34 @@ namespace HHT
                 );
                 Activity.RunOnUiThread(() => {
                     ((MainActivity)this.Activity).DismissDialog();
-                    if (!hasError) StartFragment(FragmentManager, typeof(MainMenuFragment));
+                    if (!hasError) {
+                        //StartFragment(FragmentManager, typeof(MainMenuFragment));
+                        string bodyMsg = "";
+                        string menu_kbn = prefs.GetString("menu_kbn", "");
+
+                        if (menu_kbn == "0")
+                        {
+                            bodyMsg = "構内でログインしました。";
+                        }
+                        else if (menu_kbn == "1")
+                        {
+                            bodyMsg = "ドライバーでログインしました。";
+                        }else if(menu_kbn == "2")
+                        {
+                            bodyMsg = "管理者でログインしました。";
+                        }
+                        else if (menu_kbn == "3")
+                        {
+                            bodyMsg = "ＴＣ２型（花王）でログインしました。";
+                        }
+                        
+                        CommonUtils.AlertDialog(view, "", bodyMsg, () => {
+                            ToneGenerator toneGen1 = new ToneGenerator(Stream.Music,100);
+                            toneGen1.StartTone(Tone.CdmaPip,150);
+                            StartFragment(FragmentManager, typeof(MainMenuFragment));
+                        });
+                    }
+
                 });
             }
             )).Start();

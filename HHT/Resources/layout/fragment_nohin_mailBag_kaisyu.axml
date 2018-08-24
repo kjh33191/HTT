@@ -45,11 +45,12 @@
             android:layout_marginTop="30dp"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:id="@+id/abcd"
             android:layout_columnSpan="2" />
         <EditText
             android:text=""
-            android:inputType="text"
-            android:id="@+id/et_nohinSelect_receipt"
+            android:inputType="numberSigned"
+            android:id="@+id/et_todoke_tokuisaki"
             android:layout_gravity="fill_horizontal"
             android:layout_columnSpan="2" />
     </GridLayout>
@@ -66,7 +67,7 @@
             android:layout_marginTop="30dp"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:id="@+id/txt_nohinSelect_confirmMsg" />
+            android:id="@+id/txt_kosuSelect_confirmMsg" />
     </LinearLayout>
     <Button
         android:text="確定"
@@ -74,5 +75,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
-        android:id="@+id/btn_nohinSelect_confirm" />
+        android:id="@+id/button1" />
 </LinearLayout>

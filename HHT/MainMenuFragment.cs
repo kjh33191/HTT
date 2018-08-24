@@ -18,6 +18,7 @@ namespace HHT
 {
     public class MainMenuFragment : BaseFragment
     {
+        private View view;
         private string mUserKbn = "0";
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -27,17 +28,10 @@ namespace HHT
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.fragment_menu_main, container, false);
+            view = inflater.Inflate(Resource.Layout.fragment_menu_main, container, false);
             LinearLayout layout = view.FindViewById<LinearLayout>(Resource.Id.linearLayout2);
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(Application.Context);
-            /*
-            String mString = prefs.GetString("souko_cd", "");
-            String mString = prefs.GetString("sagyousya_cd", "");
-            String mString = prefs.GetString("kitaku_cd", "");
-            String mString = prefs.GetString("menu_kbn", "");
-            String mString = prefs.GetString("souko_kbn", "");
-            */
-
+            
             // 管理者の場合
             
             Button btnNyuka = view.FindViewById<Button>(Resource.Id.btn_main_manager_nyuka);
@@ -53,6 +47,9 @@ namespace HHT
             btnNohin.Click += delegate { StartFragment(FragmentManager, typeof(NohinSelectFragment)); };
 
             Button btnDataSend = view.FindViewById<Button>(Resource.Id.btn_main_manager_dataSend);
+            btnDataSend.Click += delegate { CommonUtils.AlertDialog(view, "Error", "送信するデータが存在しません。", null); };
+
+
             Button btnMailBag = view.FindViewById<Button>(Resource.Id.btn_main_manager_mailBag);
             Button btnIdouRegist = view.FindViewById<Button>(Resource.Id.btn_main_manager_idousakiRegist);
             Button btnIdouNohin = view.FindViewById<Button>(Resource.Id.btn_main_manager_idousakiNohin);
@@ -87,10 +84,13 @@ namespace HHT
             else if (keycode == Keycode.Num5)
             {
                 // データ送信
+                //DataSend();
+                CommonUtils.AlertDialog(view, "Error", "送信するデータが存在しません。", null);
             }
             else if (keycode == Keycode.Num6)
             {
                 // マテハン登録
+                StartFragment(FragmentManager, typeof(MatehanMenuFragment));
             }
             else if (keycode == Keycode.Num7)
             {
@@ -113,6 +113,29 @@ namespace HHT
                 // 在庫集約
             }
             return true;
+        }
+
+        private void DataSend()
+        {
+            // 送信データが存在しない場合、
+            //CommonUtils.AlertDialog(view, "Error", "送信するデータが存在しません。", null);
+
+            CommonUtils.AlertConfirm(view, "Error", "送信するデータが存在しません。", (flag)=> {
+                if (flag)
+                {
+                    // データ送信する。（サーバーを呼出す。）　　
+                    //　　②－１．ファイルの拡張子が「.csv」の場合　：　FTP010
+　　                //    ②－２．ファイルの拡張子が「.txt」の場合：　SEND010
+
+                    // 파일이 아니라 로컬DB이므로, 어떻게 보내야할까..
+
+
+                }
+                else
+                {
+
+                }
+            });
         }
     }
 }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:gravity="center_vertical|left">
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gl_kosuSelect_Todoke"
+        android:columnCount="3">
+        <TextView
+            android:text="貸出日"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginRight="10dp"
+            android:id="@+id/textView1" />
+        <EditText
+            android:inputType="date"
+            android:layout_width="120dp"
+            android:id="@+id/et_matehan_kasidatuDate"
+            android:focusable="true"
+            android:hint="yyMMdd"
+            android:layout_columnSpan="2"
+            android:layout_gravity="fill_horizontal" />
+        <TextView
+            android:text="貸出先"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView2" />
+        <EditText
+            android:text=""
+            android:inputType="numberSigned"
+            android:layout_width="120dp"
+            android:id="@+id/et_matehan_kasidatuTarget"
+            android:layout_gravity="fill_horizontal" />
+        <Button
+            android:text="検索"
+            android:textSize="15sp"
+            android:id="@+id/btn_matehan_kasidasiSakiSearch" />
+    </GridLayout>
+    <TextView
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="textStart"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:id="@+id/tv_matehan_targetName" />
+    <TextView
+        android:text="よろしいですか？"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:id="@+id/tv_matehan_confirmMsg" />
+    <Button
+        android:text="確定"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/btn_matehan_confirm" />
+</LinearLayout>

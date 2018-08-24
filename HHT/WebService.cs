@@ -12,8 +12,7 @@ namespace HHT
     {
         public readonly static string TAG = "WebService";
         
-        public readonly static string HOST_ADDRESS = "172.26.190.133";
-        //public readonly static string HOST_ADDRESS = "192.168.0.19";
+        public readonly static string HOST_ADDRESS = "192.168.0.19";
         public readonly static string WEB_SERVICE_URL = "http://" + HOST_ADDRESS + ":8787/";
         
         public class LOGIN {
@@ -58,31 +57,52 @@ namespace HHT
 
         public class TUMIKOMI
         {
-            public readonly static string TUMIKOMI010 = WEB_SERVICE_URL + "RequestTumikomi010"; // 便検索 
-            public readonly static string TUMIKOMI020 = WEB_SERVICE_URL + "RequestTumikomi020"; // 該当コース内の店舗一覧取得
-            public readonly static string TUMIKOMI030 = WEB_SERVICE_URL + "RequestTumikomi030"; // 該当店舗が何コース分あるか取得(1件であれば定番コース。2件以上あれば増便コース)
-            public readonly static string TUMIKOMI040 = WEB_SERVICE_URL + "RequestTumikomi040"; // 該当店舗の各マテハン数を取得(定番コース)
-            public readonly static string TUMIKOMI050 = WEB_SERVICE_URL + "RequestTumikomi050"; // 該当店舗の各マテハン数を取得(定番コース)
-            public readonly static string TUMIKOMI060 = WEB_SERVICE_URL + "RequestTumikomi060"; // 積込検品用Proc sagyou5
-            public readonly static string TUMIKOMI070 = WEB_SERVICE_URL + "RequestTumikomi070"; // 貨物Noスキャン時、各分類のカウントを取得
-            public readonly static string TUMIKOMI080 = WEB_SERVICE_URL + "RequestTumikomi080"; // 積込検品用Proc sagyou7
-            public readonly static string TUMIKOMI090 = WEB_SERVICE_URL + "RequestTumikomi090"; // Back
+            public readonly static string TUMIKOMI010 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi010"; // 便検索 
+            public readonly static string TUMIKOMI020 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi020"; // 該当コース内の店舗一覧取得
+            public readonly static string TUMIKOMI030 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi030"; // 該当店舗が何コース分あるか取得(1件であれば定番コース。2件以上あれば増便コース)
+            public readonly static string TUMIKOMI040 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi040"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI050 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi050"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI060 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi060"; // 積込検品用Proc sagyou5
+            public readonly static string TUMIKOMI070 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi070"; // 貨物Noスキャン時、各分類のカウントを取得
+            public readonly static string TUMIKOMI080 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi080"; // 積込検品用Proc sagyou7
+            public readonly static string TUMIKOMI090 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi090"; // Back
+            public readonly static string TUMIKOMI100 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi100"; // m_file取得
+            public readonly static string TUMIKOMI140 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi140"; // mb_file取得
+            public readonly static string TUMIKOMI160 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi160"; // so_file取得
+            public readonly static string TUMIKOMI180 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi180"; // ps_file取得
+            public readonly static string TUMIKOMI190 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi190"; // FTP_file取得
+            
+            public readonly static string TUMIKOMI210 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi210"; // 積込検品用Proc(配車テーブル実績数更新) sagyou5
+            
+            public readonly static string TUMIKOMI230 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi230"; // 積込検品用Proc(配車テーブル実績数更新) sagyou5
 
-            public readonly static string TUMIKOMI210 = WEB_SERVICE_URL + "RequestTumikomi210"; // 積込検品用Proc(配車テーブル実績数更新) sagyou5
-
-
-            public readonly static string TUMIKOMI230 = WEB_SERVICE_URL + "RequestTumikomi230"; // 積込検品用Proc(配車テーブル実績数更新) sagyou5
-
+            public readonly static string TUMIKOMI260 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi260"; // mate_file取得
+            public readonly static string TUMIKOMI270 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi270"; // tokui_file取得
 
             public readonly static string TUMIKOMI300 = WEB_SERVICE_URL + "RequestTumikomi300"; // 該当店舗の各マテハン数を取得(定番コース)
             public readonly static string TUMIKOMI312 = WEB_SERVICE_URL + "RequestTumikomi312"; // Back
             public readonly static string TUMIKOMI314 = WEB_SERVICE_URL + "RequestTumikomi314"; // 積込検品用Proc(配車テーブル実績数更新) sagyou7
-            public readonly static string KOSU050 = WEB_SERVICE_URL + "RequestLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
-            public readonly static string KOSU060 = WEB_SERVICE_URL + "RequestLogin050";
-            public readonly static string KOSU065 = WEB_SERVICE_URL + "RequestLogin050";
         };
 
-        //***************　ログイン　***************//
+        public class MATEHAN
+        {
+            public readonly static string MATE010 = WEB_SERVICE_URL + "MateHan/RequestMATE010";
+            public readonly static string MATE020 = WEB_SERVICE_URL + "MateHan/RequestMATE020";
+            public readonly static string MATE030 = WEB_SERVICE_URL + "MateHan/RequestMATE030";
+            public readonly static string MATE040 = WEB_SERVICE_URL + "MateHan/RequestMATE040";
+            public readonly static string MATE050 = WEB_SERVICE_URL + "MateHan/RequestMATE050";
+            public readonly static string MATE060 = WEB_SERVICE_URL + "MateHan/RequestMATE060";
+        };
+
+        
+
+        public class SEND_DATA
+        {
+            public readonly static string SEND010 = WEB_SERVICE_URL + "SendData/RequestSEND010";
+        }
+
+        #region ログイン=====================================================================
+        
         public static LOGIN010 RequestLogin010(string soukoCd)
         {
             Dictionary<string, string> param = new Dictionary<string, string>
@@ -183,6 +203,9 @@ namespace HHT
                 throw new Exception(response.message);
             }
         }
+        #endregion
+
+        #region 個数=====================================================================
 
         //***************　個数　***************//
         public static int RequestKosu010(string tokuisaki_cd)
@@ -454,8 +477,10 @@ namespace HHT
             return resultDataSet;
         }
 
+        #endregion
 
-        //***************　積込　***************//
+        #region 積込=====================================================================
+        
         public static TUMIKOMI010 RequestTumikomi010(string kenpin_souko, string kitaku_cd, string syuka_date, string nohin_date, string course)
         {
             Dictionary<string, string> param = new Dictionary<string, string> {
@@ -466,13 +491,93 @@ namespace HHT
                 {"course",course}
             };
 
-            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI010, new Dictionary<string, string>());
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI010, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
             if (response.status == "0")
             {
                 TUMIKOMI010 result = response.GetDataObject<TUMIKOMI010>();
                 return result;
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static MFile RequestTumikomi100()
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI100, new Dictionary<string, string>());
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<MFile>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static MbFile RequestTumikomi140()
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI140, new Dictionary<string, string>());
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<MbFile>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static SoFile RequestTumikomi160()
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI160, new Dictionary<string, string>());
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<SoFile>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static FtpFile RequestTumikomi190()
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI190, new Dictionary<string, string>());
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<FtpFile>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static PsFile RequestTumikomi180()
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI180, new Dictionary<string, string>());
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<PsFile>();
             }
             else
             {
@@ -498,6 +603,216 @@ namespace HHT
             }
         }
 
+        public static List<MateFile> RequestTumikomi260()
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI260, new Dictionary<string, string>());
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<MateFile>>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static List<TokuiFile> RequestTumikomi270()
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI270, new Dictionary<string, string>());
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<TokuiFile>>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        #endregion
+
+        #region データ送信=====================================================================
+
+        public static int RequestSend010()
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+
+            };
+
+            string resultJson = CommonUtils.Post(SEND_DATA.SEND010, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                Dictionary<string, string> result = response.GetDataObject();
+                return int.Parse(result["kohmoku"]);
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        #endregion
+
+        #region マテハン=====================================================================
+
+        public static string RequestMate010(string vendor_cd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"vendor_cd", vendor_cd }
+            };
+
+            string resultJson = CommonUtils.Post(MATEHAN.MATE010, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                Dictionary<string, string> result = response.GetDataObject();
+                return result["vendor_nm"];
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+
+        public static MATE020 RequestMate020(string nyuka_souko)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"nyuka_souko", nyuka_souko }
+            };
+
+            string resultJson = CommonUtils.Post(MATEHAN.MATE020, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<MATE020>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static MATE030 RequestMate030(string vendor_cd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"vendor_cd", vendor_cd }
+            };
+
+            string resultJson = CommonUtils.Post(MATEHAN.MATE030, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<MATE030>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static string RequestMate040(string name_cd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"name_cd", name_cd }
+            };
+
+            string resultJson = CommonUtils.Post(MATEHAN.MATE040, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                Dictionary<string, string> result = response.GetDataObject();
+                return result["code_name"];
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static int RequestMate050(string system_kbn)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"system_kbn", system_kbn }
+            };
+
+            string resultJson = CommonUtils.Post(MATEHAN.MATE050, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                Dictionary<string, string> result = response.GetDataObject();
+                return int.Parse(result["kohmoku"]);
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static MATE060 RequestMate060()
+        {
+            // proc_hht_kasidasi
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                /*
+                pTerminalID			
+                pProgramID			
+                pSagyosyaCD			
+                pSoukoCD			
+                pKitakuCD			
+                pNyusyukoDate			
+                pNyusyukoSu1			
+                pNyusyukoSu2			
+                pNyusyukoSu3			
+                pNyusyukoSu4			
+                pMatehanVendor			
+                pMatehanCd1			
+                pMatehanCd2			
+                pMatehanCd3			
+                pMatehanCd4			
+                 */
+            };
+
+            string resultJson = CommonUtils.Post(MATEHAN.MATE060, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<MATE060>();        
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        #endregion
 
     }
 

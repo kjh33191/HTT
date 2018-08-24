@@ -28,11 +28,12 @@ namespace HHT
         TextView txtConfirmMsg, txtConfirmBin;
         private string souko_cd;
         private string kitaku_cd;
-        private string shuka_date;
+        private string syuka_date;
+        private string nohin_date;
         private string course;
         private string bin_no;
         private string kansen_kbn;
-
+        
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -68,8 +69,6 @@ namespace HHT
             txtConfirmMsg = view.FindViewById<TextView>(Resource.Id.tv_tsumikomiSelect_confirmMsg);
 
             btnConfirm.Click += delegate { Confirm(); };
-
-            etSyukaDate.Text = "18/03/20";
             etSyukaDate.FocusChange += (sender, e) => {
                 if (e.HasFocus)
                 {
@@ -89,6 +88,10 @@ namespace HHT
                     }
                 }
             };
+
+            etSyukaDate.Text = "18/03/20";
+            etCourse.RequestFocus();
+
         }
 
         // パラメータ設定
@@ -96,7 +99,8 @@ namespace HHT
         {
             souko_cd = prefs.GetString("souko_cd", "");
             kitaku_cd = prefs.GetString("kitaku_cd", "");
-            shuka_date = prefs.GetString("shuka_date", "");
+            syuka_date = prefs.GetString("syuka_date", "");
+            nohin_date = prefs.GetString("nohin_date", "");
             course = prefs.GetString("course", "");
             bin_no = prefs.GetString("bin_no", "");
             kansen_kbn = prefs.GetString("kansen_kbn", "");
@@ -110,27 +114,31 @@ namespace HHT
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
                 {
-                    Thread.Sleep(500);
-
-                    string kenpin_souko = "";
-                    string kitaku_cd = "";
-                    string syuka_date = "";
-                    string nohin_date = "";
-                    string course = "";
+                    //TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, nohin_date, course);
                     
-                    TUMIKOMI010 result = WebService.RequestTumikomi010(kenpin_souko, kitaku_cd, syuka_date, nohin_date, course);
+                    TUMIKOMI010 result = new TUMIKOMI010
+                    {
+                        state = "00",
+                        bin_no = "1",
+                        kansen_kbn = "0"
+                    };
+                    
 
                     if (result.state == "03")
                     {
                         CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", () => { return; });
                     }
 
-                    editor.PutString("bin_no", result.bin_no);
-                    editor.PutString("kansen_kbn", result.kansen_kbn);
+                    bin_no = result.bin_no;
+                    kansen_kbn = result.kansen_kbn;
+
+                    etBinNo.Text = bin_no;
+                    editor.PutString("bin_no", bin_no);
+                    editor.PutString("kansen_kbn", kansen_kbn);
                     editor.Apply();
 
                     ShowConfirmMessage();
-
+                    CommonUtils.HideKeyboard(this.Activity);
                 }
                 );
                 Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
@@ -175,39 +183,24 @@ namespace HHT
             }
             else
             {
-                /*
-                // FTP店着実績ファイルの残骸がいるかもしれないので削除
-				TOOL:del_File(nil, "FTPSend_" & Handy:serialId, 1)
 
-				// 幹線便で且つメールバッグが存在した場合は「メールバッグ積込画面」へ遷移する。
-				btvPram = JOB:souko_cd & "," & JOB:kitaku_cd & "," & JOB:shuka_date & "," & JOB:nohin_date & "," & JOB:bin_no & "," & JOB:course
-				iRet = REMOTE:SearchCnt("TUMIKOMI230",3,btvPram)
-				If iRet is nil Then
-					If JOB:kansen_kbn eq "1" Then
-						// 幹線便
-						JOB:zoubin_flg = 1
-						Return("sagyou5")
-					Else
-						Return("sagyou4")
-					EndIf
-				ElseIf iRet > 0 Then
-					// メールバッグ積込画面へ
-					JOB:mail_bag = 0
-					JOB:zoubin_flg = 1
-					DEVICE:read_OK()
-					Return("sagyou14")
-				Else
-					If JOB:kansen_kbn eq "1" Then
-						// 幹線便コース
-						JOB:zoubin_flg = 1
-						Return("sagyou5")
-					Else
-						Return("sagyou4")
-					EndIf
-				EndIf
-                 */
+                //int count = WebService.RequestTumikomi230();
+                int count = 0;
 
-                StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
+                if(count > 0)
+                {
+                    // Return("sagyou14")
+                    return;
+                }
+
+                if (kansen_kbn == "1")
+                {
+                    StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
+                }
+                else
+                {
+                    StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
+                }
             }
         }
 
@@ -221,7 +214,11 @@ namespace HHT
             }
             else if (keycode == Keycode.Back)
             {
-                HideConfirmMessage();
+                if (txtConfirmMsg.Visibility == ViewStates.Visible)
+                {
+                    HideConfirmMessage();
+                    return false;
+                }
             }
 
             return true;
@@ -242,7 +239,6 @@ namespace HHT
                     {
                         if (data.Length < 12)
                         {
-                            //에러 コース№がみつかりません。
                             CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", () => { return; });
                         }
                         else
@@ -254,21 +250,26 @@ namespace HHT
 
                             try
                             {
-                                string kenpin_souko = "";
-                                string kitaku_cd = "";
-                                string syuka_date = "";
-                                string nohin_date = "";
-                                string course = "";
 
                                 string haiso_date = CommonUtils.GetDateYYMMDDwithSlash(btvHaisohDate);
 
-                                TUMIKOMI010 result = WebService.RequestTumikomi010(kenpin_souko, kitaku_cd, syuka_date, nohin_date, course);
+                                //TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, nohin_date, btvCourse);
+                                
+                                TUMIKOMI010 result = new TUMIKOMI010
+                                {
+                                    state = "00",
+                                    bin_no = "1",
+                                    kansen_kbn = "0"
+                                };
+                                
 
                                 if (result.state == "03")
                                 {
                                     CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", () => { return; });
                                 }
 
+                                etBinNo.Text = bin_no;
+                                editor.PutString("course", btvCourse);
                                 editor.PutString("bin_no", result.bin_no);
                                 editor.PutString("kansen_kbn", result.kansen_kbn);
                                 editor.Apply();

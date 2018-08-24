@@ -25,6 +25,17 @@ namespace HHT.Resources.DataHelper
                     connection.CreateTable<Tanto>();
                     connection.CreateTable<Login>();
                     connection.CreateTable<Tokuisaki>();
+
+                    connection.CreateTable<MFile>();
+                    connection.CreateTable<MbFile>();
+                    connection.CreateTable<SoFile>();
+                    connection.CreateTable<FtpFile>();
+                    connection.CreateTable<PsFile>();
+                    connection.CreateTable<MateFile>();
+                    connection.CreateTable<TokuiFile>();
+
+                    //　納品用
+                    connection.CreateTable<SndNohinWork>();
                     return true;
                 }
             }
