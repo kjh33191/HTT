@@ -11,6 +11,7 @@ using Android.Content;
 using Android.Preferences;
 using Android.Util;
 using Android.Media;
+using HHT.Common;
 
 namespace HHT
 {
@@ -65,7 +66,7 @@ namespace HHT
                 }
             };
 
-            btnLogin.Click += delegate { Login(); };
+            btnLogin.Click += delegate {Login();};
 
             btnLogin.FocusChange += delegate {
                 if (btnLogin.IsFocused)

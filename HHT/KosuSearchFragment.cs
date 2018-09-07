@@ -127,7 +127,7 @@ namespace HHT
 
             editor.Apply();
 
-            StartFragment(FragmentManager, typeof(KosuConfirmFragment));
+            StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
             
         }
         

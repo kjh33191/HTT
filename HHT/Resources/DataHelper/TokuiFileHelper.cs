@@ -49,5 +49,25 @@ namespace HHT.Resources.DataHelper
             }
         }
 
+
+        public List<TokuiFile> SelectByTokuisakiWithTodokesaki(string tokuisaki, string todokesaki)
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    string sql = "select * from TOkuiFile where tokuisaki_cd =? and todokesaki_cd=? ";
+
+                    List<TokuiFile> tokuisakiListInfo = connection.Query<TokuiFile>(sql, tokuisaki, todokesaki);
+                    return tokuisakiListInfo;
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return null;
+            }
+        }
+
     }
 }

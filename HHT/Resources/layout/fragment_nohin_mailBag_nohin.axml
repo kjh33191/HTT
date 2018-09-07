@@ -31,10 +31,17 @@
         android:id="@+id/et_nohinMailBagNohin_mailbagNumber"
         android:layout_gravity="fill_horizontal" />
     <Button
-        android:text="解　　除"
-        android:layout_width="150dp"
+        android:text="解除"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
         android:id="@+id/btn_nohinMailBagNohin_kaizo" />
+    <Button
+        android:text="無"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:id="@+id/btn_nohinMailBagNohin_mu" />
 </LinearLayout>

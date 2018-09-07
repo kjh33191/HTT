@@ -199,6 +199,11 @@ namespace HHT
                 }
                 else
                 {
+                    editor.PutString("course", etCourse.Text);
+                    editor.PutString("bin_no", etBinNo.Text);
+                    editor.PutString("kansen_kbn", kansen_kbn);
+                    editor.Apply();
+
                     StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
                 }
             }

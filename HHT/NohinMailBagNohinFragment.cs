@@ -5,18 +5,25 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Com.Densowave.Bhtsdk.Barcode;
+using HHT.Resources.DataHelper;
+using HHT.Resources.Model;
 using System.Collections.Generic;
 
 namespace HHT
 {
     public class NohinMailBagNohinFragment : BaseFragment
     {
+        private readonly string TAG = "NohinMailBagNohinFragment";
         private View view;
         private ISharedPreferences prefs;
         private ISharedPreferencesEditor editor;
+        private SndNohinMailHelper sndNohinMailHelper;
+        private MbFileHelper mbFileHelper;
 
         EditText etMailBagNumber;
-        private string mail_bag_su;
+        private string tokuisakiCd;
+        private string todokesakiCd;
+        private int mailbackCnt;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -28,22 +35,43 @@ namespace HHT
             view = inflater.Inflate(Resource.Layout.fragment_nohin_mailBag_nohin, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
+            sndNohinMailHelper = new SndNohinMailHelper();
+            mbFileHelper = new MbFileHelper();
+
+            tokuisakiCd = prefs.GetString("tokuisaki_cd", "");
+            todokesakiCd = prefs.GetString("todokesaki_cd", "");
 
             SetTitle("メールバック納品");
             SetFooterText(" F1:解除");
 
             TextView txtTokusakiName = view.FindViewById<TextView>(Resource.Id.txt_nohinMailBagNohin_tokuisakiNm);
-            txtTokusakiName.Text = prefs.GetString("souko_nm", "");
+            txtTokusakiName.Text = prefs.GetString("tokuisaki_nm", "");
 
             etMailBagNumber = view.FindViewById<EditText>(Resource.Id.et_nohinMailBagNohin_mailbagNumber);
             etMailBagNumber.Text = "0";
             etMailBagNumber.RequestFocus();
 
+            // メールバッグ件数取得
+            mailbackCnt = mbFileHelper.GetMailbackCount();
+
             Button kaizoButton = view.FindViewById<Button>(Resource.Id.btn_nohinMailBagNohin_kaizo);
             kaizoButton.Click += delegate { StartFragment(FragmentManager, typeof(NohinMailBagPasswordFragment)); };
 
-            mail_bag_su = "3";
 
+            Button muButton = view.FindViewById<Button>(Resource.Id.btn_nohinMailBagNohin_mu);
+            muButton.Click += delegate {
+                CommonUtils.AlertConfirm(view, "確認", "メールバッグ納品業務を終了しますか？", (flag) => {
+                    if (flag)
+                    {
+                        //MSG1: appendFile()
+                        Log.Debug(TAG, "F3 return pushed : " + prefs.GetString("tokuisaki_cd", "") + ", " + prefs.GetString("tokuisaki_nm", ""));
+                        editor.PutBoolean("mailBagFlag", true);
+                        editor.Apply();
+                        FragmentManager.PopBackStack();
+                    }
+                });
+            };
+            
             return view;
         }
 
@@ -59,6 +87,7 @@ namespace HHT
                 CommonUtils.AlertConfirm(view, "", "メールバッグ納品業務を終了しますか？", (flag) => {
                     if (flag)
                     {
+                        
                         // SndMBN_+ 시리얼 +  .txt의 Empty File을 만든다. 
                         // 이미 존재한다면 패스
                         FragmentManager.PopBackStack();
@@ -82,97 +111,97 @@ namespace HHT
             {
                 this.Activity.RunOnUiThread(() =>
                 {
-                    string densoSymbology = barcodeData.SymbologyDenso;
-                    string data = barcodeData.Data;
-                    int barcodeDataLength = data.Length;
-
-                    //data = 
-                    //string mailBag = GetMailBag();
-                    // 바코드로 읽어온 값이랑 동일한 mailbag 데이터를 찾는다 그래서 존재할시, 
+                    string data = barcodeData.Data;   
                     data = "J00000374";
-                    if (IsValidMailBagData(data))
+                    MbFileHelper mbFileHelper = new MbFileHelper();
+
+                    if (mbFileHelper.HasExistMailBagData(data))
                     {
-                        // 중복된 놈인지 체크 // メールバッグ重複チェック
-                        // "既にスキャン済みです。"
-
-
-                        /*
-                    Lenkey1 = mail_bag.Length
-                    btvTokuisaki = mail_bag.Mid(1, 4)
-                    btvTodokesaki = mail_bag.Mid(5, 4)
-                    btvKey1 = btvTokuisaki & btvTodokesaki
-                    btvKey2 = JOB:tokuisaki_cd & JOB:todokesaki_cd
-                    
-                        // JOB:mail_bag_su = JOB:mail_bag_su + 1
-                        // appendFile(mail_bag,0)
-
-                        */
-
-                        etMailBagNumber.Text = (int.Parse(etMailBagNumber.Text) + 1).ToString();
-                        // appendFile(mail_bag,0) DB 업뎃　<--- 송신용 파일 작성
-
-                        if (mail_bag_su == etMailBagNumber.Text)
+                        // 이미 스캔되었는지 확인
+                        if (CheckMailBagData(data))
                         {
-                            // DB 삭제후 
+                            CommonUtils.AlertDialog(view, "", "既にスキャン済みです。", null);
+                            return;
+                        }
+
+                        string btvTokuisaki = data.Substring(1, 4);
+                        string btvTodokesaki = data.Substring(5, 4);
+
+                        // 해당 바코드가 토쿠이,토도케 값이 맞는지 확인.
+                        if (tokuisakiCd != btvTokuisaki || todokesakiCd != btvTodokesaki)
+                        {
+                            CommonUtils.AlertDialog(view, "", "納入先店舗が違います。", null);
+                            return;
+                        }
+
+                        // 전송용DB에 해당 메일백에 대한 레코드 등록
+                        InsertSndMailInfo(data);
+
+                        // 메일백수 +1
+                        int mail_bag_su = prefs.GetInt("mail_bag_su", 0) + 1;
+                        editor.PutInt("mail_bag_su", mail_bag_su);
+                        editor.Apply();
+
+                        etMailBagNumber.Text = mail_bag_su.ToString();
+                        
+                        // 최대 메일백수에 도달하면 메일백 납품완료
+                        if (mail_bag_su == mailbackCnt)
+                        {
+                            editor.PutBoolean("mailBagFlag", true);
                             StartFragment(FragmentManager, typeof(NohinCompleteFragment));
                         }
                     }
-
-                    // mb_ + serialId + .txt 파일이 있어야 함.
-                    // 만약 사이즈가 0이라면 2를 반환
-
-                    // mbcont = :GetCount(false)
-                    // If mbcont <= 0 Then	// レコード無し del_File(nil,mb_file,nil) 파일 삭제 그리고 2 반환
-                    // 아니면 mail_bag  = :GetData(4) 그리고 파일 삭제, 0 리턴
-
+                    else
+                    {
+                        CommonUtils.AlertDialog(view, "", "該当メールバッグはありません。", null);
+                        return;
+                    }
+                    
                 });
             }
         }
-
-        private bool IsValidMailBagData(string data)
-        {
-
-            return true;
-        }
-
-        private void appendFile()
-        {
-
-            // SndMBN_ file 
-
-            /*
-            // wPackage = "01"
-            wTerminalID = FIX:setFixLength(10, Handy: serialId)
-        wProgramID = FIX:setFixLength(10, JOB: program_id)
-        wSagyosyaCD = FIX:setFixLength(13, JOB: sagyousya_cd)
-        wSoukoCD = FIX:setFixLength(10, JOB: souko_cd)
-        wHaisoDate = FIX:setFixLength(8, JOB: haiso_date)
-        wBinNo = FIX:setFixLength(10, JOB: bin_no)
-        wCourse = FIX:setFixLength(10, JOB: course)
-        wDriverCD = FIX:setFixLength(13, JOB: driver_cd)
-        wTokuisakiCD = FIX:setFixLength(13, JOB: tokuisaki_cd)
-        wTodokesakiCD = FIX:setFixLength(13, JOB: todokesaki_cd)
-        wKanriNo = FIX:setFixLength(20, mailback)
-        wVendorCd = FIX:setFixLength(13, JOB: vendor_cd)
-        wMateVendorCd = FIX:setFixLength(13, "")
-        wSyukaDate = FIX:setFixLength(8, "0")
-        wButsuryuNo = FIX:setFixLength(10, "")
-        wKamotuNo = FIX:setFixLength(28, "")
-        wMatehan = FIX:setFixLength(50, "")
-        wMatehanSu = FIX:setFixLength(5, "0")
-        wHHT_no = FIX:setFixLength(15, "")
-        wNohinKbn = FIX:setFixLength(1, "")
-        wKaisyuKbn = FIX:setFixLength(1, "")
-        wTenkanState = FIX:setFixLength(2, "00")
-        wSakiTokuisakiCD = FIX:setFixLength(13, "")
-        wSakiTodokesakiCD = FIX:setFixLength(13, "")
-        wNohinDate = FIX:setFixLength(8, JOB: nohin_date)
-        wNohinTime = FIX:setFixLength(4, JOB: nohin_time)
         
-             
-             
-             */
+        private bool CheckMailBagData(string data)
+        {
+            List<SndNohinMail> sndNohinMail = sndNohinMailHelper.Select(tokuisakiCd, todokesakiCd, data);
+            return sndNohinMail.Count != 0;
         }
 
+        private void InsertSndMailInfo(string mailback)
+        {
+            // レコード作成用　値取得
+            SndNohinMail sndNohinMail = new SndNohinMail
+            {
+                wPackage = "01",
+                wTerminalID = "11101", //Handy: serialId
+                wProgramID = prefs.GetString("program_id", "NOH"), //JOB: program_id
+                wSagyosyaCD = prefs.GetString("sagyousya_cd", "99999"),
+                wSoukoCD = prefs.GetString("souko_cd", ""), //JOB: noh_soukoCd
+                wHaisoDate = prefs.GetString("haiso_date", ""), // noh_syukaDate
+                wBinNo = prefs.GetString("bin_no", ""), //JOB: noh_binNo
+                wCourse = prefs.GetString("course", ""),
+                wDriverCD = prefs.GetString("driver_cd", ""),
+                wTokuisakiCD = prefs.GetString("tokuisaki_cd", ""),
+                wTodokesakiCD = prefs.GetString("todokesaki_cd", ""),
+                wKanriNo = mailback,
+                wVendorCd = prefs.GetString("vendor_cd", ""),
+                wMateVendorCd = "",
+                wSyukaDate = "0",
+                wButsuryuNo = "",
+                wKamotuNo = "",
+                wMatehan = "",
+                wMatehanSu = "",
+                wHHT_no = "",
+                wNohinKbn = "",
+                wKaisyuKbn = "",
+                wTenkanState = "00",
+                wSakiTokuisakiCD = "",
+                wSakiTodokesakiCD = "",
+                wNohinDate = prefs.GetString("nohin_date", ""),
+                wNohinTime = prefs.GetString("nohin_time", "")
+            };
+
+            sndNohinMailHelper.Insert(sndNohinMail);
+        }
     }
 }

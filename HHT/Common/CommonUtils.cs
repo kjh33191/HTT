@@ -204,6 +204,7 @@ namespace HHT
             alertDialog.SetTitle(title);
             alertDialog.SetMessage(message);
             alertDialog.SetButton("確認", (senderAlert, args) => { callback?.Invoke(); });
+            alertDialog.SetCancelable(false);
             alertDialog.Show();
 
             //alertDialog.SetOnShowListener(new IDialogInterfaceOnShowListener() {  })
@@ -235,6 +236,13 @@ namespace HHT
             string ymd = Regex.Replace(Convert.ToString(dateString), @"[^\u0000-\u007F]|/", string.Empty);
             DateTime dt = DateTime.ParseExact(ymd.ToString(), "yyMMdd", CultureInfo.InvariantCulture);
             return dt.ToString("yy/MM/dd", CultureInfo.InvariantCulture);
+        }
+
+        public static string GetDateYYYYMMDDwithSlash(string dateString)
+        {
+            string ymd = Regex.Replace(Convert.ToString(dateString), @"[^\u0000-\u007F]|/", string.Empty);
+            DateTime dt = DateTime.ParseExact(ymd.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+            return dt.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture);
         }
 
     }

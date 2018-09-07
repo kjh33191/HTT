@@ -34,8 +34,16 @@ namespace HHT.Resources.DataHelper
                     connection.CreateTable<MateFile>();
                     connection.CreateTable<TokuiFile>();
 
+                    //　納品時、店舗到着情報
+                    connection.CreateTable<TenpoArrive>();
+
                     //　納品用
                     connection.CreateTable<SndNohinWork>();
+                    connection.CreateTable<SndNohinMate>();
+                    connection.CreateTable<SndNohinMail>();
+                    connection.CreateTable<SndNohinSyohinKaisyu>();
+                    connection.CreateTable<SndNohinMailKaisyu>();
+                    
                     return true;
                 }
             }
@@ -45,5 +53,40 @@ namespace HHT.Resources.DataHelper
                 return false;
             }
         }
+
+        public bool ClearAll()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    connection.DeleteAll<Tanto>();
+                    connection.DeleteAll<Login>();
+                    connection.DeleteAll<Tokuisaki>();
+                    
+                    connection.DeleteAll<MFile>();
+                    connection.DeleteAll<MbFile>();
+                    connection.DeleteAll<SoFile>();
+                    connection.DeleteAll<FtpFile>();
+                    connection.DeleteAll<PsFile>();
+                    connection.DeleteAll<MateFile>();
+                    connection.DeleteAll<TokuiFile>();
+                    
+                    //　納品用
+                    connection.DeleteAll<SndNohinWork>();
+                    connection.DeleteAll<SndNohinMate>();
+                    connection.DeleteAll<SndNohinMail>();
+                    connection.DeleteAll<SndNohinSyohinKaisyu>();
+                    connection.DeleteAll<SndNohinMailKaisyuHelper>();
+                    return true;
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+        }
+        
     }
 }

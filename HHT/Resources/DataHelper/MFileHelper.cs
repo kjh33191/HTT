@@ -95,6 +95,43 @@ namespace HHT.Resources.DataHelper
         }
 
 
+        public List<MFile> SelectByMatehanCd(string tokuisaki, string todokesaki, string matehanCd)
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    //SQLiteCommand cmd = connection.CreateCommand();
+                    string sql = @"select * from MFile where tokuisaki_cd = ? and todokesaki_cd= ? and matehan = ?";
+                    List<MFile> tokuisakiList = connection.Query<MFile>(sql, tokuisaki, todokesaki, matehanCd).ToList();
+
+                    return tokuisakiList;
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return null;
+            }
+        }
+
+        public bool DeleteAll()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    connection.DeleteAll<MFile>();
+                    return true;
+                }
+
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+        }
 
     }
 }

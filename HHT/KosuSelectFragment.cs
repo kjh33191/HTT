@@ -196,6 +196,26 @@ namespace HHT
             return await Task.FromResult(isExist);
         }
 
+        private async Task<string> GetVendorState()
+        {
+            string venderState = "";
+
+            try
+            {
+                string syukaDate = "20" + etSyukaDate.Text.Replace("/", "");
+                KOSU131 kosu131 = WebService.RequestKosu131(soukoCd, kitakuCd, syukaDate, etVendorCode.Text);
+
+                venderState = kosu131.state;
+                vendorNm = kosu131.vendor_nm;
+            }
+            catch
+            {
+
+            }
+
+            return await Task.FromResult(venderState);
+        }
+
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
         {
             IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData = dataReceivedEvent.BarcodeData;
@@ -356,6 +376,7 @@ namespace HHT
             }
             else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
             {
+                // 必須チェック
                 if (etSyukaDate.Text == "")
                 {
                     CommonUtils.ShowAlertDialog(view, "エラー", "配送日を入力してください。");
@@ -369,21 +390,13 @@ namespace HHT
                     etVendorCode.RequestFocus();
                     return false;
                 }
+
+                // ベンダー情報検索
                 string syukaDate = etSyukaDate.Text;
                 string errTitle = "";
                 string errMsg = "";
 
-                Dictionary<string, string> param = new Dictionary<string, string>
-                    {
-                        { "kenpin_souko",  "108"},
-                        { "kitaku_cd",  "2"},
-                        { "syuka_date",  "20180320"},
-                        { "vendor_cd",  etVendorCode.Text}
-                    };
-
-                string resultJson131 = await CommonUtils.PostAsync(WebService.KOSU.KOSU131, param);
-                Dictionary<string, string> result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson131);
-                string resultState = result["state"];
+                string resultState = await GetVendorState();
 
                 if (resultState == null)
                 {
@@ -410,11 +423,7 @@ namespace HHT
                     });
                     return false;
                 }
-                else
-                {
-                    vendorNm = result["vendor_nm"];
-                    return true;
-                }
+                
             }
             else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
             {

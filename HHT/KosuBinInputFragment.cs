@@ -90,30 +90,39 @@ namespace HHT
                     string bin_no = etBinNo.Text;
                     string tokuisaki_cd = prefs.GetString("tokuisaki_cd", "108");
                     string todokesaki_cd = prefs.GetString("todokesaki_cd", "108");
-                    
-                    int status = WebService.RequestKosu040(souko_cd, kitaku_cd, syuka_date, bin_no, tokuisaki_cd, todokesaki_cd);
 
-                    if (status == 99)
+                    try
+                    {
+                        int status = WebService.RequestKosu040(souko_cd, kitaku_cd, syuka_date, bin_no, tokuisaki_cd, todokesaki_cd);
+
+
+                        if (status == 99)
+                        {
+                            CommonUtils.AlertDialog(view, "エラー", "検品可能なデータがありません。", null);
+                        }
+                        else if (status >= 1)
+                        {
+                            CommonUtils.AlertDialog(view, "確認", "全ての検品が完了しています。", null);
+                        }
+                        else
+                        {
+                            KOSU050 kosu050 = WebService.RequestKosu050(tokuisaki_cd, todokesaki_cd);
+                            editor.PutString("tokuisaki_nm", kosu050.tokuisaki_rk);
+                            editor.PutString("default_vendor", kosu050.default_vendor);
+                            editor.PutString("vendor_nm", kosu050.vendor_nm);
+                            editor.PutString("syuka_date", syuka_date);
+                            editor.PutString("bin_no", bin_no);
+
+                            editor.Apply();
+
+                            StartFragment(FragmentManager, typeof(KosuConfirmFragment));
+                        }
+                    }
+                    catch
                     {
                         CommonUtils.AlertDialog(view, "エラー", "検品可能なデータがありません。", null);
                     }
-                    else if (status >= 1)
-                    {
-                        CommonUtils.AlertDialog(view, "確認", "全ての検品が完了しています。", null);
-                    }
-                    else
-                    {
-                        KOSU050 kosu050 = WebService.RequestKosu050(tokuisaki_cd, todokesaki_cd);
-                        editor.PutString("tokuisaki_nm", kosu050.tokuisaki_rk);
-                        editor.PutString("default_vendor", kosu050.default_vendor);
-                        editor.PutString("vendor_nm", kosu050.vendor_nm);
-                        editor.PutString("syuka_date", syuka_date);
-                        editor.PutString("bin_no", bin_no);
-
-                        editor.Apply();
-
-                        StartFragment(FragmentManager, typeof(KosuConfirmFragment));
-                    }
+                    
                 }
                 );
             Activity.RunOnUiThread(() =>

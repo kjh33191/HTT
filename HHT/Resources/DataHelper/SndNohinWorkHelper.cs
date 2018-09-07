@@ -18,7 +18,6 @@ namespace HHT.Resources.DataHelper
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
                 {
-                    connection.DeleteAll<SndNohinWork>();
                     connection.Insert(nohinWork);
                     return true;
                 }
@@ -30,7 +29,7 @@ namespace HHT.Resources.DataHelper
                 return false;
             }
         }
-        public List<SndNohinWork> SelectALLNohinWorkInfo()
+        public List<SndNohinWork> SelectAll()
         {
             try
             {
@@ -44,6 +43,39 @@ namespace HHT.Resources.DataHelper
             {
                 Log.Info("SQLiteEx", ex.Message);
                 return null;
+            }
+        }
+        public List<SndNohinWork> SelectNohinWorkWithKamotu(string kamotu)
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    List<SndNohinWork> nohinWorkList = connection.Query<SndNohinWork>("select * from SndNohinWork where wKamotuNo = ?", kamotu);
+                    return nohinWorkList;
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return null;
+            }
+        }
+        public bool DeleteAll()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    connection.DeleteAll<SndNohinWork>();
+                    return true;
+                }
+
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
             }
         }
     }

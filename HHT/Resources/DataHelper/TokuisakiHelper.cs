@@ -79,8 +79,7 @@ namespace HHT.Resources.DataHelper
                 return null;
             }
         }
-
-
+       
         public List<Tokuisaki> SelectALLTokuisakiInfo()
         {
             try
@@ -98,6 +97,23 @@ namespace HHT.Resources.DataHelper
             }
         }
 
-
+        public List<Tokuisaki> SelectByTokuisakiWithTodokesaki(string tokuisaki, string todokesaki)
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    string sql = "select * from TOkuiFile where tokuisaki_cd =? and todokesaki_cd=? ";
+                    
+                    List<Tokuisaki> tokuisakiListInfo = connection.Query<Tokuisaki>(sql, tokuisaki, todokesaki);
+                    return tokuisakiListInfo;
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return null;
+            }
+        }
     }
 }

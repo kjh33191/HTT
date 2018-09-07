@@ -6,20 +6,20 @@
     android:paddingTop="30dp"
     android:paddingLeft="20dp">
     <TextView
-        android:text="シーエスイー"
+        android:text="TokuisakiName"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/txtMiseName"
+        android:id="@+id/txt_nohinKaisyuShohin_tokuisakiNm"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="10dp" />
     <TextView
-        android:text="水天宮店"
+        android:text="TodokesakiName"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/txtMiseName"
+        android:id="@+id/txt_nohinKaisyuShohin_todokisakiNm"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="10dp" />
@@ -47,7 +47,7 @@
                 <TextView
                     android:text="0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/txt_todoke_case"
+                    android:id="@+id/txt_nohinKaisyuShohin_idousu"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
@@ -70,7 +70,7 @@
                 <TextView
                     android:text="0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/txt_todoke_huteikei"
+                    android:id="@+id/txt_nohinKaisyuShohin_hazaisu"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
@@ -92,12 +92,35 @@
                 <TextView
                     android:text="0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/txt_todoke_miseidou"
+                    android:id="@+id/txt_nohinKaisyuShohin_sonotasu"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp" />
+            </TableRow>
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="30dp">
+                <TextView
+                    android:text="総個数"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/textView7"
+                    android:layout_width="80dp"
+                    android:background="@drawable/border"
+                    android:textStyle="bold"
+                    android:paddingLeft="5dp" />
+                <TextView
+                    android:text="0"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/txt_nohinKaisyuShohin_sougosu"
+                    android:layout_width="50dp"
+                    android:textAlignment="textEnd"
+                    android:textStyle="bold"
+                    android:background="@drawable/border"
+                    android:paddingRight="5dp"
+                    android:layout_height="wrap_content" />
             </TableRow>
         </TableLayout>
         <TableLayout
@@ -119,7 +142,7 @@
                 <TextView
                     android:text="0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/txt_todoke_oricon"
+                    android:id="@+id/txt_nohinKaisyuShohin_henpinsu"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
@@ -142,7 +165,7 @@
                 <TextView
                     android:text="0"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/txt_todoke_hazai"
+                    android:id="@+id/txt_nohinKaisyuShohin_mailsu"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
@@ -151,35 +174,6 @@
             </TableRow>
         </TableLayout>
     </LinearLayout>
-    <TableLayout
-        android:layout_width="130dp"
-        android:layout_marginBottom="25dp"
-        android:layout_marginTop="30dp"
-        android:paddingLeft="5dp"
-        android:layout_height="wrap_content">
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-            <TextView
-                android:text="総個数"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/textView7"
-                android:layout_width="80dp"
-                android:background="@drawable/border"
-                android:textStyle="bold"
-                android:paddingLeft="5dp" />
-            <TextView
-                android:text="0"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/txt_todoke_oricon"
-                android:layout_width="50dp"
-                android:textAlignment="textEnd"
-                android:textStyle="bold"
-                android:background="@drawable/border"
-                android:paddingRight="5dp"
-                android:layout_height="wrap_content" />
-        </TableRow>
-    </TableLayout>
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -191,7 +185,7 @@
             android:layout_gravity="center" />
         <Button
             android:text="修"
-            android:id="@+id/btn_todoke_mantan"
+            android:id="@+id/btn_nohinKaisyuShohin_osamu"
             android:layout_width="140dp"
             android:layout_gravity="center" />
     </GridLayout>

@@ -82,11 +82,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adapters\TenpoAdapter.cs" />
+    <Compile Include="Adapters\Tsumikomi020Adapter.cs" />
     <Compile Include="Adapters\TodokesakiAdapter.cs" />
+    <Compile Include="Common\DialogAsync.cs" />
     <Compile Include="Common\AlertDialog.cs" />
     <Compile Include="Common\BaseFragment.cs" />
     <Compile Include="Common\BootComplete.cs" />
     <Compile Include="Common\CommonUtils.cs" />
+    <Compile Include="CompleteFragment.cs" />
+    <Compile Include="IdouNohinWorkFragment.cs" />
+    <Compile Include="IdouNohinSelectFragment.cs" />
+    <Compile Include="IdouRegistWorkFragment.cs" />
+    <Compile Include="IdouRegistSelectFragment.cs" />
+    <Compile Include="MailMenuFragment.cs" />
+    <Compile Include="MailManageInputFragment.cs" />
+    <Compile Include="MailManageSelectFragment.cs" />
     <Compile Include="NohinKaisyuShohinFragment.cs" />
     <Compile Include="NohinKaisyuMatehanFragment.cs" />
     <Compile Include="NohinMailBagKaisyuFragment.cs" />
@@ -98,6 +108,11 @@
     <Compile Include="NohinMailBagPasswordFragment.cs" />
     <Compile Include="Resources\DataHelper\MateFileHelper.cs" />
     <Compile Include="Resources\DataHelper\FtpFileHelper.cs" />
+    <Compile Include="Resources\DataHelper\SndNohinMailHelper.cs" />
+    <Compile Include="Resources\DataHelper\SndNohinMailKaisyuHelper.cs" />
+    <Compile Include="Resources\DataHelper\SndNohinSyohinKaisyuHelper.cs" />
+    <Compile Include="Resources\DataHelper\SndNohinMateHelper.cs" />
+    <Compile Include="Resources\DataHelper\TenpoArriveHelper.cs" />
     <Compile Include="Resources\DataHelper\TokuiFileHelper.cs" />
     <Compile Include="Resources\DataHelper\SoFileHelper.cs" />
     <Compile Include="Resources\DataHelper\PsFileHelper.cs" />
@@ -110,7 +125,16 @@
     <Compile Include="Resources\Model\File\SoFile.cs" />
     <Compile Include="Resources\Model\File\MbFile.cs" />
     <Compile Include="Resources\Model\File\PsFile.cs" />
+    <Compile Include="Resources\Model\SndNohinMail.cs" />
+    <Compile Include="Resources\Model\SndNohinMailKaisyu.cs" />
+    <Compile Include="Resources\Model\SndNohinSyohinKaisyu.cs" />
+    <Compile Include="Resources\Model\SndNohinMate.cs" />
     <Compile Include="Resources\Model\SndNohinWork.cs" />
+    <Compile Include="Resources\Model\TenpoArrive.cs" />
+    <Compile Include="Resources\Model\WebService\Tidou\TIDOU010.cs" />
+    <Compile Include="Resources\Model\WebService\Tidou\TIDOU002.cs" />
+    <Compile Include="Resources\Model\WebService\Tidou\TIDOU001.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI040.cs" />
     <Compile Include="TsumikomiIdouMenuFragment.cs" />
     <Compile Include="MatehanSearchFragment.cs" />
     <Compile Include="MatehanMenuFragment.cs" />
@@ -432,6 +456,48 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\fragment_nohin_mailBag_password.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_menu_mailbag.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_mail_manage_select.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_mail_manage_input.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_idou_regist_select.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_idou_regist_work.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_idou_nohin_select.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_idou_nohin_work.axml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>

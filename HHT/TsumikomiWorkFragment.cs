@@ -26,7 +26,7 @@ namespace HHT
         private string zoubin_flg;
 
         private static readonly string ERR_UPDATE_001 = "更新出来ませんでした。\n再度商品をスキャンして下さい。";
-
+        
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -40,6 +40,8 @@ namespace HHT
             SetTitle("積込検品");
             SetFooterText("F3：移動");
 
+            
+            view.FindViewById<TextView>(Resource.Id.txt_tsumikomiWork_tokuisakiNm).Text = prefs.GetString("tokuisaki_nm", "");
             etKosu = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_kosu);
             etCarLabel = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_carLabel);
             etCarry = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_carry);
@@ -144,8 +146,10 @@ namespace HHT
                         //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI080, param);
                         //TUMIKOMI080 result = JsonConvert.DeserializeObject<TUMIKOMI080>(resultJson);
 
-                        TUMIKOMI310 result = new TUMIKOMI310();
-                        result.poRet = "0"; // todo
+                        TUMIKOMI310 result = new TUMIKOMI310
+                        {
+                            poRet = "0" // todo
+                        };
                         switch (result.poRet)
                         {
                             case "1": resultCode = 1; break;
@@ -351,44 +355,32 @@ namespace HHT
                         { "pHHT_No", prefs.GetString("bin_no", "310") }
                     };
 
+                    string errorCode = "";
+
                     if (zoubin_flg == "1" && kansen_kbn != 0)
                     {
-                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI310, param);
-                        //TUMIKOMI310 result = JsonConvert.DeserializeObject<TUMIKOMI310>(resultJson);
-
-                        TUMIKOMI310 result = new TUMIKOMI310();
-                        switch (result.poRet)
-                        {
-                            case "1": CommonUtils.AlertDialog(view, "エラー", "貨物Noが見つかりません。", null); break;
-                            case "2": CommonUtils.AlertDialog(view, "エラー", "個数検品が完了していません。", null); break;
-                            case "3": CommonUtils.AlertDialog(view, "エラー", "他の作業者が作業中です。", null); break;
-                            case "4": CommonUtils.AlertDialog(view, "エラー", "既に積込済です。", null); break;
-                            case "5": CommonUtils.AlertDialog(view, "エラー", "他の便の貨物Noです。", null); break;
-                            case "8": resultCode = 8; break;
-                            case "0":
-                                resultCode = 0; //matehan = arrData[3] 
-                                break;
-                        }
+                        TUMIKOMI310 result = WebService.RequestTumikomi310(param);
+                        errorCode = result.poRet;
                     }
                     else
                     {
-                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI060, param);
-                        //TUMIKOMI060 result = JsonConvert.DeserializeObject<TUMIKOMI060>(resultJson);
-
-                        TUMIKOMI060 result = new TUMIKOMI060();
-                        switch (result.poRet)
-                        {
-                            case "1": CommonUtils.AlertDialog(view, "エラー", "貨物Noが見つかりません。", null); break;
-                            case "2": CommonUtils.AlertDialog(view, "エラー", "個数検品が完了していません。", null); break;
-                            case "3": CommonUtils.AlertDialog(view, "エラー", "他の作業者が作業中です。", null); break;
-                            case "4": CommonUtils.AlertDialog(view, "エラー", "既に積込済です。", null); break;
-                            case "5": CommonUtils.AlertDialog(view, "エラー", "他の便の貨物Noです。", null); break;
-                            case "8": resultCode = 8; break;
-                            case "0":
-                                resultCode = 0; //matehan = arrData[3] 
-                                break;
-                        }
+                        TUMIKOMI060 result = WebService.RequestTumikomi060(param); //result.poMatehan
+                         errorCode = result.poRet;
                     }
+
+                    switch (errorCode)
+                    {
+                        case "1": CommonUtils.AlertDialog(view, "エラー", "貨物Noが見つかりません。", null); break;
+                        case "2": CommonUtils.AlertDialog(view, "エラー", "個数検品が完了していません。", null); break;
+                        case "3": CommonUtils.AlertDialog(view, "エラー", "他の作業者が作業中です。", null); break;
+                        case "4": CommonUtils.AlertDialog(view, "エラー", "既に積込済です。", null); break;
+                        case "5": CommonUtils.AlertDialog(view, "エラー", "他の便の貨物Noです。", null); break;
+                        case "8": resultCode = 8; break;
+                        case "0":
+                            resultCode = 0; //matehan = arrData[3] 
+                            break;
+                    }
+
                     resultCode = 0;
 
                     if (resultCode == 0)
@@ -420,55 +412,49 @@ namespace HHT
 
                     Dictionary<string, string> param = new Dictionary<string, string>
                     {
-                        { "kenpin_souko",  prefs.GetString("souko_cd", "103")},
+                        { "kenpin_souko",  prefs.GetString("souko_cd", "108")},
                         { "kitaku_cd", prefs.GetString("kitaku_cd", "2") },
-                        { "syuka_date", prefs.GetString("shuka_date", "180310") },
-                        { "nohin_date", prefs.GetString("nohin_date", "1") },
-                        { "tokuisaki_cd", prefs.GetString("tokuisaki_cd", "1") },
-                        { "todokesaki_cd", prefs.GetString("todokesaki_cd", "1") },
-                        { "bin_no", prefs.GetString("bin_no", "310") },
+                        { "syuka_date", prefs.GetString("shuka_date", "20180320") },
+                        { "nohin_date", prefs.GetString("nohin_date", "20180321") },
+                        { "tokuisaki_cd", prefs.GetString("tokuisaki_cd", "0000") },
+                        { "todokesaki_cd", prefs.GetString("todokesaki_cd", "0194") },
+                        { "bin_no", prefs.GetString("bin_no", "1") },
                     };
 
+                    List<TUMIKOMI040> resultList;
+                    
                     if (kansen_kbn == 0)
                     {
-                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI040, param);
-                        //List<TUMIKOMI040> result = JsonConvert.DeserializeObject<List<TUMIKOMI010>>(resultJson);
+                        // 該当店舗の各マテハン数を取得(定番コース)
+                        resultList = WebService.RequestTumikomi040(param);
                     }
                     else
                     {
-                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI300, param);
-                        //List<TUMIKOMI300> result = JsonConvert.DeserializeObject<List<TUMIKOMI300>>(resultJson);
+                        // 該当店舗の各マテハン数を取得(定番コース)
+                        resultList = WebService.RequestTumikomi300(param);
                     }
 
-                    List<Dictionary<string, string>> resultList = new List<Dictionary<string, string>>();
-
-                    foreach (Dictionary<string, string> result in resultList)
+                    foreach (TUMIKOMI040 result in resultList)
                     {
-                        string btvCategory = result["name_cd"];
-                        string btvCategoryNm = result["category_nm"];
-                        string btvKosu = result["cnt"];
+                        string btvCategory = result.name_cd;
+                        string btvCategoryNm = result.category_nm;
+                        string btvKosu = result.cnt;
 
                         if (btvCategory == "00")
                         {
-                            // キャリーラベル
-                            // category1_nm = btvCategoryNm
-                            // category1_su = btvKosu
+                            etCarry.Text = btvKosu;
                         }
                         else if (btvCategory == "01") {
-                            // category2_nm = btvCategoryNm
-                            // category2_su = btvKosu
+                            etKargo.Text = btvKosu;
                         }
                         else if (btvCategory == "02") {
-                            // category3_nm = btvCategoryNm
-                            // category3_su = btvKosu
+                            etCard.Text = btvKosu;
                         }
                         else if (btvCategory == "03") {
-                            // category4_nm = btvCategoryNm
-                            // category4_su = btvKosu
+                            etBara.Text = btvKosu;
                         }
                         else if (btvCategory == "04") {
-                            // category5_nm = btvCategoryNm
-                            // category5_su = btvKosu
+                            etSonata.Text = btvKosu;
                         }
                     }
                 }

@@ -29,6 +29,8 @@ namespace HHT
                 db = new DataBase();
                 db.CreateDataBase();
 
+                //db.ClearAll();
+                
                 StartActivity(new Intent(Application.Context, typeof(MainActivity)));
                 
             });

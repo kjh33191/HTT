@@ -26,10 +26,10 @@ namespace HHT
 
             var view = inflater.Inflate(Resource.Layout.fragment_menu_tsumikomi_idou, container, false);
             Button button1 = view.FindViewById<Button>(Resource.Id.btn_tsumikomiMenu_course);
-            button1.Click += delegate { GoTodokeSelect(); }; // sagyou2
+            button1.Click += delegate { GoTodokeSelect(); };
 
             Button button2 = view.FindViewById<Button>(Resource.Id.btn_tsumikomiMenu_tsumikae);
-            button2.Click += delegate { GoVendorSelect(); }; // sagyou7
+            button2.Click += delegate { GoVendorSelect(); }; 
 
             return view;
         }

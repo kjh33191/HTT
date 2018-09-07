@@ -41,6 +41,7 @@ namespace HHT
             txtTc = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_tc);
             txtKosu = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_kosu);
 
+            
 
             return view;
         }

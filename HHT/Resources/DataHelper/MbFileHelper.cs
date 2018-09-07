@@ -29,6 +29,82 @@ namespace HHT.Resources.DataHelper
                 return false;
             }
         }
-        
+
+        public bool HasExistMailBagData()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    if (connection.Table<MbFile>().ToList().Count > 0) return true;
+                }
+
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+
+            return false;
+        }
+
+        public bool HasExistMailBagData(string keycode)
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    string sql = "select * from MbFile where kanri_no =?";
+                    List<MbFile> result = connection.Query<MbFile>(sql, keycode);
+                    return result != null;
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+
+            return false;
+        }
+
+        public int GetMailbackCount()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    return connection.Table<MbFile>().ToList().Count;
+                }
+
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+            }
+
+            return 0;
+        }
+
+
+        public bool DeleteAll()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    connection.DeleteAll<MbFile>();
+                    return true;
+                }
+
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+        }
+
     }
 }

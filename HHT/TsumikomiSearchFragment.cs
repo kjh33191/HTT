@@ -14,6 +14,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using HHT.Common;
 using HHT.Resources.Model;
 
 namespace HHT
@@ -22,7 +23,7 @@ namespace HHT
     {
         private View view;
         private TenpoAdapter tenpoAdapter;
-        private TodokesakiAdapter todokesakiAdapter;
+        private Tsumikomi020Adapter todokesakiAdapter;
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
         
@@ -57,83 +58,46 @@ namespace HHT
             SetTodokesakiAsync();
         }
 
-        private void GetTenpoList()
-        {
-            ((MainActivity)this.Activity).ShowProgress("Contacting server. Please wait...");
-
-            new Thread(new ThreadStart(delegate {
-
-            Activity.RunOnUiThread(() =>
-            {
-                Thread.Sleep(3000);
-
-                Dictionary<string, string> param = new Dictionary<string, string>
-                {
-                    { "kenpin_souko",  prefs.GetString("souko_cd", "103")},
-                    { "kitaku_cd", prefs.GetString("kitaku_cd", "2") },
-                    { "syuka_date", prefs.GetString("shuka_date", "180310") },
-                    { "nohin_date", prefs.GetString("nohin_date", "1") },
-                    { "bin_no", prefs.GetString("bin_no", "310") },
-                    { "course", prefs.GetString("course", "310") },
-                };
-                
-                //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI010, param);
-                //List<TUMIKOMI010> result = JsonConvert.DeserializeObject<List<TUMIKOMI010>>(resultJson);
-                result = new List<TUMIKOMI020>();
-                result.Add(new TUMIKOMI020());
-                result.Add(new TUMIKOMI020());
-                result.Add(new TUMIKOMI020());
-                result.Add(new TUMIKOMI020());
-                result.Add(new TUMIKOMI020());
-                result.Add(new TUMIKOMI020());
-                result.Add(new TUMIKOMI020());
-                result.Add(new TUMIKOMI020());
-                result.Add(new TUMIKOMI020());
-                result.Add(new TUMIKOMI020());
-
-                tenpoAdapter = new TenpoAdapter(result);
-            }
-            );
-            Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
-
-        }
-        )).Start();
-
-        }
-
-
         private void SetTodokesakiAsync()
         {
             var progress = ProgressDialog.Show(this.Activity, null, "届先検索中。。。", true);
 
-            List<Todokesaki> todokeList = GetTokuisakiMasterInfo();
-
-            if (todokeList.Count > 0)
-            {
-                ListView listView = view.FindViewById<ListView>(Resource.Id.listView1);
-                listView.ItemClick += listView_ItemClick;
-
-                todokesakiAdapter = new TodokesakiAdapter(todokeList);
-                listView.Adapter = todokesakiAdapter;
-            }
+            List<TUMIKOMI020> todokeList = GetTokuisakiMasterInfo();
 
             new Thread(new ThreadStart(delegate
             {
+                Activity.RunOnUiThread(() => {
+                    if (todokeList.Count > 0)
+                    {
+                        ListView listView = view.FindViewById<ListView>(Resource.Id.listView1);
+                        listView.ItemClick += listView_ItemClick;
+
+                        todokesakiAdapter = new Tsumikomi020Adapter(todokeList);
+                        listView.Adapter = todokesakiAdapter;
+                    }
+                    else
+                    {
+                        CommonUtils.AlertDialog(view, "", "表示データがありません。", ()=> { FragmentManager.PopBackStack(); });
+                    }
+
+                });
                 Activity.RunOnUiThread(() => progress.Dismiss());
             }
             )).Start();
         }
 
-        private List<Todokesaki> GetTokuisakiMasterInfo()
+        private List<TUMIKOMI020> GetTokuisakiMasterInfo()
         {
-            List<Todokesaki> resultList = new List<Todokesaki>(); ;
+            List<TUMIKOMI020> resultList = new List<TUMIKOMI020>(); ;
             string soukoCd = prefs.GetString("souko_cd", "108");
             string kitakuCd = prefs.GetString("kitaku_cd", "2");
             string syuka_date = prefs.GetString("syuka_date", "20180320");
+            string nohin_date = prefs.GetString("nohin_date", "20180320");
             string bin_no = prefs.GetString("bin_no", "1");
+            string course = prefs.GetString("course", "101");
 
-            resultList = WebService.RequestKosu060(soukoCd, kitakuCd, syuka_date, bin_no);
-
+            resultList = WebService.RequestTumikomi020(soukoCd, kitakuCd, syuka_date, nohin_date,  bin_no, course);
+            
             return resultList;
         }
 

@@ -49,5 +49,26 @@ namespace HHT.Resources.DataHelper
             }
         }
 
+
+        public List<MateFile> SelectByVendorCd(string vendorCd)
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    string sql = @"select * from MateFile where vendor_cd = ?";
+                    List<MateFile> mateList = connection.Query<MateFile>(sql, vendorCd).ToList();
+
+                    return mateList;
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return null;
+            }
+        }
+
+
     }
 }

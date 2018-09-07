@@ -236,7 +236,7 @@ namespace HHT
                 settings.Notification.Sound.UsageType = NotificationSettings_.UsageType_.Ringtone;
                 //settings.Notification.Sound.UsageType = NotificationSettings_.UsageType_.Media;
                 //settings.Notification.Sound.UsageType = NotificationSettings_.UsageType_.Alarm;
-                
+
                 if (settings.Notification.Sound.UsageType == NotificationSettings_.UsageType_.Media)
                 {
                     //TO BE Implement

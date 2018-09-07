@@ -80,6 +80,7 @@ namespace HHT
             public readonly static string TUMIKOMI270 = WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi270"; // tokui_file取得
 
             public readonly static string TUMIKOMI300 = WEB_SERVICE_URL + "RequestTumikomi300"; // 該当店舗の各マテハン数を取得(定番コース)
+            public readonly static string TUMIKOMI310 = WEB_SERVICE_URL + "RequestTumikomi310"; // 該当店舗の各マテハン数を取得(定番コース)
             public readonly static string TUMIKOMI312 = WEB_SERVICE_URL + "RequestTumikomi312"; // Back
             public readonly static string TUMIKOMI314 = WEB_SERVICE_URL + "RequestTumikomi314"; // 積込検品用Proc(配車テーブル実績数更新) sagyou7
         };
@@ -94,15 +95,20 @@ namespace HHT
             public readonly static string MATE060 = WEB_SERVICE_URL + "MateHan/RequestMATE060";
         };
 
-        
-
         public class SEND_DATA
         {
             public readonly static string SEND010 = WEB_SERVICE_URL + "SendData/RequestSEND010";
         }
 
+        public class TIDOU
+        {
+            public readonly static string TIDOU001 = WEB_SERVICE_URL + "TenpoIdou/RequestTIDOU001";
+            public readonly static string TIDOU002 = WEB_SERVICE_URL + "TenpoIdou/RequestTIDOU002";
+            public readonly static string TIDOU010 = WEB_SERVICE_URL + "TenpoIdou/RequestTIDOU010";
+        }
+
         #region ログイン=====================================================================
-        
+
         public static LOGIN010 RequestLogin010(string soukoCd)
         {
             Dictionary<string, string> param = new Dictionary<string, string>
@@ -391,6 +397,31 @@ namespace HHT
             }
         }
 
+        public static KOSU131 RequestKosu131(string soukoCd, string kitakuCd, string syukaDate, string venderCd)
+        {
+
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                { "kenpin_souko",  soukoCd},
+                { "kitaku_cd",  kitakuCd},
+                { "syuka_date",  syukaDate},
+                { "vendor_cd",  venderCd}
+            };
+
+            string resultJson = CommonUtils.Post(KOSU.KOSU131, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<KOSU131>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
         public static KOSU070 RequestKosu150(Dictionary<string, string> param)
         {
             string resultJson = CommonUtils.Post(KOSU.KOSU150, param);
@@ -505,6 +536,97 @@ namespace HHT
                 throw new Exception(response.message);
             }
         }
+
+        public static List<TUMIKOMI020> RequestTumikomi020(string kenpin_souko, string kitaku_cd, string syuka_date, string nohin_date, string bin_no, string course)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string> {
+                {"kenpin_souko",kenpin_souko},
+                {"kitaku_cd",kitaku_cd},
+                {"syuka_date",syuka_date},
+                {"nohin_date",nohin_date},
+                {"bin_no",bin_no},
+                {"course",course}
+            };
+
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI020, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<TUMIKOMI020>>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static List<TUMIKOMI040> RequestTumikomi040(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI040, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<TUMIKOMI040>>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static TUMIKOMI060 RequestTumikomi060(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI060, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<TUMIKOMI060>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static List<TUMIKOMI040> RequestTumikomi300(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI300, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<TUMIKOMI040>>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+
+        public static TUMIKOMI310 RequestTumikomi310(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI310, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<TUMIKOMI310>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
 
         public static MFile RequestTumikomi100()
         {
@@ -639,12 +761,8 @@ namespace HHT
 
         #region データ送信=====================================================================
 
-        public static int RequestSend010()
+        public static int RequestSend010(Dictionary<string, string> param)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-
-            };
 
             string resultJson = CommonUtils.Post(SEND_DATA.SEND010, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
@@ -814,6 +932,69 @@ namespace HHT
 
         #endregion
 
+        #region 移動先店舗登録=====================================================================
+
+        public static TIDOU001 RequestTidou001(string kamotsu_no, string syuka_date)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kamotsu_no", kamotsu_no },
+                {"tenkansyuka_date_state", syuka_date },
+            };
+
+            string resultJson = CommonUtils.Post(TIDOU.TIDOU001, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<TIDOU001>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+        
+        public static TIDOU002 RequestTidou002(string tokuisaki_cd, string todokesaki_cd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"tokuisaki_cd", tokuisaki_cd },
+                {"todokesaki_cd", todokesaki_cd },
+            };
+
+            string resultJson = CommonUtils.Post(TIDOU.TIDOU002, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<TIDOU002>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static TIDOU010 RequestTidou010(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(TIDOU.TIDOU010, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<TIDOU010>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+        
+        #endregion
     }
 
 }

@@ -38,23 +38,13 @@ namespace HHT
             etTokuisaki.Text = prefs.GetString("def_tokuisaki_cd", "");
             etTodokesaki = view.FindViewById<EditText>(Resource.Id.et_nohinSelect_todokesaki);
             etReceipt = view.FindViewById<EditText>(Resource.Id.et_nohinSelect_receipt);
+
+            etTodokesaki.Text = "0374";
             etReceipt.Text = "J00000374";
 
             Button confirm = view.FindViewById<Button>(Resource.Id.btn_nohinSelect_confirm);
             confirm.Click += delegate {
                 
-                // Main file
-                MFileHelper mFlieHelper = new MFileHelper();
-                List<MFile> tsumikomiList = mFlieHelper.SelectTsumikomiList(etTokuisaki.Text, etTodokesaki.Text);
-
-                if (tsumikomiList.Count == 0)
-                {
-                    CommonUtils.AlertDialog(View, "エラー", "得意先コードが見つかりません。", () => {
-                        etTodokesaki.RequestFocus();
-                    });
-                    return;
-                }
-
                 string jyuryo = etReceipt.Text;
                 if(jyuryo[0] != 'J')
                 {
@@ -64,16 +54,7 @@ namespace HHT
                     return;
                 }
 
-                string yyyyMMdd = DateTime.Now.ToString("yyyyMMdd");
-                string hhmm = DateTime.Now.ToString("HHmm");
-
-                editor.PutString("tokuisaki_nm", tsumikomiList[0].tokuisaki_rk);
-                editor.PutString("vendor_cd", tsumikomiList[0].vendor_cd);
-                editor.PutString("vendor_nm", tsumikomiList[0].vendor_nm);
-                editor.PutString("mailbag_flg", "1");
-                editor.PutString("nohin_date", DateTime.Now.ToString("yyyyMMdd"));
-                editor.PutString("nohin_time", DateTime.Now.ToString("HHmm"));
-                StartFragment(FragmentManager, typeof(NohinMenuFragment));
+                Confirm();
                 
             };
 
@@ -81,7 +62,6 @@ namespace HHT
 
             return view;
         }
-        
 
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
         {
@@ -92,98 +72,112 @@ namespace HHT
                 this.Activity.RunOnUiThread(() =>
                 {
                     string data = barcodeData.Data;
-                    
+
+                    if (etReceipt.HasFocus)
+                    {
+                        string barcode_toku_todo = data.Substring(1, 8);
+                        if (barcode_toku_todo[0] != 'J')
+                        {
+                            CommonUtils.AlertDialog(view, "", "受領書ではありません。", () => {
+                                etTodokesaki.RequestFocus();
+                            });
+                            return;
+                        }
+
+                        if (barcode_toku_todo != etTokuisaki.Text + etTodokesaki.Text)
+                        {
+                            CommonUtils.AlertDialog(view, "", "納入先店舗が違います。", null);
+                            return;
+                        }
+
+                        etReceipt.Text = barcode_toku_todo;
+                        Confirm();
+                    }
                 });
             }
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-            if (keycode == Keycode.Back)
-            {
-               
-            }
-            else if (keycode == Keycode.F1)
-            {
-                /*
-                if (etTodokesaki.IsFocused)
-                {
-                    bool errFlag = false;
-                    MainActivity.ShowProgressBar();
-
-                    if (etSyukaDate.Text == "")
-                    {
-                        CommonUtils.ShowAlertDialog(view, "エラー", "配送日を入力してください。");
-                        etSyukaDate.RequestFocus();
-                        errFlag = true;
-                        return false;
-                    }
-
-                    if (etTokuisaki.Text == "")
-                    {
-                        CommonUtils.ShowAlertDialog(view, "エラー", "得意先コードを入力してください。");
-                        etTokuisaki.RequestFocus();
-                        errFlag = true;
-                        return false;
-                    }
-
-                    new Thread(new ThreadStart(delegate {
-                        Activity.RunOnUiThread(() =>
-                        {
-                            if (!IsExistTokuisaki())
-                            {
-                                CommonUtils.ShowAlertDialog(view, "エラー", "得意先コードがみつかりません。");
-                                etTokuisaki.Text = "";
-                                etTokuisaki.RequestFocus();
-                                errFlag = true;
-                                return;
-                            }
-                        }
-                        );
-                        Activity.RunOnUiThread(() => MainActivity.HideProgressBar());
-                    }
-                    )).Start();
-
-                    if (errFlag)
-                    {
-                        return false;
-                    }
-
-                    editor.PutString("deliveryDate", etSyukaDate.Text);
-                    editor.PutString("tokuisaki", etTokuisaki.Text);
-                    editor.PutString("deliveryDate", etSyukaDate.Text);
-                    editor.PutBoolean("isConfirm", false); // 届先検索フラグ設定
-                    editor.Apply();
-
-                    StartFragment(FragmentManager, typeof(KosuBinInputFragment));
-                }
-
-                if (etVendorCode.IsFocused)
-                {
-                    GoVendorSearchPage();
-                }
-                */
-
-            }
-            else if (keycode == Keycode.F4)
+            if (keycode == Keycode.F4)
             {
                 Confirm();
             }
-
             return true;
         }
 
         private void Confirm()
         {
+            bool hasError = false;
             var progress = ProgressDialog.Show(this.Activity, null, "納品情報を確認しています。", true);
 
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
                     {
+                        // Main file
+                        MFileHelper mFlieHelper = new MFileHelper();
+                        List<MFile> tsumikomiList = mFlieHelper.SelectTsumikomiList(etTokuisaki.Text, etTodokesaki.Text);
+                        if (tsumikomiList.Count == 0)
+                        {
+                            hasError = true;
+                            CommonUtils.AlertDialog(View, "エラー", "得意先コードが見つかりません。", () => {
+                                etTodokesaki.RequestFocus();
+                            });
+                            return;
+                        }
+                        
+
+                        // 店舗到着情報を登録する。
+                        TenpoArrive tenpoArrive = new TenpoArrive
+                        {
+                            pBinNo = tsumikomiList[0].bin_no,
+                            pCourse = tsumikomiList[0].course,
+                            pSoukoCD = tsumikomiList[0].kenpin_souko,
+                            pKitakuCD = tsumikomiList[0].kitaku_cd,
+                            pNohinDate = DateTime.Now.ToString("yyyyMMdd"),
+                            pNohinTime = DateTime.Now.ToString("HHmm"),
+                            pProgramID = "NOH",
+                            pSyukaDate = tsumikomiList[0].syuka_date,
+                            pTerminalID = "11101",
+                            pTodokesakiCD = tsumikomiList[0].todokesaki_cd,
+                            pTokuisakiCD = tsumikomiList[0].tokuisaki_cd
+                        };
+
+                        TenpoArriveHelper tenpoArriveHelper = new TenpoArriveHelper();
+                        tenpoArriveHelper.Insert(tenpoArrive);
+
+                        editor.PutString("souko_cd", tsumikomiList[0].kenpin_souko);
+                        editor.PutString("kitaku_cd", tsumikomiList[0].kitaku_cd);
+                        editor.PutString("haiso_date", tsumikomiList[0].syuka_date);
+                        editor.PutString("bin_no", tsumikomiList[0].bin_no);
+                        editor.PutString("course", tsumikomiList[0].course);
+                        editor.PutString("driver_cd", tsumikomiList[0].driver_cd);
+                        
+                        editor.PutString("tokuisaki_cd", tsumikomiList[0].tokuisaki_cd);
+                        editor.PutString("tokuisaki_nm", tsumikomiList[0].tokuisaki_rk);
+                        editor.PutString("vendor_cd", tsumikomiList[0].vendor_cd);
+                        editor.PutString("vendor_nm", tsumikomiList[0].vendor_nm);
+                        editor.PutString("mate_vendor_cd", tsumikomiList[0].default_vendor);
+                        editor.PutString("mate_vendor_nm", tsumikomiList[0].default_vendor_nm);
+                        editor.PutString("mailbag_flg", "1");
+                        editor.PutString("nohin_date", DateTime.Now.ToString("yyyyMMdd"));
+                        editor.PutString("nohin_time", DateTime.Now.ToString("HHmm"));
+                        
+                        editor.PutString("bunrui", tsumikomiList[0].bunrui);
+                        editor.PutString("matehan_cd", tsumikomiList[0].matehan);
+                        
+                        editor.PutString("jyuryo", etReceipt.Text);
+                        editor.Apply();
                         
                     }
                 );
-                Activity.RunOnUiThread(() => progress.Dismiss());
+                Activity.RunOnUiThread(() => { progress.Dismiss();
+                    if (!hasError)
+                    {
+                        StartFragment(FragmentManager, typeof(NohinMenuFragment));
+                    }
+                    
+                });
                }
             )).Start();
         }

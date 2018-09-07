@@ -124,8 +124,6 @@ namespace HHT
         
         public void CountItem(IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData)
         {
-            ((MainActivity)this.Activity).ShowProgress("検品情報を確認しています。");
-
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
                 {
@@ -240,7 +238,7 @@ namespace HHT
                 }
                 }
                 );
-                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
+                //Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
 
@@ -256,22 +254,25 @@ namespace HHT
 
             if (totalCount + 1 > kosuMax)
             {
-                CommonUtils.AlertConfirm(View, "注意", "検品数が" + kosuMax + "を超えています。続けますか？", (flag) =>
+                Activity.RunOnUiThread(() =>
                 {
-                    if (flag)
+                    CommonUtils.AlertConfirm(View, "注意", "検品数が" + kosuMax + "を超えています。続けますか？", (flag) =>
                     {
-                        CountItem(listBarcodeData);
-                    }
-                    else
-                    {
-                        // if menu_flg = vender 
-                        // JOB:tsumi_vendor_cd = JOB:vendor_cd
-                        // JOB: tsumi_vendor_nm = JOB:vendor_nm
-                        // return ("sagyou16")	//満タン処理
-                        SetSumQty();
-                        StartFragment(FragmentManager, typeof(KosuMantanFragment));
-                        return;
-                    }
+                        if (flag)
+                        {
+                            CountItem(listBarcodeData);
+                        }
+                        else
+                        {
+                            // if menu_flg = vender 
+                            // JOB:tsumi_vendor_cd = JOB:vendor_cd
+                            // JOB: tsumi_vendor_nm = JOB:vendor_nm
+                            // return ("sagyou16")	//満タン処理
+                            SetSumQty();
+                            StartFragment(FragmentManager, typeof(KosuMantanFragment));
+                            return;
+                        }
+                    });
                 });
             }
             else

@@ -39,7 +39,19 @@ namespace HHT
             
             
             Button confirmButton = view.FindViewById<Button>(Resource.Id.btn_nohinComplete_confirm);
-            confirmButton.Click += delegate { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(1).Id, 0); };
+            confirmButton.Click += delegate {
+                if (menuFlag == "1")
+                {
+                    
+                }
+                else
+                {
+                    
+                }
+
+                FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(2).Id, 0);
+
+            };
 
             return view;
         }
