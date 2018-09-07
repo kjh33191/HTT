@@ -131,6 +131,17 @@
     <Compile Include="Resources\Model\SndNohinMate.cs" />
     <Compile Include="Resources\Model\SndNohinWork.cs" />
     <Compile Include="Resources\Model\TenpoArrive.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU010.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU020.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU070.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU080.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU090.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU060.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU050.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU040.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU033.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU031.cs" />
+    <Compile Include="Resources\Model\WebService\Idou\IDOU030.cs" />
     <Compile Include="Resources\Model\WebService\Tidou\TIDOU010.cs" />
     <Compile Include="Resources\Model\WebService\Tidou\TIDOU002.cs" />
     <Compile Include="Resources\Model\WebService\Tidou\TIDOU001.cs" />

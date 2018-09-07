@@ -12,12 +12,17 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Com.Densowave.Bhtsdk.Barcode;
+using HHT.Resources.Model;
 
 namespace HHT
 {
     public class TsumikaeIdouFragment : BaseFragment
     {
-        private int menuFlag;
+        private View view;
+        private ISharedPreferences prefs;
+        private ISharedPreferencesEditor editor;
+
+        private int menuFlag, btvQty, btvScnFlg;
         private TextView txtCase, txtOricon, txtIdosu, txtMail, txtSonota
             , txtFuteikei, txtHansoku, txtTc, txtKosu;
         public override void OnCreate(Bundle savedInstanceState)
@@ -27,7 +32,9 @@ namespace HHT
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.fragment_tsumikae_Idou, container, false);
+            view = inflater.Inflate(Resource.Layout.fragment_tsumikae_Idou, container, false);
+            prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
+            editor = prefs.Edit();
 
             SetTitle("移動元マテハン");
             
@@ -41,17 +48,101 @@ namespace HHT
             txtTc = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_tc);
             txtKosu = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_kosu);
 
-            
+            menuFlag = prefs.GetInt("menuFlag", 1);
+            btvQty = 0;
+            /*
+            If btvQty > 0 And JOB:menu_flg == 1 Then
+                OutputText(" ENT:確 F3:マテ L:戻")
+            ElseIf btvQty > 0 Then
+                OutputText("  ENT:確定  L:戻る  ")
+            Else
+                OutputText("            L:戻る  ")
+            EndIf
+            */
 
             return view;
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-            if (keycode == Keycode.Num1)
+            if (keycode == Keycode.F1)
             {
-                StartFragment(FragmentManager, typeof(KosuMenuFragment));
+                if (btvScnFlg > 0)
+                {
+                    if (menuFlag == 1)
+                    {
+                        // get_kamotuno()
+
+                        // ido file안에서 레코드 갯수를 세아린다.
+                        // 모든 카모츠컬럼을 이용해 proc_tumikomi(btvPram,"02") 실행하는데
+                        // 0이 아닌 값이 돌아오면 중단하고 2를 리턴
+                        // 모두 정상적으로 종료되면 1을 리턴
+
+                        //if (get_kamotuno() == 1)
+                        {
+                            //btvScnFlg = 0
+                            //Return("msg1")
+
+                            editor.PutString("completeTitle", "メッセージ");
+                            editor.PutString("completeMsg", "移動処理が\n完了しました。");
+                            editor.Apply();
+
+                            StartFragment(FragmentManager, typeof(CompleteFragment));
+
+                        }
+                    }
+                    else if (menuFlag == 2)
+                    {
+                        // IDOU060
+                        //btvScnFlg = 0
+                        //Return("msg1")
+
+                        /*
+                        string pTerminalID = "";
+                        string pProgramID = "";
+                        string pSagyosyaCD = "";
+                        string pSoukoCD = "";
+                        string pMotoKamotsuNo = "";
+                        string pSakiKamotsuNo = "";
+                        string pGyomuKbn = "";
+                        string pVendorCd = "";
+
+                        IDOU060 idou060 = WebService.RequestIdou060(pTerminalID, pProgramID, pSagyosyaCD, pSoukoCD, pMotoKamotsuNo, pSakiKamotsuNo, pGyomuKbn, pVendorCd);
+                        */
+
+                        editor.PutString("completeTitle", "メッセージ");
+                        editor.PutString("completeMsg", "移動処理が\n完了しました。");
+                        editor.Apply();
+
+                        StartFragment(FragmentManager, typeof(CompleteFragment));
+
+                    }
+                }
+
             }
+            else if (keycode == Keycode.Enter)
+            {
+                if (btvQty > 0)
+                {
+                    if (menuFlag == 1)
+                    {
+                        // 単品
+                        // sagyou2
+                    }
+                    else if (menuFlag == 2)
+                    {
+                        // sagyou2   
+                    }
+                    else if (menuFlag == 3)
+                    {
+                        // sagyou3
+                    }
+
+                    StartFragment(FragmentManager, typeof(KosuMenuFragment));
+                }
+                
+            }
+
 
             return true;
         }
@@ -65,13 +156,12 @@ namespace HHT
             {
                 this.Activity.RunOnUiThread(() =>
                 {
-
-                    // Apply data to UI
-                    string densoSymbology = barcodeData.SymbologyDenso;
                     string kamotsu_no = barcodeData.Data;
 
+                    
                     if (menuFlag == 1)
                     {
+                        
                         ProcessTanpin(kamotsu_no);
                     }
                     else if (menuFlag == 2)
@@ -82,55 +172,85 @@ namespace HHT
                     {
 
                     }
-
-
-
+                    
                 });
             }
 
         }
+        /*
+        private int check_scnno(string kamotsu_no, int menuFlag)
+        {
+            // 単品移動の場合、ido.txt 
+            // 全品移動の場合、idox.txt 
+            // マテハン移動の場合、idosk.txt 
+            // 上記以外はidoxsk.txtに記載するらしい
+
+            // 上記のファイルでおなじ貨物番号が存在する場合、2を戻り値で設定。
+            if (menuFlag == 1)
+            {
+                
+            }
+        }
+        */
 
         private void ProcessTanpin(string kamotsu_no) {
+
             // ret = check_scnno(kamotsu_no, 1);
-            // ret == 2 then err "同一の商品です。"
-            // else 
+            int ret = 0; // 正常0
+
+            if (ret == 2)
+            {
+                CommonUtils.AlertDialog(view, "", "同一の商品です。", null);
+                return;
+            }
+
             // check_todoke(kamotsu_no, 0, tokuiArr);
             // if false then retry
+            string soukouCd = "108";
+            string kitakuCd = "2";
 
-            // if btvQty > 0 Then 便チェック
-            // check_bin_no(JOB:tokuiArr[8]) is false Then Return("retry")
+            IDOU033 idou033 = WebService.RequestIdou033(soukouCd, kitakuCd, kamotsu_no);
+            //idou033 == arrTokui
 
+            // If (btvTodoke1 eq JOB:tmptokui_cd And btvTodoke2 eq JOB:tmptodoke_cd) Or JOB:tmptodoke_cd eq "" Then
+            // then 届先が異なります。
 
-            // btvPram = JOB:ht_serial & "," & JOB:ht_program & "," & JOB:sagyousya_cd & "," & JOB:souko_cd & "," & JOB:kamotu_no & "," & JOB:DEF_GYOMU_IDO
-            // proc_tumikomi(btvPram,"01") == 0
+            if (btvQty > 0)
+            {
+                // 便チェック
+                // check_bin_no(JOB:tokuiArr[8]) is false Then Return("retry")
+                return;
+            }
 
-            /*
-            arrTokui[0] = btvTodoke1
-	    	arrTokui[1] = btvTodoke2
-		    arrTokui[2] = btvDefVendorCd
-		    arrTokui[3] = btvVendorCd
-		    arrTokui[4] = btvVendorNm
-		    arrTokui[5] = btvMtVendorNm
-		    arrTokui[6] = btvBunrui
-		    arrTokui[7] = btvMatehanCd
-		    arrTokui[8] = btvBinNo    
+            string pTerminalID = "";
+            string pProgramID = "";
+            string pSagyosyaCD = "";
+            string pSoukoCD = "";
+            string pMotoKamotsuNo = "";
+            string pGyomuKbn = "";
+
+            IDOU040 idou040 = WebService.RequestIdou040(pTerminalID, pProgramID, pSagyosyaCD, pSoukoCD, pMotoKamotsuNo, pGyomuKbn);
+            if (idou040.poRet == "1") {
+                // "移動元の貨物№が見つかりません。"
+                return;
+            }
+
+            editor.PutString("tmptokui_cd", idou033.tokuisaki_cd);
+            editor.PutString("tmptodoke_cd", idou033.todokesaki_cd);
+            editor.PutString("tsumi_vendor_cd", idou033.default_vendor);
+            editor.PutString("tsumi_vendor_nm", idou033.vendor_nm);
+            editor.PutString("btvBunrui", idou033.bunrui);
+            editor.PutString("motomate_cd", idou033.matehan);
+            editor.PutString("bin_no", idou033.torikomi_bin);
             
-            JOB:tmptokui_cd		= JOB:tokuiArr[0]
-			JOB:tmptodoke_cd	= JOB:tokuiArr[1]
-    		JOB:tsumi_vendor_cd	= JOB:tokuiArr[2]	// デフォルトベンダー
-            //JOB:tsumi_vendor_cd	= JOB:tokuiArr[3]	// マテハンベンダー
-		    JOB:tsumi_vendor_nm	= JOB:tokuiArr[4]	// デフォルトベンダー名
-            //JOB:tsumi_vendor_nm	= JOB:tokuiArr[5]	// マテハンベンダー名
-		    btvBunrui			= JOB:tokuiArr[6]
-		    JOB:motomate_cd		= JOB:tokuiArr[7]
-		    JOB:bin_no			= JOB:tokuiArr[8]
+            appendFile(kamotsu_no, "1");
+            SetMatehan(idou033.bunrui, 0);
+            
+            editor.PutInt("motok_su", prefs.GetInt("motok_su", 0) + 1);
+            editor.PutInt("ko_su", prefs.GetInt("motok_su", 0) + 1);
 
-		    JOB:appendFile(JOB:kamotu_no,1)
-		    JOB:set_matehan(btvBunrui,0)
-		    JOB:motok_su = JOB:motok_su + 1
-		    JOB:ko_su = JOB:motok_su
-
-            */
+            editor.Apply();
+            
         }
 
         private int Check_scnno(int flag)
@@ -399,10 +519,29 @@ namespace HHT
                         // sk_sonota_su ++
                     }
                     break;
-                    break;
 
             }
-           
+        }
+
+        private void appendFile(string kamotu_no , string flag)
+        {
+            if(flag == "1")
+            {
+                //単品
+                // filenm = "ido"
+                // 固定長
+                // strStroRec = wMotoKamotuNo & "," & motomate_cd & "\n"
+                
+
+            }
+            else if (flag == "2")
+            {
+                //全品
+            }
+            else if (flag == "3")
+            {
+                //マテハン
+            }
         }
     }
 }

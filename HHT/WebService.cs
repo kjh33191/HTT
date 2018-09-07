@@ -45,14 +45,17 @@ namespace HHT
 
         public class IDOU
         {
-            public readonly static string IDOU010 = WEB_SERVICE_URL + "RequestIdou010?kenpin_souko={0}&kitaku_cd={1}&kamotsu_no={2}";
-            public readonly static string KOSU020 = WEB_SERVICE_URL + "RequestLogin010?souko_cd={0}";
-            public readonly static string KOSU030 = WEB_SERVICE_URL + "RequestLogin020?hht_id={0}";
-            public readonly static string KOSU040 = WEB_SERVICE_URL + "RequestLogin030?driver_cd={0}";
-            public readonly static string KOSU050 = WEB_SERVICE_URL + "RequestLogin040?driver_cd={0}&souko_cd={1}&htt_id={2}";
-            public readonly static string KOSU060 = WEB_SERVICE_URL + "RequestLogin050";
-            public readonly static string KOSU065 = WEB_SERVICE_URL + "RequestLogin050";
-            
+            public readonly static string IDOU010 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU010";
+            public readonly static string IDOU020 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU020";
+            public readonly static string IDOU030 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU030";
+            public readonly static string IDOU031 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU031";
+            public readonly static string IDOU033 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU033";
+            public readonly static string IDOU040 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU040";
+            public readonly static string IDOU050 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU050";
+            public readonly static string IDOU060 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU060";
+            public readonly static string IDOU070 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU070";
+            public readonly static string IDOU080 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU080";
+            public readonly static string IDOU090 = WEB_SERVICE_URL + "Tumikomi/RequestIDOU090";
         };
 
         public class TUMIKOMI
@@ -993,8 +996,406 @@ namespace HHT
                 throw new Exception(response.message);
             }
         }
-        
+
         #endregion
+
+        #region 積替検品=====================================================================
+
+        /// <summary>
+        /// 単品移動確定
+        /// </summary>
+        /// <param name="kenpin_souko"></param>
+        /// <param name="kitaku_cd"></param>
+        /// <param name="kamotsu_no"></param>
+        /// <returns></returns>
+        public static IDOU010 RequestIdou010(string kenpin_souko, string kitaku_cd, string kamotsu_no)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko },
+                {"kitaku_cd", kitaku_cd },
+                {"kamotsu_no", kamotsu_no },
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU010, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU010>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// 全品移動入力
+        /// </summary>
+        /// <param name="kenpin_souko"></param>
+        /// <param name="kitaku_cd"></param>
+        /// <param name="kamotsu_no"></param>
+        /// <returns></returns>
+        public static IDOU020 RequestIdou020(string kenpin_souko, string kitaku_cd, string kamotsu_no)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko },
+                {"kitaku_cd", kitaku_cd },
+                {"kamotsu_no", kamotsu_no },
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU020, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU020>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// マテハン移動入力
+        /// </summary>
+        /// <param name="kenpin_souko"></param>
+        /// <param name="kitaku_cd"></param>
+        /// <param name="kamotsu_no"></param>
+        /// <returns></returns>
+        public static IDOU030 RequestIdou030(string kenpin_souko, string kitaku_cd, string kamotsu_no)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko },
+                {"kitaku_cd", kitaku_cd },
+                {"kamotsu_no", kamotsu_no },
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU030, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU030>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// ベンダー確認・ベンダー名取得
+        /// </summary>
+        /// <param name="kenpin_souko"></param>
+        /// <param name="kitaku_cd"></param>
+        /// <param name="kamotsu_no"></param>
+        /// <returns></returns>
+        public static IDOU031 RequestIdou031(string kenpin_souko, string kitaku_cd, string kamotsu_no)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko },
+                {"kitaku_cd", kitaku_cd },
+                {"kamotsu_no", kamotsu_no },
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU031, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU031>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// 届先確認
+        /// </summary>
+        /// <param name="kenpin_souko"></param>
+        /// <param name="kitaku_cd"></param>
+        /// <param name="kamotsu_no"></param>
+        /// <returns></returns>
+        public static IDOU033 RequestIdou033(string kenpin_souko, string kitaku_cd, string kamotsu_no)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko },
+                {"kitaku_cd", kitaku_cd },
+                {"kamotsu_no", kamotsu_no },
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU033, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU033>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// 積込移動用Proc
+        /// 00:「2.単品移動入力」単品移動で移動元の確認 
+        /// </summary>
+        /// <param name="pTerminalID"></param>
+        /// <param name="pProgramID"></param>
+        /// <param name="pSagyosyaCD"></param>
+        /// <param name="pSoukoCD"></param>
+        /// <param name="pMotoKamotsuNo"></param>
+        /// <param name="pGyomuKbn"></param>
+        /// <returns></returns>
+        public static IDOU040 RequestIdou040(string pTerminalID, string pProgramID, string pSagyosyaCD, string pSoukoCD, string pMotoKamotsuNo, string pGyomuKbn)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"pTerminalID", pTerminalID },
+                {"pProgramID", pProgramID },
+                {"pSagyosyaCD", pSagyosyaCD },
+                {"pSoukoCD", pSoukoCD },
+                {"pMotoKamotsuNo", pMotoKamotsuNo },
+                {"pGyomuKbn", pGyomuKbn }
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU040, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU040>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// 積込移動用Proc
+        /// 01:「3.単品移動確定」単品移動で移動を確定する 
+        /// </summary>
+        /// <param name="pTerminalID"></param>
+        /// <param name="pProgramID"></param>
+        /// <param name="pSagyosyaCD"></param>
+        /// <param name="pSoukoCD"></param>
+        /// <param name="pMotoKamotsuNo"></param>
+        /// <param name="pSakiKamotsuNo"></param>
+        /// <param name="pGyomuKbn"></param>
+        /// <param name="pVendorCd"></param>
+        /// <returns></returns>
+        public static IDOU050 RequestIdou050(string pTerminalID, string pProgramID, string pSagyosyaCD
+            , string pSoukoCD, string pMotoKamotsuNo, string pSakiKamotsuNo, string pGyomuKbn, string pVendorCd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"pTerminalID", pTerminalID },
+                {"pProgramID", pProgramID },
+                {"pSagyosyaCD", pSagyosyaCD },
+                {"pSoukoCD", pSoukoCD },
+                {"pMotoKamotsuNo", pMotoKamotsuNo },
+                {"pSakiKamotsuNo", pSakiKamotsuNo },
+                {"pGyomuKbn", pGyomuKbn },
+                {"pVendorCd", pVendorCd }
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU050, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU050>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// 積込移動用Proc
+        /// 02:「6.全品移動確定」全品の移動を確定する
+        /// </summary>
+        /// <param name="pTerminalID"></param>
+        /// <param name="pProgramID"></param>
+        /// <param name="pSagyosyaCD"></param>
+        /// <param name="pSoukoCD"></param>
+        /// <param name="pMotoKamotsuNo"></param>
+        /// <param name="pSakiKamotsuNo"></param>
+        /// <param name="pGyomuKbn"></param>
+        /// <param name="pVendorCd"></param>
+        /// <returns></returns>
+        public static IDOU060 RequestIdou060(string pTerminalID, string pProgramID, string pSagyosyaCD
+    , string pSoukoCD, string pMotoKamotsuNo, string pSakiKamotsuNo, string pGyomuKbn, string pVendorCd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"pTerminalID", pTerminalID },
+                {"pProgramID", pProgramID },
+                {"pSagyosyaCD", pSagyosyaCD },
+                {"pSoukoCD", pSoukoCD },
+                {"pMotoKamotsuNo", pMotoKamotsuNo },
+                {"pSakiKamotsuNo", pSakiKamotsuNo },
+                {"pGyomuKbn", pGyomuKbn },
+                {"pVendorCd", pVendorCd }
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU060, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU060>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// 積込移動用Proc
+        /// 03:「9.マテハン移動確定」マテハンの移動を確定する 
+        /// </summary>
+        /// <param name="pTerminalID"></param>
+        /// <param name="pProgramID"></param>
+        /// <param name="pSagyosyaCD"></param>
+        /// <param name="pSoukoCD"></param>
+        /// <param name="pMotoKamotsuNo"></param>
+        /// <param name="pSakiKamotsuNo"></param>
+        /// <param name="pGyomuKbn"></param>
+        /// <param name="pVendorCd"></param>
+        /// <returns></returns>
+        public static IDOU070 RequestIdou070(string pTerminalID, string pProgramID, string pSagyosyaCD
+            , string pSoukoCD, string pMotoKamotsuNo, string pSakiKamotsuNo, string pGyomuKbn, string pVendorCd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"pTerminalID", pTerminalID },
+                {"pProgramID", pProgramID },
+                {"pSagyosyaCD", pSagyosyaCD },
+                {"pSoukoCD", pSoukoCD },
+                {"pMotoKamotsuNo", pMotoKamotsuNo },
+                {"pSakiKamotsuNo", pSakiKamotsuNo },
+                {"pGyomuKbn", pGyomuKbn },
+                {"pVendorCd", pVendorCd }
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU070, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU070>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// 積込移動用Proc([単品移動]マテハン連番取得)
+        /// 04:「単品マテハン変更」マテハンNo取得
+        /// </summary>
+        /// <param name="pTerminalID"></param>
+        /// <param name="pProgramID"></param>
+        /// <param name="pSagyosyaCD"></param>
+        /// <param name="pSoukoCD"></param>
+        /// <param name="pMotoKamotsuNo"></param>
+        /// <param name="pSakiKamotsuNo"></param>
+        /// <param name="pGyomuKbn"></param>
+        /// <param name="pVendorCd"></param>
+        /// <returns></returns>
+        public static IDOU080 RequestIdou080(string pTerminalID, string pProgramID, string pSagyosyaCD, string pSoukoCD, string pGyomuKbn)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"pTerminalID", pTerminalID },
+                {"pProgramID", pProgramID },
+                {"pSagyosyaCD", pSagyosyaCD },
+                {"pSoukoCD", pSoukoCD },
+                {"pGyomuKbn", pGyomuKbn }
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU080, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU080>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// 積込移動用Proc([単品移動]マテハン登録)
+        /// 05:「単品マテハン変更」単品でマテハンの変更
+        /// </summary>
+        /// <param name="pTerminalID"></param>
+        /// <param name="pProgramID"></param>
+        /// <param name="pSagyosyaCD"></param>
+        /// <param name="pSoukoCD"></param>
+        /// <param name="pMotoKamotsuNo"></param>
+        /// <param name="pSakiKamotsuNo"></param>
+        /// <param name="pGyomuKbn"></param>
+        /// <param name="pVendorCd"></param>
+        /// <returns></returns>
+        public static IDOU090 RequestIdou090(string pTerminalID, string pProgramID, string pSagyosyaCD
+            , string pSoukoCD, string pMotoKamotsuNo, string pSakiKamotsuNo, string pGyomuKbn, string pVendorCd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"pTerminalID", pTerminalID },
+                {"pProgramID", pProgramID },
+                {"pSagyosyaCD", pSagyosyaCD },
+                {"pSoukoCD", pSoukoCD },
+                {"pMotoKamotsuNo", pMotoKamotsuNo },
+                {"pSakiKamotsuNo", pSakiKamotsuNo },
+                {"pGyomuKbn", pGyomuKbn },
+                {"pVendorCd", pVendorCd }
+            };
+
+            string resultJson = CommonUtils.Post(IDOU.IDOU090, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<IDOU090>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        #endregion
+
     }
 
 }

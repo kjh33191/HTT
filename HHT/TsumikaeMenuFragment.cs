@@ -16,6 +16,10 @@ namespace HHT
 {
     public class TsumikaeMenuFragment : BaseFragment
     {
+        private View view;
+        private ISharedPreferences prefs;
+        private ISharedPreferencesEditor editor;
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -23,28 +27,32 @@ namespace HHT
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.fragment_menu_tsumikae, container, false);
+            view = inflater.Inflate(Resource.Layout.fragment_menu_tsumikae, container, false);
+            prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
+            editor = prefs.Edit();
             
             SetTitle("積替移動");
 
-            Bundle bundle = new Bundle();
-
+            
             Button button1 = view.FindViewById<Button>(Resource.Id.btn_tsumikaeMenu_tanpin);
             button1.Click += delegate {
-                bundle.PutInt("menuFlag", 1);
-                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment), bundle);
+                editor.PutInt("menuFlag", 1);
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
             };
 
             Button button2 = view.FindViewById<Button>(Resource.Id.btn_tsumikaeMenu_zenpin);
             button2.Click += delegate {
-                bundle.PutInt("menuFlag", 2);
-                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment), bundle);
+                editor.PutInt("menuFlag", 2);
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
             };
 
             Button button3 = view.FindViewById<Button>(Resource.Id.btn_tsumikaeMenu_matehan);
             button3.Click += delegate {
-                bundle.PutInt("menuFlag", 3);
-                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment), bundle);
+                editor.PutInt("menuFlag", 3);
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
             };
 
             return view;
@@ -54,9 +62,23 @@ namespace HHT
         {
             if (keycode == Keycode.Num1)
             {
-                StartFragment(FragmentManager, typeof(KosuMenuFragment));
+                editor.PutInt("menuFlag", 1);
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
             }
-            
+            else if (keycode == Keycode.Num2)
+            {
+                editor.PutInt("menuFlag", 2);
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
+            }
+            else if (keycode == Keycode.Num3)
+            {
+                editor.PutInt("menuFlag", 3);
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
+            }
+
             return true;
         }
 
