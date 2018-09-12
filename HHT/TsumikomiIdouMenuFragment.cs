@@ -57,7 +57,7 @@ namespace HHT
         {
             editor.PutInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.VENDOR);
             editor.Apply();
-            StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
+            StartFragment(FragmentManager, typeof(TsumikaeIdouMotoFragment));
         }
     }
 }

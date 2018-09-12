@@ -94,6 +94,7 @@
     <Compile Include="IdouNohinSelectFragment.cs" />
     <Compile Include="IdouRegistWorkFragment.cs" />
     <Compile Include="IdouRegistSelectFragment.cs" />
+    <Compile Include="TsumikaeIdouMatehanFragment.cs" />
     <Compile Include="MailMenuFragment.cs" />
     <Compile Include="MailManageInputFragment.cs" />
     <Compile Include="MailManageSelectFragment.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Resources\Model\WebService\Tidou\TIDOU002.cs" />
     <Compile Include="Resources\Model\WebService\Tidou\TIDOU001.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI040.cs" />
+    <Compile Include="TsumikaeIdouSakiFragment.cs" />
     <Compile Include="TsumikomiIdouMenuFragment.cs" />
     <Compile Include="MatehanSearchFragment.cs" />
     <Compile Include="MatehanMenuFragment.cs" />
@@ -177,7 +179,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainMenuFragment.cs" />
     <Compile Include="TsumikomiSelectFragment.cs" />
-    <Compile Include="TsumikaeIdouFragment.cs" />
+    <Compile Include="TsumikaeIdouMotoFragment.cs" />
     <Compile Include="TsumikaeMenuFragment.cs" />
     <Compile Include="NyukaMenuFragment.cs" />
     <Compile Include="Resources\DataHelper\LoginHelper.cs" />
@@ -346,7 +348,7 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\fragment_tsumikae_Idou.axml">
+    <AndroidResource Include="Resources\layout\fragment_tsumikae_Idou_moto.axml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>
@@ -509,6 +511,18 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\fragment_idou_nohin_work.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_tsumikae_Idou_saki.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_tsumikae_idou_matehan.axml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>

@@ -223,26 +223,9 @@
         </TableLayout>
     </LinearLayout>
     <Button
-        android:text="中断"
-        android:id="@+id/btn_todoke_stop"
+        android:text="確定"
+        android:id="@+id/confirmButton"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/gd_tying_canman"
-        android:visibility="gone"
-        android:columnCount="2">
-        <Button
-            android:text="取消"
-            android:id="@+id/btn_todoke_cancel"
-            android:layout_width="140dp"
-            android:layout_gravity="center" />
-        <Button
-            android:text="満タン"
-            android:id="@+id/btn_todoke_mantan"
-            android:layout_width="140dp"
-            android:layout_gravity="center" />
-    </GridLayout>
 </LinearLayout>

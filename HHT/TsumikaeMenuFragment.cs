@@ -38,21 +38,21 @@ namespace HHT
             button1.Click += delegate {
                 editor.PutInt("menuFlag", 1);
                 editor.Apply();
-                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
+                StartFragment(FragmentManager, typeof(TsumikaeIdouMotoFragment));
             };
 
             Button button2 = view.FindViewById<Button>(Resource.Id.btn_tsumikaeMenu_zenpin);
             button2.Click += delegate {
                 editor.PutInt("menuFlag", 2);
                 editor.Apply();
-                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
+                StartFragment(FragmentManager, typeof(TsumikaeIdouMotoFragment));
             };
 
             Button button3 = view.FindViewById<Button>(Resource.Id.btn_tsumikaeMenu_matehan);
             button3.Click += delegate {
                 editor.PutInt("menuFlag", 3);
                 editor.Apply();
-                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
+                StartFragment(FragmentManager, typeof(TsumikaeIdouMotoFragment));
             };
 
             return view;
@@ -64,19 +64,19 @@ namespace HHT
             {
                 editor.PutInt("menuFlag", 1);
                 editor.Apply();
-                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
+                StartFragment(FragmentManager, typeof(TsumikaeIdouMotoFragment));
             }
             else if (keycode == Keycode.Num2)
             {
                 editor.PutInt("menuFlag", 2);
                 editor.Apply();
-                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
+                StartFragment(FragmentManager, typeof(TsumikaeIdouMotoFragment));
             }
             else if (keycode == Keycode.Num3)
             {
                 editor.PutInt("menuFlag", 3);
                 editor.Apply();
-                StartFragment(FragmentManager, typeof(TsumikaeIdouFragment));
+                StartFragment(FragmentManager, typeof(TsumikaeIdouMotoFragment));
             }
 
             return true;
