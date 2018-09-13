@@ -172,7 +172,7 @@ namespace HHT
                     editor.PutString("def_tokuisaki_cd", login010.def_tokuisaki_cd);
                     editor.PutString("tsuhshin_kbn", login010.tsuhshin_kbn);
                     editor.PutString("souko_kbn", login010.souko_kbn);
-
+                    
                     editor.Apply();
 
                     Log.Verbose(TAG, "Login Succeeded");

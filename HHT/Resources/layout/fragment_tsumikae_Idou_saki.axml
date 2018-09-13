@@ -227,5 +227,6 @@
         android:id="@+id/confirmButton"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         android:layout_gravity="center" />
 </LinearLayout>

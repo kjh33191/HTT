@@ -28,9 +28,7 @@ namespace HHT
 
             Button confirmButton = view.FindViewById<Button>(Resource.Id.btn_vender_confirm2);
             confirmButton.Click += delegate {
-                editor.Clear();
-                editor.Commit();
-                StartFragment(FragmentManager, typeof(KosuMenuFragment));
+                BackToMainMenu();
             };
 
             return view;
@@ -40,12 +38,40 @@ namespace HHT
         {
             if (keycode == Keycode.F4)
             {
-                editor.Clear();
-                editor.Commit();
-                StartFragment(FragmentManager, typeof(KosuMenuFragment));
+                BackToMainMenu();
             }
 
             return true;
         }
+
+        private void BackToMainMenu()
+        {
+            string menu_kbn = prefs.GetString("menu_kbn", "");
+            string driver_nm = prefs.GetString("driver_nm", "");
+            string souko_cd = prefs.GetString("souko_cd", "");
+            string souko_nm = prefs.GetString("souko_nm", "");
+            string driver_cd = prefs.GetString("driver_cd", "");
+            string kitaku_cd = prefs.GetString("kitaku_cd", "");
+            string def_tokuisaki_cd = prefs.GetString("def_tokuisaki_cd", "");
+            string tsuhshin_kbn = prefs.GetString("tsuhshin_kbn", "");
+            string souko_kbn = prefs.GetString("souko_kbn", "");
+
+            editor.Clear();
+            editor.Commit();
+
+            editor.PutString("menu_kbn", menu_kbn);
+            editor.PutString("driver_nm", driver_nm);
+            editor.PutString("souko_cd", souko_cd);
+            editor.PutString("souko_nm", souko_nm);
+            editor.PutString("driver_cd", driver_cd);
+            editor.PutString("kitaku_cd", kitaku_cd);
+            editor.PutString("def_tokuisaki_cd", def_tokuisaki_cd);
+            editor.PutString("tsuhshin_kbn", tsuhshin_kbn);
+            editor.PutString("souko_kbn", souko_kbn);
+            editor.Apply();
+
+            FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0);
+        }
+
     }
 }

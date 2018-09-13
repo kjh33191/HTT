@@ -185,7 +185,11 @@ namespace HHT
             return isReachable;
         }
 
-
+        public static string GetDeviceID(Context context)
+        {
+            return ((TelephonyManager)context.GetSystemService(Context.TelephonyService)).DeviceId;
+        }
+        
         public static string GetDeviceUUID(Context context)
         {
             TelephonyManager tm = (TelephonyManager)context.GetSystemService(Context.TelephonyService);
@@ -193,7 +197,7 @@ namespace HHT
             string tmDevice, tmSerial;
             tmDevice = "" + tm.DeviceId;
             tmSerial = "" + tm.SimSerialNumber;
-
+            
 
             return tmDevice + "    " + tmSerial;
         }

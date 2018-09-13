@@ -1068,7 +1068,7 @@ namespace HHT
         /// <param name="kitaku_cd"></param>
         /// <param name="kamotsu_no"></param>
         /// <returns></returns>
-        public static IDOU030 RequestIdou030(string kenpin_souko, string kitaku_cd, string kamotsu_no)
+        public static List<IDOU030> RequestIdou030(string kenpin_souko, string kitaku_cd, string kamotsu_no)
         {
             Dictionary<string, string> param = new Dictionary<string, string>
             {
@@ -1082,7 +1082,7 @@ namespace HHT
 
             if (response.status == "0")
             {
-                return response.GetDataObject<IDOU030>();
+                return response.GetDataObject<List<IDOU030>>();
             }
             else
             {

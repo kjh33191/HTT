@@ -1,15 +1,12 @@
-﻿using Android.App;
-using Android.OS;
+﻿using Android.OS;
 using Android.Views;
 using Android.Widget;
-using Com.Densowave.Bhtsdk.Barcode;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using HHT.Resources.Model;
-using static Android.Widget.AdapterView;
 using Android.Content;
 using Android.Preferences;
+using static Android.Widget.AdapterView;
 
 namespace HHT
 {
@@ -108,18 +105,6 @@ namespace HHT
             return true;
         }
 
-        // マテハンコード取得
-        public string GetMaster()
-        {
-            // File読み取り
-            // マテハンコードの種類は最大でも4件
-            // int resultCode = GetCount();
-            // aryMatehancd, aryMatehannm
-            // GetData(1), GetData(2)
-
-            return null;
-        }
-
         public void SelectListViewItem(int index)
         {
             if (matehanList.Count > index)
@@ -127,54 +112,56 @@ namespace HHT
                 string msg = matehanList[index].matehan_nm + "でよろしいですか？";
                 CommonUtils.AlertConfirm(view, "確認", msg, (flag) =>
                 {
-                    
-                    /* TODO まだプロシージャが動かない
-                        if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
-                        {
-                            kosuKenpin = WebService.RequestKosu080(param);
-                        }
-                        else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
-                        {
-                            kosuKenpin = WebService.RequestKosu160(param);
-                        }
-                        
-                    */
-
-                    int resultCode = 0;
-                    // 全完了OK
-
-                    string dai_su = prefs.GetString("dai_su", "0");
-                    int dai_su_intValue = int.TryParse(dai_su, out dai_su_intValue) ? dai_su_intValue : 0;
-
-                    if (resultCode == 0 || resultCode == 1)
+                    if (flag)
                     {
-                        dai_su_intValue = dai_su_intValue + 1; //台数加算
+                        /* TODO まだプロシージャが動かない
+                            if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
+                            {
+                                kosuKenpin = WebService.RequestKosu080(param);
+                            }
+                            else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
+                            {
+                                kosuKenpin = WebService.RequestKosu160(param);
+                            }
 
-                        editor.PutString("dai_su", dai_su_intValue.ToString());
-                        editor.Apply();
+                        */
 
-                        if (resultCode == 0)
+                        int resultCode = 0;
+                        // 全完了OK
+
+                        string dai_su = prefs.GetString("dai_su", "0");
+                        int dai_su_intValue = int.TryParse(dai_su, out dai_su_intValue) ? dai_su_intValue : 0;
+
+                        if (resultCode == 0 || resultCode == 1)
                         {
-                            StartFragment(FragmentManager, typeof(KosuCompleteFragment));
+                            dai_su_intValue = dai_su_intValue + 1; //台数加算
+
+                            editor.PutString("dai_su", dai_su_intValue.ToString());
+                            editor.Apply();
+
+                            if (resultCode == 0)
+                            {
+                                StartFragment(FragmentManager, typeof(KosuCompleteFragment));
+                            }
+                            else if (resultCode == 1)
+                            {
+                                /*
+                                If JOB:menu_flg == JOB:MENU_VENDOR THEN
+                                JOB: tokuisaki_cd = ""
+                                JOB: todokesaki_cd = ""
+                                JOB: tokuisaki_nm = ""
+                                Return("sagyou15")
+                                */
+                                // 前の画面に遷移するけど、変更された値を考える必要がある
+                                // Return("sagyou15") 紐付画面
+                                this.Activity.FragmentManager.PopBackStack();
+                            }
                         }
-                        else if (resultCode == 1)
+                        else
                         {
-                            /*
-                            If JOB:menu_flg == JOB:MENU_VENDOR THEN
-                            JOB: tokuisaki_cd = ""
-                            JOB: todokesaki_cd = ""
-                            JOB: tokuisaki_nm = ""
-                            Return("sagyou15")
-                            */
-                            // 前の画面に遷移するけど、変更された値を考える必要がある
-                            // Return("sagyou15") 紐付画面
-                            this.Activity.FragmentManager.PopBackStack();
+                            CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                            return;
                         }
-                    }
-                    else
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
-                        return;
                     }
                 }
                 );
