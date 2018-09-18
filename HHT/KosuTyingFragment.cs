@@ -10,11 +10,13 @@ using HHT.Resources.Model;
 using Android.Content;
 using Android.Preferences;
 using System.Threading;
+using Android.Util;
 
 namespace HHT
 {
     public class TodokeTyingWorkFragment : BaseFragment
     {
+        private readonly string TAG = "KosuWorkFragment";
         private View view;
         private int kosuMenuflag;
         private int totalCount;
@@ -23,6 +25,7 @@ namespace HHT
             , txtOricon, txtHazai, txtHenpin, txtKaisyu, txtDaisu;
         private Button btnStop, btnCancel, btnMantan;
         private GridLayout gdTyingCanman;
+        private string venderCd;
         private int kosuMax;
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
@@ -61,6 +64,9 @@ namespace HHT
             {
                 SetTitle("ベンダー指定検品");
                 SetFooterText("F1:中断");
+                txtMiseName.Text = prefs.GetString("vendor_nm", "");
+                venderCd = prefs.GetString("vendor_cd", "");
+
             }
             else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
             {
@@ -132,8 +138,6 @@ namespace HHT
                         string densoSymbology = barcodeData.SymbologyDenso;
                         string kamotsu_no = barcodeData.Data;
 
-                        string pTeminalID = "";
-                        string pProgramID = "";
                         string pSagyosyaCD = prefs.GetString("driver_cd", "");
                         string pSoukoCD = prefs.GetString("souko_cd", "");
                         string pSyukaDate = prefs.GetString("syuka_date", "");
@@ -158,7 +162,7 @@ namespace HHT
 
                         Dictionary<string, string> param = new Dictionary<string, string>
                         {
-                            { "pTerminalID",  pTeminalID},
+                            { "pTerminalID",  Build.Serial},
                             { "pProgramID",  "KOS"},
                             { "pSagyosyaCD",  pSagyosyaCD},
                             { "pSoukoCD",  pSoukoCD},
@@ -183,58 +187,63 @@ namespace HHT
                         };
 
                         KOSU070 kosuKenpin = new KOSU070();
-                        kosuKenpin.poLabelType = "0";
-                        
-                        /* TODO まだプロシージャが動かない
-                        if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
+                        try
                         {
-                            kosuKenpin = WebService.RequestKosu070(param);
-                        }
-                        else
-                        {
-                            kosuKenpin = WebService.RequestKosu150(param);
-                        }
-                        
-                        */
-
-                        // result["poLabelType"] 0：ケース、1：オリコン、2：不定形、3：店移動、4：破材、5：返品、6：販促物、7：回収
-                        if (kosuKenpin != null)
-                        {
-                            switch (kosuKenpin.poLabelType)
+                            if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                             {
-                                case "0":
-                                    txtCase.Text = (Int32.Parse(txtCase.Text) + 1).ToString();
-                                    break;
-                                case "1":
-                                    txtOricon.Text = (Int32.Parse(txtOricon.Text) + 1).ToString();
-                                    break;
-                                case "2":
-                                    txtHuteikei.Text = (Int32.Parse(txtHuteikei.Text) + 1).ToString();
-                                    break;
-                                case "3":
-                                    txtMiseidou.Text = (Int32.Parse(txtMiseidou.Text) + 1).ToString();
-                                    break;
-                                case "4":
-                                    txtHazai.Text = (Int32.Parse(txtHazai.Text) + 1).ToString();
-                                    break;
-                                case "5":
-                                    txtHenpin.Text = (Int32.Parse(txtHenpin.Text) + 1).ToString();
-                                    break;
-                                case "6":
-                                    txtHansoku.Text = (Int32.Parse(txtHansoku.Text) + 1).ToString();
-                                    break;
-                                case "7":
-                                    txtKaisyu.Text = (Int32.Parse(txtKaisyu.Text) + 1).ToString();
-                                    break;
+                                kosuKenpin = WebService.RequestKosu070(param);
+                            }
+                            else
+                            {
+                                kosuKenpin = WebService.RequestKosu150(param);
                             }
 
-                            txtTotal.Text = (Int32.Parse(txtTotal.Text) + 1).ToString();
-                            //JOB: scan_ko_su = JOB:scan_ko_su + 1	// スキャンした個数
-                            gdTyingCanman.Visibility = ViewStates.Visible;
-                            btnStop.Visibility = ViewStates.Gone;
-                            SetFooterText("  F2 :取消                    F3:満タン");
-                        }
+                            // result["poLabelType"] 0：ケース、1：オリコン、2：不定形、3：店移動、4：破材、5：返品、6：販促物、7：回収
+                            if (kosuKenpin != null)
+                            {
+                                switch (kosuKenpin.poLabelType)
+                                {
+                                    case "0":
+                                        txtCase.Text = (Int32.Parse(txtCase.Text) + 1).ToString();
+                                        break;
+                                    case "1":
+                                        txtOricon.Text = (Int32.Parse(txtOricon.Text) + 1).ToString();
+                                        break;
+                                    case "2":
+                                        txtHuteikei.Text = (Int32.Parse(txtHuteikei.Text) + 1).ToString();
+                                        break;
+                                    case "3":
+                                        txtMiseidou.Text = (Int32.Parse(txtMiseidou.Text) + 1).ToString();
+                                        break;
+                                    case "4":
+                                        txtHazai.Text = (Int32.Parse(txtHazai.Text) + 1).ToString();
+                                        break;
+                                    case "5":
+                                        txtHenpin.Text = (Int32.Parse(txtHenpin.Text) + 1).ToString();
+                                        break;
+                                    case "6":
+                                        txtHansoku.Text = (Int32.Parse(txtHansoku.Text) + 1).ToString();
+                                        break;
+                                    case "7":
+                                        txtKaisyu.Text = (Int32.Parse(txtKaisyu.Text) + 1).ToString();
+                                        break;
+                                }
 
+                                txtTotal.Text = (Int32.Parse(txtTotal.Text) + 1).ToString();
+                                //JOB: scan_ko_su = JOB:scan_ko_su + 1	// スキャンした個数
+                                gdTyingCanman.Visibility = ViewStates.Visible;
+                                btnStop.Visibility = ViewStates.Gone;
+                                SetFooterText("  F2 :取消                    F3:満タン");
+                            }
+
+                        }
+                        catch
+                        {
+                            CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                            Log.Error(Tag, "");
+                            return;
+                        }
+                        
                 }
                 }
                 );

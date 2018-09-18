@@ -81,6 +81,7 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\VendorAdapter.cs" />
     <Compile Include="Adapters\TenpoAdapter.cs" />
     <Compile Include="Adapters\Tsumikomi020Adapter.cs" />
     <Compile Include="Adapters\TodokesakiAdapter.cs" />
@@ -94,6 +95,8 @@
     <Compile Include="IdouNohinSelectFragment.cs" />
     <Compile Include="IdouRegistWorkFragment.cs" />
     <Compile Include="IdouRegistSelectFragment.cs" />
+    <Compile Include="KosuVendorSearchFragment.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU095.cs" />
     <Compile Include="TsumikaeIdouMatehanFragment.cs" />
     <Compile Include="MailMenuFragment.cs" />
     <Compile Include="MailManageInputFragment.cs" />
@@ -526,6 +529,33 @@
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\adapter_list_vendor.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_kosu_vendor_search.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-hdpi\baseline_search_black_18.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-hdpi\baseline_search_black_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-hdpi\baseline_search_black_36.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-hdpi\baseline_search_black_48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\baseline_search_black_24.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

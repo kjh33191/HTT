@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
-using Android.Runtime;
 using Android.Util;
 using Android.Views;
-using Android.Views.InputMethods;
 using Android.Widget;
 using Com.Densowave.Bhtsdk.Barcode;
-using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
-using Newtonsoft.Json;
 
 namespace HHT
 {
@@ -66,9 +58,9 @@ namespace HHT
                 GridLayout gl = view.FindViewById<GridLayout>(Resource.Id.gl_kosuSelect_Todoke);
                 gl.Visibility = ViewStates.Visible;
 
-                Button searchButton = view.FindViewById<Button>(Resource.Id.btn_search_todoke);
+                ImageButton searchButton = view.FindViewById<ImageButton>(Resource.Id.btn_search_todoke);
                 searchButton.Click += delegate { SearchTodokesaki(); };
-                searchButton.Visibility = ViewStates.Gone;
+                // searchButton.Visibility = ViewStates.Gone;
 
                 etTokuisaki = view.FindViewById<EditText>(Resource.Id.et_todoke_tokuisaki);
                 etTodokesaki = view.FindViewById<EditText>(Resource.Id.et_todoke_todokesaki);
@@ -78,12 +70,12 @@ namespace HHT
                     if (e.HasFocus)
                     {
                         SetFooterText("F1：届先検索　　　F4：確定");
-                        searchButton.Visibility = ViewStates.Visible;
+                        //searchButton.Visibility = ViewStates.Visible;
                     }
                     else
                     {
                         SetFooterText("F4：確定");
-                        searchButton.Visibility = ViewStates.Gone;
+                        //searchButton.Visibility = ViewStates.Gone;
                     }
                 };
 
@@ -93,7 +85,6 @@ namespace HHT
                     etTokuisaki.Text = prefs.GetString("def_tokuisaki_cd", "");
                     etTodokesaki.RequestFocus();
                 }
-
             }
             else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
             {
@@ -482,15 +473,19 @@ namespace HHT
 
         private void GoVendorSearchPage()
         {
+            string syukaDate = etSyukaDate.Text;
+
             if (etSyukaDate.Text == "")
             {
                 CommonUtils.ShowAlertDialog(view, "エラー", "配送日を入力してください。");
                 etSyukaDate.RequestFocus();
                 return;
             }
+            
+            editor.PutString("syuka_date", "20" + syukaDate.Replace("/", ""));
+            editor.Apply();
 
-            // TODO ベンダー検索画面
-            StartFragment(FragmentManager, typeof(KosuBinInputFragment));
+            StartFragment(FragmentManager, typeof(KosuVendorSearchFragment));
         }
     }
 }

@@ -45,6 +45,9 @@ namespace HHT
                 }
             };
 
+            TextView txtVenderName = view.FindViewById<TextView>(Resource.Id.et_mantan_vendor);
+            txtVenderName.Text = prefs.GetString("vender_nm", "");
+
             // ベンダー別マテハンコード取得
             //btvPrm = JOB:tsumi_vendor_cd
             //REMOTE:Search("KOSU200", 1, btvPrm, 1)

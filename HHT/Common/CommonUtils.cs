@@ -8,11 +8,15 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Android;
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.Net;
 using Android.OS;
 using Android.Runtime;
+using Android.Support.V4.App;
+using Android.Support.V4.Content;
 using Android.Telephony;
 using Android.Views;
 using Android.Views.InputMethods;
@@ -187,19 +191,18 @@ namespace HHT
 
         public static string GetDeviceID(Context context)
         {
+            Permission permissionCheck = ContextCompat.CheckSelfPermission(context, Manifest.Permission.ReadPhoneState);
+            if (permissionCheck != Permission.Granted)
+            {
+                ActivityCompat.RequestPermissions((MainActivity)context, new string[] { Manifest.Permission.ReadPhoneState }, 0);
+            }
+            else
+            {
+                //TODO
+            }
+
+
             return ((TelephonyManager)context.GetSystemService(Context.TelephonyService)).DeviceId;
-        }
-        
-        public static string GetDeviceUUID(Context context)
-        {
-            TelephonyManager tm = (TelephonyManager)context.GetSystemService(Context.TelephonyService);
-
-            string tmDevice, tmSerial;
-            tmDevice = "" + tm.DeviceId;
-            tmSerial = "" + tm.SimSerialNumber;
-            
-
-            return tmDevice + "    " + tmSerial;
         }
 
         public static void AlertDialog(View view, string title, string message, Action callback)

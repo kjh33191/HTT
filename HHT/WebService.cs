@@ -35,6 +35,8 @@ namespace HHT
             public readonly static string KOSU065 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu065";
             public readonly static string KOSU070 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu070";
             public readonly static string KOSU080 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu080";
+
+            public readonly static string KOSU095 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu095";
             public readonly static string KOSU131 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu131";
             public readonly static string KOSU150 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu150";
             public readonly static string KOSU160 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu160";
@@ -392,6 +394,31 @@ namespace HHT
             if (response.status == "0")
             {
                 
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        // 紐付作業取消ー未完了
+        public static List<KOSU095> RequestKosu095(string kenpin_souko, string kitaku_cd, string syuka_date)
+        {
+
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko},
+                {"kitaku_cd", kitaku_cd},
+                {"syuka_date", syuka_date},
+            };
+
+            string resultJson = CommonUtils.Post(KOSU.KOSU095, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<KOSU095>>();
             }
             else
             {

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <GridLayout
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/venderListGridLayout"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        android:columnCount="3">
+        <TextView
+            android:text="入荷\n予定時間"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/textView8"
+            android:layout_width="100dp" />
+        <TextView
+            android:text="ベン"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/textView9"
+            android:layout_width="140dp"
+            android:layout_columnSpan="2" />
+    </GridLayout>
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>

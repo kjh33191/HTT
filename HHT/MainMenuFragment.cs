@@ -34,34 +34,87 @@ namespace HHT
             view = inflater.Inflate(Resource.Layout.fragment_menu_main, container, false);
             LinearLayout layout = view.FindViewById<LinearLayout>(Resource.Id.linearLayout2);
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(Application.Context);
-            
-            // 管理者の場合
-            Button btnNyuka = view.FindViewById<Button>(Resource.Id.btn_main_manager_nyuka);
-            btnNyuka.Click += delegate { StartFragment(FragmentManager, typeof(NyukaMenuFragment)); };
 
-            Button btnTsumikae = view.FindViewById<Button>(Resource.Id.btn_main_manager_tsumikae);
-            btnTsumikae.Click += delegate { StartFragment(FragmentManager, typeof(TsumikaeMenuFragment)); };
+            string menu_kbn = prefs.GetString("menu_kbn", "");
 
-            Button btnTsumikomi = view.FindViewById<Button>(Resource.Id.btn_main_manager_tsumikomi);
-            btnTsumikomi.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiSelectFragment)); };
+            if(menu_kbn == "0")
+            {
+                // 構内の場合
+                LinearLayout konaiLayout = view.FindViewById<LinearLayout>(Resource.Id.konaiLayout);
+                konaiLayout.Visibility = ViewStates.Visible;
 
-            Button btnNohin = view.FindViewById<Button>(Resource.Id.btn_main_manager_nohin);
-            btnNohin.Click += delegate { StartFragment(FragmentManager, typeof(NohinSelectFragment)); };
+                Button btnNyuka = view.FindViewById<Button>(Resource.Id.konaiNyuka);
+                btnNyuka.Click += delegate { StartFragment(FragmentManager, typeof(NyukaMenuFragment)); };
 
-            Button btnDataSend = view.FindViewById<Button>(Resource.Id.btn_main_manager_dataSend);
-            btnDataSend.Click += delegate { DataSend(); };
+                Button btnTsumikae = view.FindViewById<Button>(Resource.Id.konaiIdou);
+                btnTsumikae.Click += delegate { StartFragment(FragmentManager, typeof(TsumikaeMenuFragment)); };
 
-            Button btnMatehanRegist = view.FindViewById<Button>(Resource.Id.btn_main_manager_matehanRegist);
-            btnMatehanRegist.Click += delegate { StartFragment(FragmentManager, typeof(MatehanMenuFragment)); };
+                Button btnMatehanRegist = view.FindViewById<Button>(Resource.Id.konaiMate);
+                btnMatehanRegist.Click += delegate { StartFragment(FragmentManager, typeof(MatehanMenuFragment)); };
 
-            Button btnMailBag = view.FindViewById<Button>(Resource.Id.btn_main_manager_mailBag);
-            btnMailBag.Click += delegate { StartFragment(FragmentManager, typeof(MailMenuFragment)); };
+                Button btnIdouRegist = view.FindViewById<Button>(Resource.Id.konaiIdouRegist);
+                btnIdouRegist.Click += delegate { StartFragment(FragmentManager, typeof(IdouRegistSelectFragment)); };
 
-            Button btnIdouRegist = view.FindViewById<Button>(Resource.Id.btn_main_manager_idousakiRegist);
-            btnIdouRegist.Click += delegate { StartFragment(FragmentManager, typeof(IdouRegistSelectFragment)); };
+            }
+            else if(menu_kbn == "1")
+            {
+                // ドライバの場合
+                LinearLayout driverLayout = view.FindViewById<LinearLayout>(Resource.Id.driverLayout);
+                driverLayout.Visibility = ViewStates.Visible;
 
-            Button btnIdouNohin = view.FindViewById<Button>(Resource.Id.btn_main_manager_idousakiNohin);
-            btnIdouNohin.Click += delegate { StartFragment(FragmentManager, typeof(IdouNohinSelectFragment)); };
+                Button btnNyuka = view.FindViewById<Button>(Resource.Id.driverNyuka);
+                btnNyuka.Click += delegate { StartFragment(FragmentManager, typeof(NyukaMenuFragment)); };
+
+                Button btnTsumikae = view.FindViewById<Button>(Resource.Id.driverIdou);
+                btnTsumikae.Click += delegate { StartFragment(FragmentManager, typeof(TsumikaeMenuFragment)); };
+
+                Button btnTsumikomi = view.FindViewById<Button>(Resource.Id.driverTsumikomi);
+                btnTsumikomi.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiSelectFragment)); };
+
+                Button btnNohin = view.FindViewById<Button>(Resource.Id.driverNohin);
+                btnNohin.Click += delegate { StartFragment(FragmentManager, typeof(NohinSelectFragment)); };
+
+                Button btnDataSend = view.FindViewById<Button>(Resource.Id.driverSend);
+                btnDataSend.Click += delegate { DataSend(); };
+
+                Button btnIdouNohin = view.FindViewById<Button>(Resource.Id.driverIdouNohin);
+                btnIdouNohin.Click += delegate { StartFragment(FragmentManager, typeof(IdouNohinSelectFragment)); };
+
+
+            }
+            else if (menu_kbn == "2")
+            {
+                // 管理者の場合
+                LinearLayout managerLayout = view.FindViewById<LinearLayout>(Resource.Id.managerLayout);
+                managerLayout.Visibility = ViewStates.Visible;
+
+                Button btnNyuka = view.FindViewById<Button>(Resource.Id.btn_main_manager_nyuka);
+                btnNyuka.Click += delegate { StartFragment(FragmentManager, typeof(NyukaMenuFragment)); };
+
+                Button btnTsumikae = view.FindViewById<Button>(Resource.Id.btn_main_manager_tsumikae);
+                btnTsumikae.Click += delegate { StartFragment(FragmentManager, typeof(TsumikaeMenuFragment)); };
+
+                Button btnTsumikomi = view.FindViewById<Button>(Resource.Id.btn_main_manager_tsumikomi);
+                btnTsumikomi.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiSelectFragment)); };
+
+                Button btnNohin = view.FindViewById<Button>(Resource.Id.btn_main_manager_nohin);
+                btnNohin.Click += delegate { StartFragment(FragmentManager, typeof(NohinSelectFragment)); };
+
+                Button btnDataSend = view.FindViewById<Button>(Resource.Id.btn_main_manager_dataSend);
+                btnDataSend.Click += delegate { DataSend(); };
+
+                Button btnMatehanRegist = view.FindViewById<Button>(Resource.Id.btn_main_manager_matehanRegist);
+                btnMatehanRegist.Click += delegate { StartFragment(FragmentManager, typeof(MatehanMenuFragment)); };
+
+                Button btnMailBag = view.FindViewById<Button>(Resource.Id.btn_main_manager_mailBag);
+                btnMailBag.Click += delegate { StartFragment(FragmentManager, typeof(MailMenuFragment)); };
+
+                Button btnIdouRegist = view.FindViewById<Button>(Resource.Id.btn_main_manager_idousakiRegist);
+                btnIdouRegist.Click += delegate { StartFragment(FragmentManager, typeof(IdouRegistSelectFragment)); };
+
+                Button btnIdouNohin = view.FindViewById<Button>(Resource.Id.btn_main_manager_idousakiNohin);
+                btnIdouNohin.Click += delegate { StartFragment(FragmentManager, typeof(IdouNohinSelectFragment)); };
+            }
 
             SetTitle("業務メニュー");
             SetFooterText("");

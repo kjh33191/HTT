@@ -8,7 +8,7 @@
     android:layout_marginRight="40dp"
     android:layout_marginBottom="30dp">
     <Button
-        android:text="1:届先指定検品"
+        android:text="1. 届先指定検品"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:id="@+id/todokeInspButton"
@@ -17,7 +17,7 @@
         android:textSize="18sp"
         android:textStyle="bold" />
     <Button
-        android:text="2:ベンダー指定検品"
+        android:text="2. ベンダー指定検品"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:textSize="18sp"
@@ -26,7 +26,7 @@
         android:textAlignment="textStart"
         android:id="@+id/vendaInspButton" />
     <Button
-        android:text="3:バラ検品"
+        android:text="3. バラ検品"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:textSize="18sp"

@@ -50,6 +50,7 @@
             android:text="届先"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginRight="10dp"
+            android:textAlignment="textEnd"
             android:textSize="20sp"
             android:textStyle="bold"
             android:id="@+id/textView3" />
@@ -58,9 +59,11 @@
             android:inputType="numberSigned"
             android:layout_width="120dp"
             android:id="@+id/et_todoke_todokesaki" />
-        <Button
-            android:text="検索"
-            android:textSize="15sp"
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="0dp"
+            android:src="@drawable/baseline_search_black_24"
             android:id="@+id/btn_search_todoke" />
     </GridLayout>
     <GridLayout
@@ -77,7 +80,7 @@
             android:textStyle="bold"
             android:id="@+id/textView3" />
         <EditText
-            android:text="000021"
+            android:text=""
             android:inputType="numberSigned"
             android:layout_width="120dp"
             android:id="@+id/et_kosuSelect_vendorCode" />
