@@ -1,10 +1,9 @@
 ﻿
 namespace HHT.Resources.Model
 {
-    public class KOSU110
+    public class KOSU115
     {
-        public string tokuisaki_cd { get; set; }
-        public string todokesaki_cd { get; set; }
+        public string vendor_cd { get; set; }
         public string sum_case { get; set; }
         public string sum_case_sumi { get; set; }
         public string sum_oricon { get; set; }

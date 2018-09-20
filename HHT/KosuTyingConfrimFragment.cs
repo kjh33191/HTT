@@ -8,6 +8,9 @@ using HHT.Resources.Model;
 using static Android.App.FragmentManager;
 using Android.Media;
 using Android.Net;
+using Android.Content;
+using Android.Preferences;
+using System.Threading;
 
 namespace HHT
 {
@@ -18,7 +21,11 @@ namespace HHT
             , txtMiseidou, txtHansoku, txtTotal
             , txtOricon, txtHazai, txtHenpin, txtKaisyu, txtDaisu;
         private ToneGenerator toneGenerator;
-        
+        private ISharedPreferences prefs;
+        private ISharedPreferencesEditor editor;
+
+        private int kosuMenuflag;
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -26,17 +33,19 @@ namespace HHT
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            SetTitle("届先指定検品");
-            SetFooterText("F1：中断");
-            
             view = inflater.Inflate(Resource.Layout.fragment_kosu_tyingConfirm, container, false);
+            prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
+            editor = prefs.Edit();
 
-            // todoke KOSU110
-            // vendor KOSU115
-            // input parameter 
-            // kenpin_souko, kitaku_cd, syuka_date, bin_no, todokesaki_cd, todokesaki_cd
-
-            KOSU110 kosu110 = new KOSU110();
+            kosuMenuflag = prefs.GetInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.TODOKE); // 画面区分
+            
+            string kenpin_souko = prefs.GetString("souko_cd", "");
+            string kitaku_cd = prefs.GetString("kitaku_cd", "");
+            string syuka_date = prefs.GetString("syuka_date", "");
+            string bin_no = prefs.GetString("bin_no", "");
+            string tokuisaki_cd = prefs.GetString("tokuisaki_cd", "");
+            string todokesaki_cd = prefs.GetString("todokesaki_cd", "");
+            string vendor_cd = prefs.GetString("vendor_cd", "");
 
             txtCase = view.FindViewById<TextView>(Resource.Id.txt_tyConfirm_case);
             txtHuteikei = view.FindViewById<TextView>(Resource.Id.txt_tyConfirm_huteikei);
@@ -49,17 +58,63 @@ namespace HHT
             txtHenpin = view.FindViewById<TextView>(Resource.Id.txt_tyConfirm_henpin);
             txtKaisyu = view.FindViewById<TextView>(Resource.Id.txt_tyConfirm_kaisyu);
             txtDaisu = view.FindViewById<TextView>(Resource.Id.txt_tyConfirm_daisu);
+            
 
-            txtCase.Text = kosu110.sum_case_sumi + "/" + kosu110.sum_case;
-            txtOricon.Text = kosu110.sum_oricon_sumi + "/" + kosu110.sum_oricon;
-            txtHuteikei.Text = kosu110.sum_futeikei_sumi + "/" + kosu110.sum_futeikei;
-            txtHazai.Text = kosu110.sum_hazai_sumi + "/" + kosu110.sum_hazai;
-            txtMiseidou.Text = kosu110.sum_ido_sumi + "/" + kosu110.sum_ido;
-            txtHenpin.Text = kosu110.sum_henpin_sumi + "/" + kosu110.sum_henpin;
-            txtHansoku.Text = kosu110.sum_hansoku_sumi + "/" + kosu110.sum_hansoku;
-            txtKaisyu.Text = "0" + "/" + "0".PadLeft(3, ' ');
-            txtTotal.Text = kosu110.sum_tc_sumi + "/" + kosu110.sum_tc;
-            txtDaisu.Text = kosu110.sum_mate_cnt.PadLeft(3, ' ');
+            try
+            {
+                if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
+                {
+
+                    SetTitle("届先指定検品");
+                    SetFooterText("F1：中断");
+
+                    KOSU110 kosu110 = WebService.RequestKosu110(kenpin_souko, kitaku_cd, syuka_date, bin_no, tokuisaki_cd, todokesaki_cd);
+                    
+                    txtCase.Text = kosu110.sum_case_sumi + "/" + kosu110.sum_case;
+                    txtOricon.Text = kosu110.sum_oricon_sumi + "/" + kosu110.sum_oricon;
+                    txtHuteikei.Text = kosu110.sum_futeikei_sumi + "/" + kosu110.sum_futeikei;
+                    txtHazai.Text = kosu110.sum_hazai_sumi + "/" + kosu110.sum_hazai;
+                    txtMiseidou.Text = kosu110.sum_ido_sumi + "/" + kosu110.sum_ido;
+                    txtHenpin.Text = kosu110.sum_henpin_sumi + "/" + kosu110.sum_henpin;
+                    txtHansoku.Text = kosu110.sum_hansoku_sumi + "/" + kosu110.sum_hansoku;
+                    txtKaisyu.Text = "0" + "/" + "0".PadLeft(3, ' ');
+                    txtTotal.Text = kosu110.sum_tc_sumi + "/" + kosu110.sum_tc;
+                    txtDaisu.Text = kosu110.sum_mate_cnt.PadLeft(3, ' ');
+
+                }
+                else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
+                {
+                    SetTitle("ベンダー指定検品");
+                    SetFooterText("F1：中断");
+
+                    KOSU115 kosu115 = WebService.RequestKosu115(kenpin_souko, kitaku_cd, syuka_date, vendor_cd);
+
+                    txtCase.Text = kosu115.sum_case_sumi + "/" + kosu115.sum_case;
+                    txtOricon.Text = kosu115.sum_oricon_sumi + "/" + kosu115.sum_oricon;
+                    txtHuteikei.Text = kosu115.sum_futeikei_sumi + "/" + kosu115.sum_futeikei;
+                    txtHazai.Text = kosu115.sum_hazai_sumi + "/" + kosu115.sum_hazai;
+                    txtMiseidou.Text = kosu115.sum_ido_sumi + "/" + kosu115.sum_ido;
+                    txtHenpin.Text = kosu115.sum_henpin_sumi + "/" + kosu115.sum_henpin;
+                    txtHansoku.Text = kosu115.sum_hansoku_sumi + "/" + kosu115.sum_hansoku;
+                    txtKaisyu.Text = "0" + "/" + "0".PadLeft(3, ' ');
+                    txtTotal.Text = kosu115.sum_tc_sumi + "/" + kosu115.sum_tc;
+                    txtDaisu.Text = kosu115.sum_mate_cnt.PadLeft(3, ' ');
+
+                }
+            }
+            catch
+            {
+                new Thread(new ThreadStart(delegate {
+                    Activity.RunOnUiThread(() =>
+                    {
+                        CommonUtils.AlertDialog(view, "", "表示データがありません。", 
+                            ()=> FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(3).Id, 0)
+                        );
+                    }
+                    );
+                })
+                ).Start();
+            }
 
             return view;
         }

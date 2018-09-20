@@ -40,8 +40,8 @@ namespace HHT
             editor = prefs.Edit();
 
             kosuMenuflag = prefs.GetInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.TODOKE); // 画面区分
-            soukoCd = prefs.GetString("soukoCd", "");
-            kitakuCd = prefs.GetString("kitakuCd", "");
+            soukoCd = prefs.GetString("souko_cd", "");
+            kitakuCd = prefs.GetString("kitaku_cd", "");
 
             InitComponent();
             
@@ -50,6 +50,27 @@ namespace HHT
 
         private void InitComponent()
         {
+            txtConfirm = view.FindViewById<TextView>(Resource.Id.txt_kosuSelect_confirmMsg);
+            etSyukaDate = view.FindViewById<EditText>(Resource.Id.todoke_et_deliveryDate);
+
+            //etSyukaDate.Text = DateTime.Now.ToString("yy/MM/dd");
+            etSyukaDate.Text = "18/03/20"; // テスト用
+
+            etSyukaDate.FocusChange += (sender, e) => {
+                if (e.HasFocus)
+                {
+                    etSyukaDate.Text = etSyukaDate.Text.Replace("/", "");
+                }
+                else
+                {
+                    CheckDate();
+                }
+
+            };
+
+            confirmButton = view.FindViewById<Button>(Resource.Id.btn_todoke_confirm);
+            confirmButton.Click += delegate { Confirm(); };
+            
             if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
             {
                 SetTitle("届先指定検品");
@@ -90,7 +111,7 @@ namespace HHT
             {
                 SetTitle("ベンダー指定検品");
                 SetFooterText("F4：確定");
-                
+
                 GridLayout gl = view.FindViewById<GridLayout>(Resource.Id.gl_kosuSelect_Vendor);
                 gl.Visibility = ViewStates.Visible;
 
@@ -103,28 +124,12 @@ namespace HHT
                 //初期フォーカス
                 etVendorCode.RequestFocus();
             }
-
-            txtConfirm = view.FindViewById<TextView>(Resource.Id.txt_kosuSelect_confirmMsg);
-
-            etSyukaDate = view.FindViewById<EditText>(Resource.Id.todoke_et_deliveryDate);
-
-            //etSyukaDate.Text = DateTime.Now.ToString("yy/MM/dd");
-            etSyukaDate.Text = "18/03/20"; // テスト用
-
-            etSyukaDate.FocusChange += (sender, e) => {
-                if (e.HasFocus)
-                {
-                    etSyukaDate.Text = etSyukaDate.Text.Replace("/", "");
-                }
-                else
-                {
-                    CheckDate();
-                }
-
-            };
-
-            confirmButton = view.FindViewById<Button>(Resource.Id.btn_todoke_confirm);
-            confirmButton.Click += delegate { Confirm(); };
+            else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
+            {
+                SetTitle("バラ検品");
+                etSyukaDate.SetSelection(etSyukaDate.Text.Length);
+                etSyukaDate.RequestFocus();
+            }
         }
     
         private void CheckTokuisaki()
@@ -190,7 +195,7 @@ namespace HHT
         private async Task<string> GetVendorState()
         {
             string venderState = "";
-
+            
             try
             {
                 string syukaDate = "20" + etSyukaDate.Text.Replace("/", "");
@@ -292,25 +297,30 @@ namespace HHT
                             }
                             else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
                             {
-                                if (txtConfirm.Visibility == ViewStates.Gone)
+                                var message =
+                                        @"配送日：" + etSyukaDate.Text
+                                    + "\nベンダー：" + etVendorCode.Text
+                                    + "\n" + vendorNm
+                                    + "\n\n" + "よろしいですか？";
+                                
+                                CommonUtils.AlertConfirm(view, "", message, (okFlag) =>
                                 {
-                                    txtConfirm.Visibility = ViewStates.Visible;
-                                }
-                                else
-                                {
-                                    editor.PutString("vendor_cd", etVendorCode.Text);
-                                    editor.PutString("vendor_nm", vendorNm);
-                                    editor.PutString("tokuisaki_nm", vendorNm);
-
-                                    editor.PutString("deliveryDate", etSyukaDate.Text);
-                                    editor.Apply();
-
-                                    StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
-                                }
+                                    if (okFlag)
+                                    {
+                                        editor.PutString("vendor_cd", etVendorCode.Text);
+                                        editor.PutString("vendor_nm", vendorNm);
+                                        editor.PutString("syuka_date", "20" + etSyukaDate.Text.Replace("/", ""));
+                                        editor.PutString("tokuisaki_nm", "");
+                                        editor.Apply();
+                                        StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
+                                    }
+                                });
                             }
                             else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
                             {
                                 editor.PutString("tokuisaki_nm", "");
+                                editor.PutString("syuka_date", "20" + etSyukaDate.Text.Replace("/", ""));
+                                editor.Apply();
                                 StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
                             }
                         }
@@ -389,7 +399,7 @@ namespace HHT
 
                 string resultState = await GetVendorState();
 
-                if (resultState == null)
+                if (vendorNm == "")
                 {
                     errTitle = "Error";
                     errMsg = "ベンダーコードがみつかりません。";

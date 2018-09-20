@@ -129,7 +129,7 @@ namespace HHT
                 {
                     if (flag)
                     {
-                        editor.PutString("mateno", matehanList[index].matehan);
+                        editor.PutString("mateno", matehanList[index].matehan_cd);
                         editor.Apply();
 
 

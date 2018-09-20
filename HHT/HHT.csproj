@@ -97,6 +97,9 @@
     <Compile Include="IdouRegistSelectFragment.cs" />
     <Compile Include="KosuVendorSearchFragment.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU095.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU115.cs" />
+    <Compile Include="Resources\Model\WebService\Mail\MAIL010.cs" />
+    <Compile Include="Resources\Model\WebService\Mail\MAIL030.cs" />
     <Compile Include="TsumikaeIdouMatehanFragment.cs" />
     <Compile Include="MailMenuFragment.cs" />
     <Compile Include="MailManageInputFragment.cs" />

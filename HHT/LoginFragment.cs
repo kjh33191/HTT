@@ -11,7 +11,6 @@ using Android.Content;
 using Android.Preferences;
 using Android.Util;
 using Android.Media;
-using HHT.Common;
 
 namespace HHT
 {
@@ -58,6 +57,19 @@ namespace HHT
             txtSoukoName = view.FindViewById<TextView>(Resource.Id.tv_login_soukoName);
             etDriverCode = view.FindViewById<EditText>(Resource.Id.et_login_driverCode);
             btnLogin = view.FindViewById<Button>(Resource.Id.loginButton);
+
+            etDriverCode.KeyPress += (sender, e) =>{
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    CommonUtils.HideKeyboard(Activity);
+                    var editText = (EditText)sender;
+                    Login();
+                }
+                else { 
+                    e.Handled = false;
+                }
+            };
 
             etSoukoCode.FocusChange += delegate {
                 if (!etSoukoCode.IsFocused)
@@ -201,12 +213,13 @@ namespace HHT
                         {
                             bodyMsg = "ＴＣ２型（花王）でログインしました。";
                         }
+
+                        Toast.MakeText(this.Activity, bodyMsg, ToastLength.Long).Show();
                         
-                        CommonUtils.AlertDialog(view, "", bodyMsg, () => {
-                            ToneGenerator toneGen1 = new ToneGenerator(Stream.Music,100);
-                            toneGen1.StartTone(Tone.CdmaPip,150);
-                            StartFragment(FragmentManager, typeof(MainMenuFragment));
-                        });
+                        ToneGenerator toneGen1 = new ToneGenerator(Stream.Music, 100);
+                        toneGen1.StartTone(Tone.CdmaPip, 1000);
+
+                        StartFragment(FragmentManager, typeof(MainMenuFragment));
                     }
 
                 });
@@ -303,7 +316,7 @@ namespace HHT
             {
                 Login();
             }
-
+            
             return true;
         }
 

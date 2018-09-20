@@ -37,42 +37,7 @@
             android:layout_width="120dp"
             android:id="@+id/et_tsumikomiSelect_course"
             android:layout_gravity="fill_horizontal" />
-        <TextView
-            android:text="便No."
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginTop="30dp"
-            android:layout_marginRight="10dp"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:id="@+id/textView2" />
-        <EditText
-            android:text=""
-            android:inputType="numberSigned"
-            android:layout_marginTop="30dp"
-            android:layout_width="120dp"
-            android:id="@+id/et_tsumikomiSelect_binNo"
-            android:layout_gravity="fill_horizontal" />
     </GridLayout>
-    <TextView
-        android:text=""
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="textStart"
-        android:layout_marginTop="20dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        android:id="@+id/tv_tsumikomiSelect_confirmBin" />
-    <TextView
-        android:text="よろしいですか？"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:layout_marginTop="20dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        android:id="@+id/tv_tsumikomiSelect_confirmMsg" />
     <Button
         android:text="確定"
         android:layout_width="150dp"

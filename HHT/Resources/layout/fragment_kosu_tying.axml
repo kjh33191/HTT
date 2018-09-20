@@ -6,6 +6,15 @@
     android:paddingTop="30dp"
     android:paddingLeft="20dp">
     <TextView
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/vendorName"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp" />
+    <TextView
         android:text="■　XXXXX店"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
@@ -17,7 +26,7 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:columnCount="2">
         <TextView
             android:text="店舗ロケ："
@@ -25,7 +34,6 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:id="@+id/textView6"
-            android:layout_marginBottom="20dp"
             android:layout_column="0" />
         <TextView
             android:text=""
@@ -33,7 +41,6 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:id="@+id/txt_todoke_tenpoLocation"
-            android:layout_marginBottom="20dp"
             android:layout_column="1" />
     </GridLayout>
     <LinearLayout
@@ -281,6 +288,13 @@
         android:id="@+id/btn_todoke_stop"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+    <Button
+        android:text="完了"
+        android:id="@+id/completeButton"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_gravity="center" />
     <GridLayout
         android:layout_width="match_parent"

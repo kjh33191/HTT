@@ -47,20 +47,7 @@ namespace HHT
             editor = prefs.Edit();
 
             // コンポーネント初期化
-            InitComponent();
-
-            return view;
-        }
-
-        // コンポーネント初期化
-        private void InitComponent()
-        {
             registFlg = prefs.GetBoolean("registFlg", true);
-
-            Button btnComplete = view.FindViewById<Button>(Resource.Id.btn_mailRegistInput_complete);
-            etMailBag = view.FindViewById<EditText>(Resource.Id.et_mailRegistInput_mail);
-            mailBagSu = view.FindViewById<TextView>(Resource.Id.txt_mailRegistInput_mailbagSu);
-            mail_back = 0;
 
             if (registFlg)
             {
@@ -70,11 +57,19 @@ namespace HHT
             {
                 SetTitle("メールバッグ削除");
             }
+
+            Button btnComplete = view.FindViewById<Button>(Resource.Id.btn_mailRegistInput_complete);
+            btnComplete.Click += delegate { Complete(); };
+
+            etMailBag = view.FindViewById<EditText>(Resource.Id.et_mailRegistInput_mail);
+            mailBagSu = view.FindViewById<TextView>(Resource.Id.txt_mailRegistInput_mailbagSu);
+            mail_back = 0;
             
             etMailBag.RequestFocus();
-            btnComplete.Click += delegate { Complete(); };
-        }
+            
 
+            return view;
+        }
 
         private void Complete()
         {
@@ -138,32 +133,39 @@ namespace HHT
                             {"pBinNo", prefs.GetString("bin_no","") },
                         };
 
-                        //int ret = WebService.requestMail010();
-                        int ret = 0;
+                        string pSagyosyaCD = "";
+                        string pSoukoCD = "";
+                        string pHaisoDate = "";
+                        string pBinNo = "";
+                        string pTokuisakiCD = "";
+                        string pTodokesakiCD = "";
+                        string pKanriNo = "";
 
-                        switch (ret)
+                        Dictionary<string, string> result = WebService.RequestMAIL010(pSagyosyaCD, pSoukoCD, pHaisoDate, pBinNo, pTokuisakiCD, pTodokesakiCD, pKanriNo);
+                        
+                        switch (result["poRet"].ToString())
                         {
-                            case 0:
+                            case "0":
                                 //	登録解除
                                 mail_back++;
                                 mailBagSu.Text = "(" + mail_back + ")";
                                 break;
-                            case 1:
+                            case "1":
                                 //	該当コースが既に積込中以上のステータスのためエラー
                                 // DEVICE:syougou_NG()
                                 CommonUtils.AlertDialog(view, "", ERR3, null);
                                 break;
-                            case 2:
+                            case "2":
                                 //	該当コースが既に出発受付以上のステータスのためエラー
                                 // DEVICE:syougou_NG()
                                 CommonUtils.AlertDialog(view, "", ERR4, null);
                                 break;
-                            case 3:
+                            case "3":
                                 //	コース割付マスタに存在しないためエラー
                                 // DEVICE:syougou_NG()
                                 CommonUtils.AlertDialog(view, "", ERR5, null);
                                 break;
-                            case 9:
+                            case "9":
                                 //	登録済
                                 // DEVICE:syougou_NG()
                                 CommonUtils.AlertDialog(view, "", ERR2, null);

@@ -35,7 +35,7 @@ namespace HHT
 
             kosuMenuflag = prefs.GetInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.TODOKE); // 画面区分
 
-            SetTitle("届先指定検品");
+            SetTitle("ベンダー指定検品");
             SetFooterText("");
 
             SetTodokesakiAsync();
@@ -94,12 +94,12 @@ namespace HHT
 
             var message =
                 @"配送日：" + prefs.GetString("syuka_date", "20180320")
-            + "ベンダー：" + item.vendor_cd
-            + item.vendor_nm
-            + "よろしいですか？";
+            + "\nベンダー：" + item.vendor_cd
+            + "\n" + item.vendor_nm
+            + "\n\n" + "よろしいですか？";
 
 
-            CommonUtils.AlertConfirm(view, "", "message", (okFlag) =>
+            CommonUtils.AlertConfirm(view, "", message, (okFlag) =>
             {
                 if (okFlag)
                 {
@@ -109,23 +109,6 @@ namespace HHT
                     StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
                 }
             });
-            /*
-            var item = todokesakiAdapter[e.Position];
-            
-            editor.PutString("todokesaki_cd", item.todokesaki_cd);
-            editor.PutString("tokuisaki_cd", item.tokuisaki_cd);
-            editor.PutString("tokuisaki_nm", item.tokuisaki_rk);
-            editor.PutString("tsumi_vendor_cd", "");
-            editor.PutString("tsumi_vendor_nm", "");
-            editor.PutString("vendor_cd", "");
-            editor.PutString("vendor_nm", "");
-            editor.PutString("start_vendor_cd", "");
-
-            editor.Apply();
-
-            StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
-            */
         }
-        
     }
 }

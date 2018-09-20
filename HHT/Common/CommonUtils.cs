@@ -142,7 +142,7 @@ namespace HHT
 
         public static bool IsHostReachable(string host)
         {
-            if (string.IsNullOrEmpty(host))
+            if (string.IsNullOrEmpty(WebService.HOST_ADDRESS))
                 return false;
 
             bool isReachable = true;
@@ -161,7 +161,7 @@ namespace HHT
                      */
 
                     //if (!isReachable){
-                    URL url = new URL("http://" + host);
+                    URL url = new URL("http://" + WebService.HOST_ADDRESS);
 
                     URLConnection connection = url.OpenConnection();
 
@@ -233,6 +233,7 @@ namespace HHT
             alert.SetMessage(content);
             alert.SetButton2("はい", (sender, e) => { callback(true); });
             alert.SetButton("いいえ", (sender, e) => { callback(false); });
+            alert.SetCancelable(false);
             alert.Show();
 
             return true;

@@ -1,4 +1,5 @@
 ﻿
+using Android.OS;
 using Android.Util;
 using HHT.Resources.Model;
 using Newtonsoft.Json;
@@ -35,11 +36,19 @@ namespace HHT
             public readonly static string KOSU065 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu065";
             public readonly static string KOSU070 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu070";
             public readonly static string KOSU080 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu080";
+            public readonly static string KOSU085 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu085";
 
             public readonly static string KOSU095 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu095";
+            public readonly static string KOSU110 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu110";
+            public readonly static string KOSU115 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu115";
             public readonly static string KOSU131 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu131";
             public readonly static string KOSU150 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu150";
             public readonly static string KOSU160 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu160";
+            public readonly static string KOSU165 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu165";
+            public readonly static string KOSU170 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu170";
+            public readonly static string KOSU180 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu180";
+            public readonly static string KOSU185 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu185";
+            public readonly static string KOSU190 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu190";
 
             public readonly static string KOSU200 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu200";
             public readonly static string KOSU210 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu210";
@@ -110,6 +119,14 @@ namespace HHT
             public readonly static string TIDOU001 = WEB_SERVICE_URL + "TenpoIdou/RequestTIDOU001";
             public readonly static string TIDOU002 = WEB_SERVICE_URL + "TenpoIdou/RequestTIDOU002";
             public readonly static string TIDOU010 = WEB_SERVICE_URL + "TenpoIdou/RequestTIDOU010";
+        }
+
+        public class MAIL
+        {
+            public readonly static string MAIL010 = WEB_SERVICE_URL + "MailBack/RequestMAIL010";
+            public readonly static string MAIL020 = WEB_SERVICE_URL + "MailBack/RequestMAIL020";
+            public readonly static string MAIL030 = WEB_SERVICE_URL + "MailBack/RequestMAIL030";
+            public readonly static string MAIL040 = WEB_SERVICE_URL + "MailBack/RequestMAIL040";
         }
 
         #region ログイン=====================================================================
@@ -386,14 +403,31 @@ namespace HHT
         }
         
         // 紐付作業取消ー未完了
-        public static void RequestKosu080(Dictionary<string, string> param)
+        public static KOSU070 RequestKosu080(Dictionary<string, string> param)
         {
             string resultJson = CommonUtils.Post(KOSU.KOSU080, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
             if (response.status == "0")
             {
-                
+                return response.GetDataObject<KOSU070>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        // 紐付作業取消ー未完了
+        public static KOSU070 RequestKosu085(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(KOSU.KOSU085, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<KOSU070>();
             }
             else
             {
@@ -419,6 +453,61 @@ namespace HHT
             if (response.status == "0")
             {
                 return response.GetDataObject<List<KOSU095>>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        // 紐付完了
+        public static KOSU110 RequestKosu110(string kenpin_souko, string kitaku_cd, string syuka_date
+            , string bin_no, string tokuisaki_cd, string todokesaki_cd)
+        {
+
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko},
+                {"kitaku_cd", kitaku_cd},
+                {"syuka_date", syuka_date},
+                {"bin_no", bin_no},
+                {"tokuisaki_cd", tokuisaki_cd},
+                {"todokesaki_cd", todokesaki_cd},
+            };
+
+            string resultJson = CommonUtils.Post(KOSU.KOSU110, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<KOSU110>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        // 紐付完了
+        public static KOSU115 RequestKosu115(string kenpin_souko, string kitaku_cd, string syuka_date, string vendor_cd)
+        {
+
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko},
+                {"kitaku_cd", kitaku_cd},
+                {"syuka_date", syuka_date},
+                {"vendor_cd", vendor_cd},
+            };
+
+            string resultJson = CommonUtils.Post(KOSU.KOSU115, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<KOSU115>();
             }
             else
             {
@@ -469,14 +558,108 @@ namespace HHT
         }
 
         // 紐付作業取消ー未完了
-        public static void RequestKosu160(Dictionary<string, string> param)
+        public static KOSU070 RequestKosu160(Dictionary<string, string> param)
         {
             string resultJson = CommonUtils.Post(KOSU.KOSU160, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
             if (response.status == "0")
             {
+                return response.GetDataObject<KOSU070>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
 
+        // 紐付作業取消ー未完了
+        public static KOSU070 RequestKosu165(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(KOSU.KOSU165, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<KOSU070>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+
+        /// <summary>
+        /// バラ検品：バーコード 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static KOSU070 RequestKosu170(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(KOSU.KOSU170, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<KOSU070>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static KOSU070 RequestKosu180(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(KOSU.KOSU180, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<KOSU070>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// バラ検品：バーコード 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static KOSU070 RequestKosu185(Dictionary<string, string> param)
+        {
+            string resultJson = CommonUtils.Post(KOSU.KOSU185, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<KOSU070>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+
+
+        public static List<KOSU200> RequestKosu200(string vendorCode)
+        {
+            string resultJson = CommonUtils.Post(KOSU.KOSU200, new Dictionary<string, string> { { "vendor_cd", vendorCode } });
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<KOSU200>>();
             }
             else
             {
@@ -557,8 +740,8 @@ namespace HHT
 
             if (response.status == "0")
             {
-                TUMIKOMI010 result = response.GetDataObject<TUMIKOMI010>();
-                return result;
+                List<TUMIKOMI010> result = response.GetDataObject<List<TUMIKOMI010>>();
+                return result.Count > 0 ? result[0] : null;
             }
             else
             {
@@ -1421,6 +1604,155 @@ namespace HHT
             }
         }
 
+        #endregion
+
+        #region メールバック=====================================================================
+
+        /// <summary>
+        /// メールバック登録
+        /// </summary>
+        /// <param name="pSagyosyaCD"></param>
+        /// <param name="pSoukoCD"></param>
+        /// <param name="pHaisoDate"></param>
+        /// <param name="pBinNo"></param>
+        /// <param name="pTokuisakiCD"></param>
+        /// <param name="pTodokesakiCD"></param>
+        /// <param name="pKanriNo"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> RequestMAIL010(string pSagyosyaCD, string pSoukoCD, string pHaisoDate, string pBinNo
+            , string pTokuisakiCD, string pTodokesakiCD, string pKanriNo)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"pTerminalID", Build.Serial },
+                {"pProgramID", "MBA" },
+                {"pSagyosyaCD", pSagyosyaCD },
+                {"pSoukoCD", pSoukoCD },
+                {"pHaisoDate", pBinNo },
+                {"pBinNo", pTokuisakiCD },
+                {"pTokuisakiCD", pTodokesakiCD },
+                {"pTodokesakiCD", pTodokesakiCD },
+                {"pKanriNo", pKanriNo },
+            };
+
+            string resultJson = CommonUtils.Post(MAIL.MAIL010, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// 登録済みメールバッグ数を取得
+        /// </summary>
+        /// <param name="souko_cd"></param>
+        /// <param name="haisoh_date"></param>
+        /// <param name="bin_no"></param>
+        /// <returns></returns>
+        public static int RequestMAIL020(string souko_cd, string haisoh_date, string bin_no)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"souko_cd", souko_cd },
+                {"haisoh_date", haisoh_date },
+                {"bin_no", bin_no },
+            };
+
+            string resultJson = CommonUtils.Post(MAIL.MAIL020, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return int.Parse(response.GetDataObject()["cnt"]);
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// メールバック削除
+        /// </summary>
+        /// <param name="pSagyosyaCD"></param>
+        /// <param name="pSoukoCD"></param>
+        /// <param name="pHaisoDate"></param>
+        /// <param name="pBinNo"></param>
+        /// <param name="pTokuisakiCD"></param>
+        /// <param name="pTodokesakiCD"></param>
+        /// <param name="pKanriNo"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> RequestMAIL030(string pSagyosyaCD, string pSoukoCD, string pHaisoDate, string pBinNo
+            , string pTokuisakiCD, string pTodokesakiCD, string pKanriNo)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"pTerminalID", Build.Serial },
+                {"pProgramID", "MBA" },
+                {"pSagyosyaCD", pSagyosyaCD },
+                {"pSoukoCD", pSoukoCD },
+                {"pHaisoDate", pBinNo },
+                {"pBinNo", pTokuisakiCD },
+                {"pTokuisakiCD", pTodokesakiCD },
+                {"pTodokesakiCD", pTodokesakiCD },
+                {"pKanriNo", pKanriNo },
+            };
+
+            string resultJson = CommonUtils.Post(MAIL.MAIL030, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        /// <summary>
+        /// メールバック削除存在チェック 
+        /// </summary>
+        /// <param name="kenpin_souko"></param>
+        /// <param name="kitaku_cd"></param>
+        /// <param name="kamotsu_no"></param>
+        /// <returns></returns>
+        public static int RequestMAIL040(string kenpin_souko, string kitaku_cd, string kamotsu_no)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"souko_cd", kenpin_souko },
+                {"kitaku_cd", kitaku_cd },
+                {"haisoh_date", kamotsu_no },
+                {"tokuisaki_cd", kamotsu_no },
+                {"todokesaki_cd", kamotsu_no },
+                {"kanri_no", kamotsu_no }
+            };
+
+            string resultJson = CommonUtils.Post(MAIL.MAIL040, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return int.Parse(response.GetDataObject()["cnt"]);
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+        
         #endregion
 
     }

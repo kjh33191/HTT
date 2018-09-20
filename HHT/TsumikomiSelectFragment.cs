@@ -24,8 +24,7 @@ namespace HHT
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
-        EditText etSyukaDate, etCourse, etBinNo;
-        TextView txtConfirmMsg, txtConfirmBin;
+        EditText etSyukaDate, etCourse;
         private string souko_cd;
         private string kitaku_cd;
         private string syuka_date;
@@ -63,12 +62,8 @@ namespace HHT
             Button btnConfirm = view.FindViewById<Button>(Resource.Id.btn_tsumikomiSelect_confirm);
             etSyukaDate = view.FindViewById<EditText>(Resource.Id.et_tsumikomiSelect_syukaDate);
             etCourse = view.FindViewById<EditText>(Resource.Id.et_tsumikomiSelect_course);
-            etCourse.FocusChange += (sender, e) => { if (!e.HasFocus && etCourse.Text != "") SearchBinNo(); };
-            etBinNo = view.FindViewById<EditText>(Resource.Id.et_tsumikomiSelect_binNo);
-            txtConfirmBin = view.FindViewById<TextView>(Resource.Id.tv_tsumikomiSelect_confirmBin);
-            txtConfirmMsg = view.FindViewById<TextView>(Resource.Id.tv_tsumikomiSelect_confirmMsg);
-
-            btnConfirm.Click += delegate { Confirm(); };
+            
+            btnConfirm.Click += delegate { SearchBinNo(); };
             etSyukaDate.FocusChange += (sender, e) => {
                 if (e.HasFocus)
                 {
@@ -114,99 +109,86 @@ namespace HHT
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
                 {
-                    //TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, nohin_date, course);
-                    
-                    TUMIKOMI010 result = new TUMIKOMI010
+                    try
                     {
-                        state = "00",
-                        bin_no = "1",
-                        kansen_kbn = "0"
-                    };
-                    
 
-                    if (result.state == "03")
-                    {
-                        CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", () => { return; });
+                        syuka_date = "20" + etSyukaDate.Text.Replace("/", "");
+                        TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, nohin_date, etCourse.Text);
+
+                        if (result == null)
+                        {
+                            CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", null);
+                            return;
+                        }
+                        else if (result.state == "03")
+                        {
+                            CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", null);
+                            return;
+                        }
+
+                        bin_no = result.bin_no;
+                        kansen_kbn = result.kansen_kbn;
+
+                        editor.PutString("bin_no", bin_no);
+                        editor.PutString("kansen_kbn", kansen_kbn);
+                        editor.Apply();
+
+                        ShowConfirmMessage();
+                        CommonUtils.HideKeyboard(this.Activity);
                     }
-
-                    bin_no = result.bin_no;
-                    kansen_kbn = result.kansen_kbn;
-
-                    etBinNo.Text = bin_no;
-                    editor.PutString("bin_no", bin_no);
-                    editor.PutString("kansen_kbn", kansen_kbn);
-                    editor.Apply();
-
-                    ShowConfirmMessage();
-                    CommonUtils.HideKeyboard(this.Activity);
+                    catch
+                    {
+                        CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", () => { return; });
+                    }
                 }
                 );
                 Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
-
         }
 
         private void ShowConfirmMessage()
         {
-            if (txtConfirmMsg.Visibility != ViewStates.Visible)
-            {
-                txtConfirmBin.Visibility = ViewStates.Visible;
-                txtConfirmMsg.Visibility = ViewStates.Visible;
-                txtConfirmBin.Text = 2 + " 便";
 
-                etSyukaDate.Focusable = false;
-                etCourse.Focusable = false;
-                etBinNo.Focusable = false;
-            }
-        }
+            string message = @"
+配送日　：" + etSyukaDate.Text + @"
+コース　：" + etCourse.Text + @"
+ 便No.  ：" + bin_no + @"
 
-        private void HideConfirmMessage()
-        {
-            if (txtConfirmMsg.Visibility == ViewStates.Visible)
-            {
-                txtConfirmBin.Visibility = ViewStates.Gone;
-                txtConfirmMsg.Visibility = ViewStates.Gone;
+よろしいですか？";
 
-                etSyukaDate.Focusable = true;
-                etCourse.Focusable = true;
-                etBinNo.Focusable = true;
-            }
-        }
-
-
-        private void Confirm()
-        {
-            if (txtConfirmMsg.Visibility != ViewStates.Visible)
-            {
-                SearchBinNo();
-            }
-            else
-            {
-
-                //int count = WebService.RequestTumikomi230();
-                int count = 0;
-
-                if(count > 0)
+            CommonUtils.AlertConfirm(view, "", message, (flag)=> {
+                if (flag)
                 {
-                    // Return("sagyou14")
-                    return;
-                }
+                    //int count = WebService.RequestTumikomi230();
+                    int count = 0;
 
-                if (kansen_kbn == "1")
-                {
-                    StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
+                    if (count > 0)
+                    {
+                        // Return("sagyou14")
+                        return;
+                    }
+
+                    if (kansen_kbn == "1")
+                    {
+                        StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
+                    }
+                    else
+                    {
+                        editor.PutString("course", etCourse.Text);
+                        editor.PutString("bin_no", bin_no);
+                        editor.PutString("kansen_kbn", kansen_kbn);
+                        editor.Apply();
+
+                        StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
+                    }
                 }
                 else
                 {
-                    editor.PutString("course", etCourse.Text);
-                    editor.PutString("bin_no", etBinNo.Text);
-                    editor.PutString("kansen_kbn", kansen_kbn);
-                    editor.Apply();
 
-                    StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
                 }
-            }
+            });
+            
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -214,16 +196,8 @@ namespace HHT
 
             if (keycode == Keycode.F4)
             {
-                Confirm();
+                ShowConfirmMessage();
                 return false;
-            }
-            else if (keycode == Keycode.Back)
-            {
-                if (txtConfirmMsg.Visibility == ViewStates.Visible)
-                {
-                    HideConfirmMessage();
-                    return false;
-                }
             }
 
             return true;
@@ -273,7 +247,6 @@ namespace HHT
                                     CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", () => { return; });
                                 }
 
-                                etBinNo.Text = bin_no;
                                 editor.PutString("course", btvCourse);
                                 editor.PutString("bin_no", result.bin_no);
                                 editor.PutString("kansen_kbn", result.kansen_kbn);

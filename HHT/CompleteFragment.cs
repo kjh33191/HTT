@@ -46,6 +46,11 @@ namespace HHT
             return true;
         }
 
+        public override bool OnBackPressed()
+        {
+            return false;
+        }
+
         private void BackToMainMenu()
         {
             string menu_kbn = prefs.GetString("menu_kbn", "");
