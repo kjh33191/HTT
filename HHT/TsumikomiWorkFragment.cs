@@ -21,7 +21,8 @@ namespace HHT
         private EditText etKosu, etCarLabel, etCarry, etKargo, etCard, etBara, etSonata;
         private Button btnIdou;
         private int kansen_kbn;
-        
+
+        private string souko_cd, kitaku_cd, syuka_date, tokuisaki_cd, todokesaki_cd, bin_no;
         private bool carLabelInputMode;
         private string zoubin_flg;
 
@@ -39,7 +40,6 @@ namespace HHT
 
             SetTitle("積込検品");
             SetFooterText("F3：移動");
-
             
             view.FindViewById<TextView>(Resource.Id.txt_tsumikomiWork_tokuisakiNm).Text = prefs.GetString("tokuisaki_nm", "");
             etKosu = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_kosu);
@@ -53,6 +53,13 @@ namespace HHT
             btnIdou = view.FindViewById<Button>(Resource.Id.et_tsumikomiWork_idou);
             btnIdou.Click += delegate { GoToIdouMenu(); };
             
+            souko_cd = prefs.GetString("souko_cd", "108");
+            kitaku_cd = prefs.GetString("kitaku_cd", "2");
+            syuka_date = prefs.GetString("syuka_date", "20180320");
+            tokuisaki_cd = prefs.GetString("tokuisaki_cd", "0000");
+            todokesaki_cd = prefs.GetString("todokesaki_cd", "0194");
+            bin_no = prefs.GetString("bin_no", "1");
+
             kansen_kbn = 0;
             
             carLabelInputMode = false;
@@ -69,6 +76,7 @@ namespace HHT
             
             return view;
         }
+
         private void GoToIdouMenu()
         {
             StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment));
@@ -77,36 +85,16 @@ namespace HHT
         // 総個数取得 TUMIKOMI050
         private int GetCountSouko()
         {
-            ((MainActivity)this.Activity).ShowProgress("");
+            ((MainActivity)this.Activity).ShowProgress("マテハン情報取得しています。");
             int count = 0;
 
             new Thread(new ThreadStart(delegate {
-
                 Activity.RunOnUiThread(() =>
                 {
                     Thread.Sleep(1500);
-
-                    Dictionary<string, string> param = new Dictionary<string, string>
-                    {
-                        { "kenpin_souko",  prefs.GetString("souko_cd", "103")},
-                        { "kitaku_cd", prefs.GetString("kitaku_cd", "2") },
-                        { "syuka_date", prefs.GetString("shuka_date", "180310") },
-                        { "nohin_date", prefs.GetString("nohin_date", "1") },
-                        { "tokuisaki_cd", prefs.GetString("tokuisaki_cd", "1") },
-                        { "todokesaki_cd", prefs.GetString("todokesaki_cd", "1") },
-                        { "bin_no", prefs.GetString("bin_no", "310") },
-                    };
-                    
-                    //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI050, param);
-                    //TUMIKOMI050 result = JsonConvert.DeserializeObject<TUMIKOMI050>(resultJson);
-                    
-                    Dictionary<string, string> result = new Dictionary<string, string>();
-                    int.TryParse(result["kosu_kei"], out count);
-                    
-                 }
-                    );
-                    Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
-
+                    count = WebService.RequestTumikomi050(souko_cd, kitaku_cd, syuka_date, tokuisaki_cd, todokesaki_cd, bin_no);
+                 });
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
                 }
             )).Start();
 
@@ -120,7 +108,6 @@ namespace HHT
             int resultCode = 1;
 
             new Thread(new ThreadStart(delegate {
-
                 Activity.RunOnUiThread(() =>
                 {
                     Thread.Sleep(1500);
@@ -143,6 +130,7 @@ namespace HHT
 
                     if (kansen_kbn != 0)
                     {
+                        
                         //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI080, param);
                         //TUMIKOMI080 result = JsonConvert.DeserializeObject<TUMIKOMI080>(resultJson);
 
@@ -150,6 +138,7 @@ namespace HHT
                         {
                             poRet = "0" // todo
                         };
+
                         switch (result.poRet)
                         {
                             case "1": resultCode = 1; break;
@@ -364,6 +353,7 @@ namespace HHT
 
                     string errorCode = "";
 
+                    // IT HAS ERROR
                     if (zoubin_flg == "1" && kansen_kbn != 0)
                     {
                         //TUMIKOMI310 result = WebService.RequestTumikomi310(param);
@@ -418,34 +408,22 @@ namespace HHT
                 {
                     Thread.Sleep(1500);
 
-                    Dictionary<string, string> param = new Dictionary<string, string>
-                    {
-                        { "kenpin_souko",  prefs.GetString("souko_cd", "108")},
-                        { "kitaku_cd", prefs.GetString("kitaku_cd", "2") },
-                        { "syuka_date", prefs.GetString("shuka_date", "20180320") },
-                        { "nohin_date", prefs.GetString("nohin_date", "20180321") },
-                        { "tokuisaki_cd", prefs.GetString("tokuisaki_cd", "0000") },
-                        { "todokesaki_cd", prefs.GetString("todokesaki_cd", "0194") },
-                        { "bin_no", prefs.GetString("bin_no", "1") },
-                    };
-
                     List<TUMIKOMI040> resultList;
                     
                     if (kansen_kbn == 0)
                     {
                         // 該当店舗の各マテハン数を取得(定番コース)
-                        resultList = WebService.RequestTumikomi040(param);
+                        resultList = WebService.RequestTumikomi040(souko_cd, kitaku_cd, syuka_date, tokuisaki_cd, todokesaki_cd, bin_no);
                     }
                     else
                     {
                         // 該当店舗の各マテハン数を取得(定番コース)
-                        resultList = WebService.RequestTumikomi300(param);
+                        resultList = WebService.RequestTumikomi300(souko_cd, kitaku_cd, syuka_date, tokuisaki_cd, todokesaki_cd, bin_no);
                     }
 
                     foreach (TUMIKOMI040 result in resultList)
                     {
                         string btvCategory = result.name_cd;
-                        string btvCategoryNm = result.category_nm;
                         string btvKosu = result.cnt;
 
                         if (btvCategory == "00")

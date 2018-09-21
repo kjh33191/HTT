@@ -65,11 +65,11 @@ namespace HHT
 
             etSyukaDate.Click += delegate
             {
-                CustomDialogFragment dialog = CustomDialogFragment.newInstance("TEST");
-                dialog.Show(FragmentManager, "dialog");
-                //DatePickerDialog dialog = new DatePickerDialog(this.Activity, test, 2013, 10, 22);
-
-                //dialog.Show();
+                //CustomDialogFragment dialog = CustomDialogFragment.newInstance("TEST");
+                //dialog.Show(FragmentManager, "dialog");
+                DatePickerDialog dialog = new DatePickerDialog(this.Activity, test, 2013, 10, 22);
+                
+                dialog.Show();
                
             };
             /*

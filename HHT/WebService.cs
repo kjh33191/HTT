@@ -803,14 +803,50 @@ namespace HHT
             }
         }
 
-        public static List<TUMIKOMI040> RequestTumikomi040(Dictionary<string, string> param)
+        public static List<TUMIKOMI040> RequestTumikomi040(string souko_cd, string kitaku_cd, string syuka_date, string tokuisaki_cd, string todokesaki_cd, string bin_no)
         {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                { "kenpin_souko",  souko_cd},
+                { "kitaku_cd", kitaku_cd },
+                { "syuka_date", syuka_date },
+                { "tokuisaki_cd", tokuisaki_cd },
+                { "todokesaki_cd", todokesaki_cd },
+                { "bin_no", bin_no },
+            };
+
             string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI040, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
             if (response.status == "0")
             {
                 return response.GetDataObject<List<TUMIKOMI040>>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        public static int RequestTumikomi050(string souko_cd, string kitaku_cd, string syuka_date, string tokuisaki_cd, string todokesaki_cd, string bin_no)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                { "kenpin_souko",  souko_cd},
+                { "kitaku_cd", kitaku_cd },
+                { "syuka_date", syuka_date },
+                { "tokuisaki_cd", tokuisaki_cd },
+                { "todokesaki_cd", todokesaki_cd },
+                { "bin_no", bin_no },
+            };
+
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI050, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return int.Parse(response.GetDataObject()["kosu_kei"]);
             }
             else
             {
@@ -835,8 +871,18 @@ namespace HHT
             }
         }
 
-        public static List<TUMIKOMI040> RequestTumikomi300(Dictionary<string, string> param)
+        public static List<TUMIKOMI040> RequestTumikomi300(string souko_cd, string kitaku_cd, string syuka_date, string tokuisaki_cd, string todokesaki_cd, string bin_no)
         {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                { "kenpin_souko",  souko_cd},
+                { "kitaku_cd", kitaku_cd },
+                { "syuka_date", syuka_date },
+                { "tokuisaki_cd", tokuisaki_cd },
+                { "todokesaki_cd", todokesaki_cd },
+                { "bin_no", bin_no },
+            };
+
             string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI300, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
