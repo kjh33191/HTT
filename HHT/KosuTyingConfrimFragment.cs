@@ -2,12 +2,9 @@
 using Android.OS;
 using Android.Views;
 using Android.Widget;
-using Com.Densowave.Bhtsdk.Barcode;
-using Newtonsoft.Json;
 using HHT.Resources.Model;
 using static Android.App.FragmentManager;
 using Android.Media;
-using Android.Net;
 using Android.Content;
 using Android.Preferences;
 using System.Threading;
@@ -78,9 +75,9 @@ namespace HHT
                     txtHenpin.Text = kosu110.sum_henpin_sumi + "/" + kosu110.sum_henpin;
                     txtHansoku.Text = kosu110.sum_hansoku_sumi + "/" + kosu110.sum_hansoku;
                     txtKaisyu.Text = "0" + "/" + "0".PadLeft(3, ' ');
-                    txtTotal.Text = kosu110.sum_tc_sumi + "/" + kosu110.sum_tc;
-                    txtDaisu.Text = kosu110.sum_mate_cnt.PadLeft(3, ' ');
-
+                    txtTotal.Text = kosu110.total + "/" + kosu110.total_sumi;
+                    txtDaisu.Text = kosu110.sum_mate_cnt;
+                    
                 }
                 else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
                 {
@@ -97,8 +94,8 @@ namespace HHT
                     txtHenpin.Text = kosu115.sum_henpin_sumi + "/" + kosu115.sum_henpin;
                     txtHansoku.Text = kosu115.sum_hansoku_sumi + "/" + kosu115.sum_hansoku;
                     txtKaisyu.Text = "0" + "/" + "0".PadLeft(3, ' ');
-                    txtTotal.Text = kosu115.sum_tc_sumi + "/" + kosu115.sum_tc;
-                    txtDaisu.Text = kosu115.sum_mate_cnt.PadLeft(3, ' ');
+                    txtTotal.Text = kosu115.total + "/" + kosu115.total_sumi;
+                    txtDaisu.Text = kosu115.sum_mate_cnt;
 
                 }
             }
@@ -119,19 +116,11 @@ namespace HHT
             return view;
         }
 
-        public override void OnResume()
-        {
-            base.OnResume();
-            
-        }
-
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
             if (keycode == Keycode.F1 || keycode == Keycode.F4)
             {
-                IBackStackEntry entry = FragmentManager.GetBackStackEntryAt(2);
-                int id = entry.Id;
-                FragmentManager.PopBackStack(id, 0);
+                FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(2).Id, 0);
             }
 
             return true;

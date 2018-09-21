@@ -1,30 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Resources.Model;
-using Newtonsoft.Json;
 
 namespace HHT
 {
     public class TsumikomiSelectFragment : BaseFragment
     {
-        View view;
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
+        View view;
         EditText etSyukaDate, etCourse;
+        Button btnConfirm;
+
         private string souko_cd;
         private string kitaku_cd;
         private string syuka_date;
@@ -41,29 +36,23 @@ namespace HHT
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             view = inflater.Inflate(Resource.Layout.fragment_tsumikomi_select, container, false);
-
-            // コンポーネント初期化
-            InitComponent();
-
-            // パラメータ設定
-            InitParamter();
-
-            return view;
-        }
-
-        // コンポーネント初期化
-        private void InitComponent()
-        {
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 
+            // TITLE SETTING
             SetTitle("積込検品");
 
-            Button btnConfirm = view.FindViewById<Button>(Resource.Id.btn_tsumikomiSelect_confirm);
+            // PARAMETER SETTING
+            souko_cd = prefs.GetString("souko_cd", "");
+            kitaku_cd = prefs.GetString("kitaku_cd", "");
+            syuka_date = prefs.GetString("syuka_date", "");
+            nohin_date = prefs.GetString("nohin_date", "");
+            course = prefs.GetString("course", "");
+            bin_no = prefs.GetString("bin_no", "");
+            kansen_kbn = prefs.GetString("kansen_kbn", "");
+
+            // ITEM EVENT SETTING 
             etSyukaDate = view.FindViewById<EditText>(Resource.Id.et_tsumikomiSelect_syukaDate);
-            etCourse = view.FindViewById<EditText>(Resource.Id.et_tsumikomiSelect_course);
-            
-            btnConfirm.Click += delegate { SearchBinNo(); };
             etSyukaDate.FocusChange += (sender, e) => {
                 if (e.HasFocus)
                 {
@@ -84,25 +73,22 @@ namespace HHT
                 }
             };
 
-            etSyukaDate.Text = "18/03/20";
+            etCourse = view.FindViewById<EditText>(Resource.Id.et_tsumikomiSelect_course);
+
+            btnConfirm = view.FindViewById<Button>(Resource.Id.btn_tsumikomiSelect_confirm);
+            btnConfirm.Click += delegate { Confirm(); };
+
+            // FIRST FOCUS
             etCourse.RequestFocus();
+            
+            // DUMMY DATA
+            etSyukaDate.Text = "18/03/20";
 
+            return view;
         }
 
-        // パラメータ設定
-        private void InitParamter()
-        {
-            souko_cd = prefs.GetString("souko_cd", "");
-            kitaku_cd = prefs.GetString("kitaku_cd", "");
-            syuka_date = prefs.GetString("syuka_date", "");
-            nohin_date = prefs.GetString("nohin_date", "");
-            course = prefs.GetString("course", "");
-            bin_no = prefs.GetString("bin_no", "");
-            kansen_kbn = prefs.GetString("kansen_kbn", "");
-
-        }
-
-        private void SearchBinNo()
+        // CHECK INPUT AND MOVE TO NEXT FRAGMENT
+        private void Confirm()
         {
             ((MainActivity)this.Activity).ShowProgress("便情報を確認しています。");
 
@@ -111,7 +97,6 @@ namespace HHT
                 {
                     try
                     {
-
                         syuka_date = "20" + etSyukaDate.Text.Replace("/", "");
                         TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, nohin_date, etCourse.Text);
 
@@ -129,6 +114,7 @@ namespace HHT
                         bin_no = result.bin_no;
                         kansen_kbn = result.kansen_kbn;
 
+                        editor.PutString("course", etCourse.Text);
                         editor.PutString("bin_no", bin_no);
                         editor.PutString("kansen_kbn", kansen_kbn);
                         editor.Apply();
@@ -149,51 +135,38 @@ namespace HHT
 
         private void ShowConfirmMessage()
         {
+            string message = "配送日".PadLeft(5) + " : " + etSyukaDate.Text + "\n";
+            message += "コース".PadLeft(5) + " : " + etCourse.Text + "\n";
+            message += "便No".PadLeft(5) + " : " + bin_no + "\n\n";
+            message += "よろしいですか？".PadLeft(5) + " : " + bin_no + "\n";
 
-            string message = @"
-配送日　：" + etSyukaDate.Text + @"
-コース　：" + etCourse.Text + @"
- 便No.  ：" + bin_no + @"
-
-よろしいですか？";
-
-            CommonUtils.AlertConfirm(view, "", message, (flag)=> {
+            CommonUtils.AlertConfirm(view, "確認", message, (flag)=> {
                 if (flag)
                 {
-                    //int count = WebService.RequestTumikomi230();
-                    int count = 0;
+                    int count = WebService.RequestTumikomi230(souko_cd,kitaku_cd, syuka_date, nohin_date, bin_no, etCourse.Text);
 
+                    // TODO
                     if (count > 0)
                     {
+                        // メールバッグ積込画面へ 
                         // Return("sagyou14")
                         return;
                     }
-
+                    
                     if (kansen_kbn == "1")
                     {
                         StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
                     }
                     else
                     {
-                        editor.PutString("course", etCourse.Text);
-                        editor.PutString("bin_no", bin_no);
-                        editor.PutString("kansen_kbn", kansen_kbn);
-                        editor.Apply();
-
                         StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
                     }
                 }
-                else
-                {
-
-                }
             });
-            
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-
             if (keycode == Keycode.F4)
             {
                 ShowConfirmMessage();
@@ -211,54 +184,45 @@ namespace HHT
             {
                 this.Activity.RunOnUiThread(() =>
                 {
-                    string densoSymbology = barcodeData.SymbologyDenso;
                     string data = barcodeData.Data;
 
                     if (etCourse.HasFocus)
                     {
                         if (data.Length < 12)
                         {
-                            CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", () => { return; });
+                            CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", null);
+                            return;
                         }
-                        else
+                       
+                        string btvTmp = data.Substring(0, 11);              // 配送日(8桁) + センター(3桁)
+                        string btvHaisohDate = btvTmp.Substring(2, 4);      // 配送日(YYMMDD)
+                        string btvCenterCd = btvTmp.Substring(6, 3);        // センターコード(3桁)
+                        string btvCourse = data.Substring(11, data.Length); // コース(桁可変) 
+
+                        try
                         {
-                            string btvTmp = data.Substring(0, 11);              // 配送日(8桁) + センター(3桁)
-                            string btvHaisohDate = btvTmp.Substring(2, 4);      // 配送日(YYMMDD)
-                            string btvCenterCd = btvTmp.Substring(6, 3);        // センターコード(3桁)
-                            string btvCourse = data.Substring(11, data.Length); // コース(桁可変) 
 
-                            try
+                            string haiso_date = CommonUtils.GetDateYYMMDDwithSlash(btvHaisohDate);
+
+                            TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, nohin_date, btvCourse);
+                            
+                            if (result.state == "03")
                             {
-
-                                string haiso_date = CommonUtils.GetDateYYMMDDwithSlash(btvHaisohDate);
-
-                                //TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, nohin_date, btvCourse);
-                                
-                                TUMIKOMI010 result = new TUMIKOMI010
-                                {
-                                    state = "00",
-                                    bin_no = "1",
-                                    kansen_kbn = "0"
-                                };
-                                
-
-                                if (result.state == "03")
-                                {
-                                    CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", () => { return; });
-                                }
-
-                                editor.PutString("course", btvCourse);
-                                editor.PutString("bin_no", result.bin_no);
-                                editor.PutString("kansen_kbn", result.kansen_kbn);
-                                editor.Apply();
-
-                                ShowConfirmMessage();
-                            }
-                            catch
-                            {
-                                CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", () => { return; });
+                                CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", null);
+                                return;
                             }
 
+                            editor.PutString("course", btvCourse);
+                            editor.PutString("bin_no", result.bin_no);
+                            editor.PutString("kansen_kbn", result.kansen_kbn);
+                            editor.Apply();
+
+                            ShowConfirmMessage();
+                        }
+                        catch
+                        {
+                            CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", null);
+                            return;
                         }
                     }
                     

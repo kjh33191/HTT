@@ -16,20 +16,25 @@ namespace HHT
     public class TodokeTyingWorkFragment : BaseFragment
     {
         private readonly string TAG = "KosuWorkFragment";
+
+        // UI Component
         private View view;
-        private int kosuMenuflag;
-        private int totalCount;
         private TextView txtVendorName, txtMiseName, txtTenpoLocation, txtCase, txtHuteikei
             , txtMiseidou, txtHansoku, txtTotal
             , txtOricon, txtHazai, txtHenpin, txtKaisyu, txtDaisu;
         private Button btnStop, btnCancel, btnMantan, btnComplete;
         private GridLayout gdTyingCanman;
+
+        // For Handling Parameters
+        private ISharedPreferences prefs;
+        private ISharedPreferencesEditor editor;
+
+        // Local Parameters
+        private int kosuMenuflag;
+        private int totalCount;
         private string venderCd;
         private int kosuMax;
-        private bool isScanned;
-        ISharedPreferences prefs;
-        ISharedPreferencesEditor editor;
-
+        private bool isScanned = false;
         
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -38,6 +43,8 @@ namespace HHT
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
+            Log.Debug(TAG, "Start OnCreateView ");
+            
             view = inflater.Inflate(Resource.Layout.fragment_kosu_tying, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
@@ -65,9 +72,8 @@ namespace HHT
             {
                 SetTitle("ベンダー指定検品");
                 SetFooterText("F1:中断");
-                txtVendorName.Text = prefs.GetString("vendor_nm", "");
                 venderCd = prefs.GetString("vendor_cd", "");
-
+                txtVendorName.Text = prefs.GetString("vendor_nm", "");
             }
             else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
             {
@@ -142,7 +148,6 @@ namespace HHT
                     Log.Error(Tag, "");
                     return;
                 }
-
             };
 
             gdTyingCanman = view.FindViewById<GridLayout>(Resource.Id.gd_tying_canman);
@@ -164,9 +169,7 @@ namespace HHT
             txtKaisyu.Text = prefs.GetString("kaisyu_su", "0");
             txtTotal.Text = prefs.GetString("ko_su", "0");
             txtDaisu.Text = prefs.GetString("dai_su", "0");
-
-            isScanned = false;
-
+            
             SetKosuMax();
         }
         
@@ -305,7 +308,6 @@ namespace HHT
                 );
             }
             )).Start();
-
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -482,10 +484,14 @@ namespace HHT
                             }
                         });
                     }
-                    
                 }
-
-                
+                else
+                {
+                    if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
+                    {
+                        FragmentManager.PopBackStack();
+                    }
+                }
 
                 return true;
             }
@@ -503,6 +509,11 @@ namespace HHT
             }
 
             return true;
+        }
+
+        public override bool OnBackPressed()
+        {
+            return false;
         }
 
         private void ScanCntReset()
@@ -556,7 +567,7 @@ namespace HHT
             string pSoukoCD = prefs.GetString("souko_cd", "");
             string pSyukaDate = prefs.GetString("syuka_date", "");
             string pTokuisakiCD = prefs.GetString("tokuisaki_cd", "0000");
-            string pTodokesakiCD = "";
+            string pTodokesakiCD = kosuMenuflag == (int)Const.KOSU_MENU.TODOKE ? prefs.GetString("todokesaki_cd", "") : "";
             string pVendorCD = prefs.GetString("vendor_cd", "");
             string pTsumiVendorCD = "";
             string pKamotsuNo = kamotsu_no;
@@ -647,24 +658,22 @@ namespace HHT
 
         private void GoMantanPage()
         {
-            if (txtTotal.Text != "0")
+            if (isScanned)
             {
-                //DEVICE:read_OK()
                 SetSumQty();
-                //IF JOB:menu_flg == JOB:MENU_VENDOR Then
-                //JOB: tsumi_vendor_cd = JOB:vendor_cd
-                //JOB:tsumi_vendor_nm = JOB:vendor_nm
+
+                if(kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
+                {
+                    editor.PutString("tsumi_vendor_cd", prefs.GetString("vendor_cd", ""));
+                    editor.PutString("tsumi_vendor_nm", prefs.GetString("vendor_nm", ""));
+                    editor.Apply();
+                }
 
                 // 満タン(sagyou16)
                 StartFragment(FragmentManager, typeof(KosuMantanFragment));
             }
         }
-
-        public override bool OnBackPressed()
-        {
-            return false;
-        }
-
+        
     }
 }
  

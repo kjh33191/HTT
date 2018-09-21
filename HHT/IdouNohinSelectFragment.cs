@@ -53,9 +53,9 @@ namespace HHT
         private void Confirm()
         {
             TokuiFileHelper tokuiFileHelper = new TokuiFileHelper();
-            List<TokuiFile> result = tokuiFileHelper.SelectByTokuisakiWithTodokesaki(etTokuisakiCd.Text, etTodokesakiCd.Text);
+            TokuiFile result = tokuiFileHelper.SelectByPk(etTokuisakiCd.Text, etTodokesakiCd.Text);
 
-            if (result.Count > 0)
+            if (result != null)
             {
                 // よろしいですか？ 表示
                 string confirmMsg = @"
@@ -66,9 +66,9 @@ namespace HHT
 よろしいですか？
                                         ";
 
-                confirmMsg = confirmMsg.Replace("@temp1", result[0].tokuisaki_cd);
-                confirmMsg = confirmMsg.Replace("@temp2", result[0].todokesaki_cd);
-                confirmMsg = confirmMsg.Replace("@temp3", result[0].tokuisaki_nm);
+                confirmMsg = confirmMsg.Replace("@temp1", result.tokuisaki_cd);
+                confirmMsg = confirmMsg.Replace("@temp2", result.todokesaki_cd);
+                confirmMsg = confirmMsg.Replace("@temp3", result.tokuisaki_nm);
 
                 CommonUtils.AlertConfirm(view, "確認", confirmMsg, (flag) =>
                 {

@@ -91,6 +91,7 @@
     <Compile Include="Common\BootComplete.cs" />
     <Compile Include="Common\CommonUtils.cs" />
     <Compile Include="CompleteFragment.cs" />
+    <Compile Include="CustomDialogFragment.cs" />
     <Compile Include="IdouNohinWorkFragment.cs" />
     <Compile Include="IdouNohinSelectFragment.cs" />
     <Compile Include="IdouRegistWorkFragment.cs" />
@@ -559,6 +560,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\baseline_search_black_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\dialog_custom.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

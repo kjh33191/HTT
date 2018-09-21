@@ -55,7 +55,7 @@ namespace HHT
             string vendorCode = prefs.GetString("tsumi_vendor_cd", "");
             etMantanVendor.Text = vendorCode;
 
-            matehanList = WebService.ExecuteKosu200(vendorCode);
+            matehanList = WebService.RequestKosu200(vendorCode);
             listView = view.FindViewById<ListView>(Resource.Id.lv_matehanList);
 
             List<string> temp = new List<string>();
@@ -131,8 +131,7 @@ namespace HHT
                     {
                         editor.PutString("mateno", matehanList[index].matehan_cd);
                         editor.Apply();
-
-
+                        
                         if (menuFlag == 3)
                         {
                             //WebService.RequestIdou070()

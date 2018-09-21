@@ -26,7 +26,6 @@ namespace HHT
             var view = inflater.Inflate(Resource.Layout.fragment_menu_nyuka, container, false);
 
             SetTitle("入荷検品");
-
             Button button2 = view.FindViewById<Button>(Resource.Id.singleInspButton);
             button2.Click += delegate { StartFragment(FragmentManager, typeof(KosuMenuFragment));};
             

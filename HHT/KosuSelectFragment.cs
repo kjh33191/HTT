@@ -10,6 +10,7 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Com.Densowave.Bhtsdk.Barcode;
+using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
 
 namespace HHT
@@ -17,16 +18,17 @@ namespace HHT
     public class KosuSelectFragment : BaseFragment
     {
         private readonly string TAG = "KosuSelectFragment";
+
         private View view;
-
-        private int kosuMenuflag;
-        private string soukoCd, kitakuCd, vendorNm;
-
         private TextView txtConfirm;
         private EditText etSyukaDate, etTokuisaki, etTodokesaki, etVendorCode;
         private Button btnVendorSearch, confirmButton;
-        ISharedPreferences prefs;
-        ISharedPreferencesEditor editor;
+
+        private ISharedPreferences prefs;
+        private ISharedPreferencesEditor editor;
+
+        private int kosuMenuflag;
+        private string soukoCd, kitakuCd, vendorNm;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -44,8 +46,13 @@ namespace HHT
             kitakuCd = prefs.GetString("kitaku_cd", "");
 
             InitComponent();
-            
+
             return view;
+        }
+
+        private void test(object sender, DatePickerDialog.DateSetEventArgs e)
+        {
+
         }
 
         private void InitComponent()
@@ -56,6 +63,16 @@ namespace HHT
             //etSyukaDate.Text = DateTime.Now.ToString("yy/MM/dd");
             etSyukaDate.Text = "18/03/20"; // テスト用
 
+            etSyukaDate.Click += delegate
+            {
+                CustomDialogFragment dialog = CustomDialogFragment.newInstance("TEST");
+                dialog.Show(FragmentManager, "dialog");
+                //DatePickerDialog dialog = new DatePickerDialog(this.Activity, test, 2013, 10, 22);
+
+                //dialog.Show();
+               
+            };
+            /*
             etSyukaDate.FocusChange += (sender, e) => {
                 if (e.HasFocus)
                 {
@@ -67,7 +84,7 @@ namespace HHT
                 }
 
             };
-
+            */
             confirmButton = view.FindViewById<Button>(Resource.Id.btn_todoke_confirm);
             confirmButton.Click += delegate { Confirm(); };
             
@@ -286,10 +303,15 @@ namespace HHT
                         {
                             if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                             {
+                                TokuiFileHelper tokuiFIleHelper = new TokuiFileHelper();
+                                TokuiFile tokuiInfo = tokuiFIleHelper.SelectByPk(etTokuisaki.Text, etTodokesaki.Text);
+                                
+                                editor.PutString("syuka_date", "20" + etSyukaDate.Text.Replace("/", ""));
                                 editor.PutString("deliveryDate", etSyukaDate.Text);
                                 editor.PutString("tokuisaki_cd", etTokuisaki.Text);
-                                editor.PutString("tokuisaki_nm", etTokuisaki.Text);
+                                editor.PutString("tokuisaki_nm", tokuiInfo.tokuisaki_nm);
                                 editor.PutString("todokesaki_cd", etTodokesaki.Text);
+                                editor.PutString("vendor_cd", tokuiInfo.default_vendor);
                                 editor.PutInt("menuKbn", 1); // 届先検索フラグ設定
                                 editor.Apply();
 

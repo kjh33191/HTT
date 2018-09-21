@@ -208,7 +208,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp">
                 <TextView
-                    android:text="個数"
+                    android:text="総個数"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"

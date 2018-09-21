@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
-using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
-using Java.Interop;
 
 namespace HHT
 {
@@ -34,10 +28,10 @@ namespace HHT
             view = inflater.Inflate(Resource.Layout.fragment_menu_main, container, false);
             LinearLayout layout = view.FindViewById<LinearLayout>(Resource.Id.linearLayout2);
             ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(Application.Context);
-
+            
             string menu_kbn = prefs.GetString("menu_kbn", "");
 
-            if(menu_kbn == "0")
+            if (menu_kbn == "0")
             {
                 // 構内の場合
                 LinearLayout konaiLayout = view.FindViewById<LinearLayout>(Resource.Id.konaiLayout);

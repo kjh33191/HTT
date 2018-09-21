@@ -330,10 +330,17 @@ namespace HHT
         }
 
         // 出荷ラベル確認処理
-        private void CheckSyukaLabel()
+        private void CheckSyukaLabel(string kamotuNo)
         {
-            var progress = ProgressDialog.Show(this.Activity, null, "出荷ラベルを確認しています。", true);
+            //((MainActivity)this.Activity).ShowProgress("出荷ラベルを確認しています。");
+            //var progress = ProgressDialog.Show(this.Activity, null, "出荷ラベルを確認しています。", true);
             int resultCode = 1;
+
+            Activity.RunOnUiThread(() =>
+            {
+                CustomDialogFragment alertDialog = new CustomDialogFragment();
+                alertDialog.Show(FragmentManager, "AAAA");
+            });
 
             new Thread(new ThreadStart(delegate {
 
@@ -343,30 +350,31 @@ namespace HHT
 
                     Dictionary<string, string> param = new Dictionary<string, string>
                     {
-                        { "pTerminalID",  prefs.GetString("souko_cd", "103")},
-                        { "pProgramID", prefs.GetString("kitaku_cd", "2") },
-                        { "pSagyosyaCD", prefs.GetString("shuka_date", "180310") },
-                        { "pSoukoCD",  prefs.GetString("souko_cd", "103")},
-                        { "pSyukaDate", prefs.GetString("kitaku_cd", "2") },
-                        { "pBinNo", prefs.GetString("shuka_date", "180310") },
-                        { "pCourse", prefs.GetString("nohin_date", "1") },
-                        { "pTokuisakiCD", prefs.GetString("tokuisaki_cd", "1") },
-                        { "pKamotsuNo", prefs.GetString("todokesaki_cd", "1") },
-                        { "pHHT_No", prefs.GetString("bin_no", "310") }
+                        { "pTerminalID",  "432660068"},
+                        { "pProgramID", "TUM" },
+                        { "pSagyosyaCD", "99999" },
+                        { "pSoukoCD",  prefs.GetString("souko_cd", "")},
+                        { "pSyukaDate", prefs.GetString("syuka_date", "") },
+                        { "pBinNo", prefs.GetString("bin_no", "") },
+                        { "pCourse", prefs.GetString("course", "") },
+                        { "pTokuisakiCD", prefs.GetString("tokuisaki_cd", "") },
+                        { "pKamotsuNo", kamotuNo },
+                        { "pHHT_No", "11101" }
                     };
 
                     string errorCode = "";
 
                     if (zoubin_flg == "1" && kansen_kbn != 0)
                     {
-                        TUMIKOMI310 result = WebService.RequestTumikomi310(param);
-                        errorCode = result.poRet;
+                        //TUMIKOMI310 result = WebService.RequestTumikomi310(param);
+                        //errorCode = result.poRet;
                     }
                     else
                     {
-                        TUMIKOMI060 result = WebService.RequestTumikomi060(param); //result.poMatehan
-                         errorCode = result.poRet;
+                        //TUMIKOMI060 result = WebService.RequestTumikomi060(param); //result.poMatehan
+                         //errorCode = result.poRet;
                     }
+                    errorCode = "0";
 
                     switch (errorCode)
                     {
@@ -394,7 +402,7 @@ namespace HHT
                     }
                 }
                 );
-                Activity.RunOnUiThread(() => progress.Dismiss());
+                //Activity.RunOnUiThread(() => progress.Dismiss());
             }
             )).Start();
         }
@@ -471,16 +479,14 @@ namespace HHT
 
             foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
             {
-                string densoSymbology = barcodeData.SymbologyDenso;
                 string data = barcodeData.Data;
-                int barcodeDataLength = data.Length;
                 
                 this.Activity.RunOnUiThread(() =>
                 {
                     if (carLabelInputMode == false) // 出荷ラベル
                     {
                         // 出荷ラベル確認処理
-                        CheckSyukaLabel();
+                        CheckSyukaLabel(data);
 
                         if (zoubin_flg == "1")
                         {

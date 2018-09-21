@@ -216,9 +216,9 @@ namespace HHT
 
                         Toast.MakeText(this.Activity, bodyMsg, ToastLength.Long).Show();
                         
-                        ToneGenerator toneGen1 = new ToneGenerator(Stream.Music, 100);
-                        toneGen1.StartTone(Tone.CdmaPip, 1000);
-
+                        ToneGenerator toneGen1 = new ToneGenerator(Stream.Notification, 100);
+                        toneGen1.StartTone(Tone.CdmaAlertCallGuard, 1000);
+                        
                         StartFragment(FragmentManager, typeof(MainMenuFragment));
                     }
 
