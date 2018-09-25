@@ -87,6 +87,24 @@ namespace HHT.Resources.DataHelper
             return 0;
         }
 
+        public bool InsertAll(List<MbFile> mbFiles)
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    connection.InsertAll(mbFiles);
+                    return true;
+                }
+
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+
+        }
 
         public bool DeleteAll()
         {

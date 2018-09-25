@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Com.Densowave.Bhtsdk.Barcode;
@@ -14,20 +16,25 @@ namespace HHT
 {
     public class TsumikomiWorkFragment : BaseFragment
     {
+        private readonly string TAG = "TsumikomiWorkFragment";
+        
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
         private View view;
         private EditText etKosu, etCarLabel, etCarry, etKargo, etCard, etBara, etSonata;
         private Button btnIdou;
-        private int kansen_kbn;
+        private string kansen_kbn;
 
-        private string souko_cd, kitaku_cd, syuka_date, tokuisaki_cd, todokesaki_cd, bin_no;
-        private bool carLabelInputMode;
-        private string zoubin_flg;
-
+        private string souko_cd, kitaku_cd, syuka_date, tokuisaki_cd, todokesaki_cd, bin_no, course;
+        private int zoubin_flg;
+        private string matehan;
+        private bool carLabelInputMode = false;
         private static readonly string ERR_UPDATE_001 = "更新出来ませんでした。\n再度商品をスキャンして下さい。";
-        
+
+        // Proc TRG - >060(kansen_kbn == 0), 310 ;  
+        // syaryou TRG - > 080(kansen_kbn == 0); 311 ; => 210, 314  cancel -> 090, 312
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -51,21 +58,20 @@ namespace HHT
             etSonata = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_sonota);
 
             btnIdou = view.FindViewById<Button>(Resource.Id.et_tsumikomiWork_idou);
-            btnIdou.Click += delegate { GoToIdouMenu(); };
+            btnIdou.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment)); };
             
-            souko_cd = prefs.GetString("souko_cd", "108");
-            kitaku_cd = prefs.GetString("kitaku_cd", "2");
-            syuka_date = prefs.GetString("syuka_date", "20180320");
-            tokuisaki_cd = prefs.GetString("tokuisaki_cd", "0000");
-            todokesaki_cd = prefs.GetString("todokesaki_cd", "0194");
-            bin_no = prefs.GetString("bin_no", "1");
+            souko_cd = prefs.GetString("souko_cd", "");
+            kitaku_cd = prefs.GetString("kitaku_cd", "");
+            syuka_date = prefs.GetString("syuka_date", "");
+            tokuisaki_cd = prefs.GetString("tokuisaki_cd", "");
+            todokesaki_cd = prefs.GetString("todokesaki_cd", "");
+            bin_no = prefs.GetString("bin_no", "");
+            course = prefs.GetString("course", "");
 
-            kansen_kbn = 0;
+            zoubin_flg = prefs.GetInt("zoubin_flg", 1);
+            kansen_kbn = prefs.GetString("kansen_kbn", "1");
             
-            carLabelInputMode = false;
-            zoubin_flg = prefs.GetString("zoubin_flg", "1");
-
-            if (zoubin_flg == "1")
+            if (zoubin_flg == 1)
             {
                 GetTenpoMatehanInfo();  // 作業5, 6 定番コース단골코스(zoubin_flg = 1)
             }
@@ -77,9 +83,55 @@ namespace HHT
             return view;
         }
 
-        private void GoToIdouMenu()
+        // TRG ボタン押した時
+        public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
         {
-            StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment));
+            IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData = dataReceivedEvent.BarcodeData;
+
+            foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
+            {
+                this.Activity.RunOnUiThread(() =>
+                {
+                    if (carLabelInputMode == false) // 出荷ラベル
+                    {
+                        // 出荷ラベル確認処理
+                        Thread.Sleep(1500);
+
+                        Dictionary<string, string> param = GetProcParam(barcodeData.Data);
+                        //MTumikomiProc result = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "060" : "310", param); // IT HAS ERROR
+
+                        MTumikomiProc result = new MTumikomiProc();
+                        result.poMsg = "";
+                        if (result.poMsg != "")
+                        {
+                            CommonUtils.AlertDialog(view, "エラー", result.poMsg, null);
+                            return;
+                        }
+
+                        matehan = result.poMatehan;
+                        CommonUtils.AlertDialog(view, "確認", "出荷ラベルが確認できました。", null);
+
+                        // result.poMatehan
+
+                        // sagyou8
+                        /*
+                        if (zoubin_flg != 1)
+                        {
+                            // 貨物Noスキャン時、各分類のカウントを取得
+                            CountKamotsu(result.poMatehan);
+                        }
+                        */
+
+                        carLabelInputMode = true;
+
+                    }
+                    else　// 車両ラベル
+                    {
+                        // 作業ステータス更新・積込処理
+                        UpdateSagyoStatus(barcodeData.Data);
+                    }
+                });
+            }
         }
 
         // 総個数取得 TUMIKOMI050
@@ -102,7 +154,7 @@ namespace HHT
         }
 
         // 作業ステータス更新・積込処理 TUMIKOMI080,TUMIKOMI311
-        private void UpdateSagyoStatus()
+        private void UpdateSagyoStatus(string saryouData)
         {
             var progress = ProgressDialog.Show(this.Activity, "Please wait...", "Contacting server. Please wait...", true);
             int resultCode = 1;
@@ -112,287 +164,79 @@ namespace HHT
                 {
                     Thread.Sleep(1500);
 
-                    Dictionary<string, string> param = new Dictionary<string, string>
+                    Dictionary<string, string> param = GetProcParam(saryouData);
+                    //MTumikomiProc result = WebService.CallTumiKomiProc( kansen_kbn != "0" ? "080": "311", param);
+
+                    // ********* delete
+                    MTumikomiProc result = new MTumikomiProc();
+                    result.poMsg = "";
+                    result.poRet = "0";
+                    // ********* delete
+
+                    // プロシージャ内エラーの場合
+                    if (result.poMsg != "")
                     {
-                        { "pTerminalID",  prefs.GetString("souko_cd", "103")},
-                        { "pProgramID", prefs.GetString("kitaku_cd", "2") },
-                        { "pSagyosyaCD", prefs.GetString("shuka_date", "180310") },
-                        { "pSoukoCD",  prefs.GetString("souko_cd", "103")},
-                        { "pSyukaDate", prefs.GetString("kitaku_cd", "2") },
-                        { "pBinNo", prefs.GetString("shuka_date", "180310") },
-                        { "pCourse", prefs.GetString("nohin_date", "1") },
-                        { "pTokuisakiCD", prefs.GetString("tokuisaki_cd", "1") },
-                        { "pTodokesakiCD", prefs.GetString("todokesaki_cd", "1") },
-                        { "pHHT_No", prefs.GetString("todokesaki_cd", "1") },
-                        { "pMatehan", prefs.GetString("todokesaki_cd", "1") },
-                        { "pSyaryoNo", prefs.GetString("bin_no", "310") }
-                    };
-
-                    if (kansen_kbn != 0)
-                    {
-                        
-                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI080, param);
-                        //TUMIKOMI080 result = JsonConvert.DeserializeObject<TUMIKOMI080>(resultJson);
-
-                        TUMIKOMI310 result = new TUMIKOMI310
-                        {
-                            poRet = "0" // todo
-                        };
-
-                        switch (result.poRet)
-                        {
-                            case "1": resultCode = 1; break;
-                            case "2": resultCode = 2; break;
-                            case "8": resultCode = 8; break;
-                            case "0": resultCode = 0; break;
-                            default: resultCode = 1; break;
-                        }
-                    }
-                    else
-                    {
-                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI311, param);
-                        //TUMIKOMI311 result = JsonConvert.DeserializeObject<TUMIKOMI311>(resultJson);
-
-                        TUMIKOMI310 result = new TUMIKOMI310();
-                        result.poRet = "0"; // todo
-                        switch (result.poRet)
-                        {
-                            case "1": resultCode = 1; break;
-                            case "2": resultCode = 2; break;
-                            case "8": resultCode = 8; break;
-                            case "0": resultCode = 0; break;
-                            default: resultCode = 1; break;
-                        }
+                        CommonUtils.AlertDialog(view, "エラー", result.poMsg, null);
+                        return;
                     }
 
-                    if (zoubin_flg == "1")
+                    resultCode = int.Parse(result.poRet);
+                   
+                    if (resultCode == 0 || resultCode == 2)
                     {
-
-                        if (resultCode == 0 || resultCode == 2)
+                        if (kansen_kbn == "0")
                         {
-                            if (kansen_kbn == 0)
+                            if (resultCode == 2)
                             {
-                                if (resultCode == 2)
+                                CommonUtils.AlertConfirm(view, "確認", "積込可能な商品があります。\n積込みを完了\nしますか？", (flag) =>
                                 {
-                                    CommonUtils.AlertConfirm(view, "確認", "積込可能な商品があります。\n積込みを完了\nしますか？", (flag) =>
+                                    if (!flag)
                                     {
-                                        if (!flag)
-                                        {
-                                            carLabelInputMode = false;
-                                            return;
-                                        }
-                                        else
-                                        {
-                                            // 積込みを完了
-                                            CompleteTsumiKomi();
-                                        }
-                                    });
-                                }
-                                else
-                                {
-                                    // 積込みを完了
-                                    CompleteTsumiKomi();
-                                }
-                            }
-
-                            if (kansen_kbn == 0)
-                            {
-                                /*
-                                Dictionary<string, string> param = new Dictionary<string, string>
+                                        carLabelInputMode = false;
+                                        return;
+                                    }
+                                    else
                                     {
-                                        { "pTerminalID",  prefs.GetString("souko_cd", "103")},
-                                        { "pProgramID", prefs.GetString("kitaku_cd", "2") },
-                                        { "pSagyosyaCD", prefs.GetString("shuka_date", "180310") },
-                                        { "pSoukoCD",  prefs.GetString("souko_cd", "103")},
-                                        { "pSyukaDate", prefs.GetString("kitaku_cd", "2") },
-                                        { "pBinNo", prefs.GetString("shuka_date", "180310") },
-                                        { "pCourse", prefs.GetString("nohin_date", "1") },
-                                        { "pTokuisakiCD", prefs.GetString("tokuisaki_cd", "1") },
-                                        { "pTodokesakiCD", prefs.GetString("todokesaki_cd", "1") },
-                                        { "pHHT_No", prefs.GetString("todokesaki_cd", "1") },
-                                        { "pMatehan", prefs.GetString("todokesaki_cd", "1") },
-                                        { "pSyaryoNo", prefs.GetString("bin_no", "310") }
-                                    };
-                                    */
-                                //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI210, param);
-                                //TUMIKOMI210 result = JsonConvert.DeserializeObject<TUMIKOMI210>(resultJson);
+                                        Log.Debug(TAG, "CreateTsumiFiles Start");
+                                   
+                                        CreateTsumiFiles();
 
-                                TUMIKOMI310 result = new TUMIKOMI310();
-                                result.poRet = "0";
-                                if (result.poRet == "99")
-                                {
-                                    // 残作業あり
-                                    // tenpo_zan_flg = true
-                                    StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
-                                }
-                                else if (result.poRet == "0")
-                                {
-                                    // 正常終了
-                                    // tenpo_zan_flg = false
-                                    StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
-                                }
-                                else
-                                {
-                                    // Error
-                                    CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
-                                    return;
-                                }
+                                        Log.Debug(TAG, "CreateTsumiFiles End");
+                                    }
+                                });
                             }
                             else
                             {
-                                /*
-                                Dictionary<string, string> param = new Dictionary<string, string>
-                                    {
-                                        { "pTerminalID",  prefs.GetString("souko_cd", "103")},
-                                        { "pProgramID", prefs.GetString("kitaku_cd", "2") },
-                                        { "pSagyosyaCD", prefs.GetString("shuka_date", "180310") },
-                                        { "pSoukoCD",  prefs.GetString("souko_cd", "103")},
-                                        { "pSyukaDate", prefs.GetString("kitaku_cd", "2") },
-                                        { "pBinNo", prefs.GetString("shuka_date", "180310") },
-                                        { "pCourse", prefs.GetString("nohin_date", "1") },
-                                        { "pTokuisakiCD", prefs.GetString("tokuisaki_cd", "1") },
-                                        { "pTodokesakiCD", prefs.GetString("todokesaki_cd", "1") },
-                                        { "pHHT_No", prefs.GetString("todokesaki_cd", "1") },
-                                        { "pMatehan", prefs.GetString("todokesaki_cd", "1") },
-                                        { "pSyaryoNo", prefs.GetString("bin_no", "310") }
-                                    };
-                                    */
-                                //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI314, param);
-                                //TUMIKOMI314 result = JsonConvert.DeserializeObject<TUMIKOMI314>(resultJson);
-
-                                TUMIKOMI310 result = new TUMIKOMI310();
-                                if (result.poRet == "99")
-                                {
-                                    // 残作業あり
-                                    // tenpo_zan_flg = true
-                                    StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
-                                }
-                                else if (result.poRet == "0")
-                                {
-                                    // 正常終了
-                                    // tenpo_zan_flg = false
-                                    StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
-                                }
-                                else
-                                {
-                                    // Error
-                                    CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
-                                    return;
-                                }
+                                CreateTsumiFiles();
                             }
                         }
-                        else if (resultCode == 1)
-                        {
-                            // scan_flg = true	//スキャン済みフラグ
-                            // iniZero(4), Return("sagyou5")
-                            carLabelInputMode = false;
-                        }
 
-                    }
-                    else
-                    {
-                        if (resultCode == 0)
+                        //配車テーブルの該当コースの各数量を実績数で更新する
+                        var updateResult = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "210" : "314", param);
+                                
+                        if (updateResult.poRet == "0" || updateResult.poRet == "99")
                         {
-                            // ok
-                            // JOB: kanryo_flg = true	//完了フラグを立てる
-                            // JOB: scan_flg = true
-                            // Return("sagyou9")
-
-                        }
-                        else if (resultCode == 8)
-                        {
-                            CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n再度商品をスキャンして下さい。", null);
+                            editor.PutBoolean("tenpo_zan_flg", updateResult.poRet == "99" ? true : false);
+                            editor.Apply();
+                            StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
                         }
                         else
                         {
-                            // sagyou7
-                            carLabelInputMode = false;
+                            CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
+                            return;
                         }
-                    }
 
+                    }
+                    else if (resultCode == 1)
+                    {
+                        // scan_flg = true	//スキャン済みフラグ
+                        // iniZero(4), Return("sagyou5")
+                        carLabelInputMode = false;
+                    }
+                        
                 }
                 );
                 Activity.RunOnUiThread(() => progress.Dismiss());
-
-            }
-            )).Start();
-        }
-
-        // 出荷ラベル確認処理
-        private void CheckSyukaLabel(string kamotuNo)
-        {
-            //((MainActivity)this.Activity).ShowProgress("出荷ラベルを確認しています。");
-            //var progress = ProgressDialog.Show(this.Activity, null, "出荷ラベルを確認しています。", true);
-            int resultCode = 1;
-
-            Activity.RunOnUiThread(() =>
-            {
-                CustomDialogFragment alertDialog = new CustomDialogFragment();
-                alertDialog.Show(FragmentManager, "AAAA");
-            });
-
-            new Thread(new ThreadStart(delegate {
-
-                Activity.RunOnUiThread(() =>
-                {
-                    Thread.Sleep(1500);
-
-                    Dictionary<string, string> param = new Dictionary<string, string>
-                    {
-                        { "pTerminalID",  "432660068"},
-                        { "pProgramID", "TUM" },
-                        { "pSagyosyaCD", "99999" },
-                        { "pSoukoCD",  prefs.GetString("souko_cd", "")},
-                        { "pSyukaDate", prefs.GetString("syuka_date", "") },
-                        { "pBinNo", prefs.GetString("bin_no", "") },
-                        { "pCourse", prefs.GetString("course", "") },
-                        { "pTokuisakiCD", prefs.GetString("tokuisaki_cd", "") },
-                        { "pKamotsuNo", kamotuNo },
-                        { "pHHT_No", "11101" }
-                    };
-
-                    string errorCode = "";
-
-                    // IT HAS ERROR
-                    if (zoubin_flg == "1" && kansen_kbn != 0)
-                    {
-                        //TUMIKOMI310 result = WebService.RequestTumikomi310(param);
-                        //errorCode = result.poRet;
-                    }
-                    else
-                    {
-                        //TUMIKOMI060 result = WebService.RequestTumikomi060(param); //result.poMatehan
-                         //errorCode = result.poRet;
-                    }
-                    errorCode = "0";
-
-                    switch (errorCode)
-                    {
-                        case "1": CommonUtils.AlertDialog(view, "エラー", "貨物Noが見つかりません。", null); break;
-                        case "2": CommonUtils.AlertDialog(view, "エラー", "個数検品が完了していません。", null); break;
-                        case "3": CommonUtils.AlertDialog(view, "エラー", "他の作業者が作業中です。", null); break;
-                        case "4": CommonUtils.AlertDialog(view, "エラー", "既に積込済です。", null); break;
-                        case "5": CommonUtils.AlertDialog(view, "エラー", "他の便の貨物Noです。", null); break;
-                        case "8": resultCode = 8; break;
-                        case "0":
-                            resultCode = 0; //matehan = arrData[3] 
-                            break;
-                    }
-
-                    resultCode = 0;
-
-                    if (resultCode == 0)
-                    {
-                        carLabelInputMode = true;
-                        CommonUtils.AlertDialog(view, "確認", "出荷ラベルが確認できました。", null);
-                    }
-                    else if (resultCode == 8)
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n再度商品をスキャンして下さい。", null);
-                    }
-                }
-                );
-                //Activity.RunOnUiThread(() => progress.Dismiss());
             }
             )).Start();
         }
@@ -410,7 +254,7 @@ namespace HHT
 
                     List<TUMIKOMI040> resultList;
                     
-                    if (kansen_kbn == 0)
+                    if (kansen_kbn == "0")
                     {
                         // 該当店舗の各マテハン数を取得(定番コース)
                         resultList = WebService.RequestTumikomi040(souko_cd, kitaku_cd, syuka_date, tokuisaki_cd, todokesaki_cd, bin_no);
@@ -450,40 +294,9 @@ namespace HHT
         )).Start();
 
         }
-
-        public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
-        {
-            IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData = dataReceivedEvent.BarcodeData;
-
-            foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
-            {
-                string data = barcodeData.Data;
-                
-                this.Activity.RunOnUiThread(() =>
-                {
-                    if (carLabelInputMode == false) // 出荷ラベル
-                    {
-                        // 出荷ラベル確認処理
-                        CheckSyukaLabel(data);
-
-                        if (zoubin_flg == "1")
-                        {
-                            // 貨物Noスキャン時、各分類のカウントを取得
-                            CountKamotsu();
-                        }
-
-                    }
-                    else　// 車両ラベル
-                    {
-                        // 作業ステータス更新・積込処理
-                        UpdateSagyoStatus();
-                    }
-                });
-            }
-        }
-
-        // 貨物Noスキャン時、各分類のカウントを取得 TUMIKOMI070
-        private int CountKamotsu()
+        
+        // 貨物Noスキャン時、各分類のカウントを取得 TUMIKOMI070 sagyou8 
+        private int CountKamotsu(string matehan)
         {
             var progress = ProgressDialog.Show(this.Activity, "Please wait...", "Contacting server. Please wait...", true);
             int resultCode = 1;
@@ -496,30 +309,25 @@ namespace HHT
 
                     Dictionary<string, string> param = new Dictionary<string, string>
                     {
-                        { "kenpin_souko",  prefs.GetString("souko_cd", "103")},
-                        { "kitaku_cd", prefs.GetString("kitaku_cd", "2") },
-                        { "syuka_date", prefs.GetString("shuka_date", "180310") },
-                        { "nohin_date",  prefs.GetString("souko_cd", "103")},
-                        { "tokuisaki_cd", prefs.GetString("kitaku_cd", "2") },
-                        { "todokesaki_cd", prefs.GetString("shuka_date", "180310") },
-                        { "matehan", prefs.GetString("nohin_date", "1") },
-                        { "bin_no", prefs.GetString("tokuisaki_cd", "1") }
+                        { "kenpin_souko",  souko_cd},
+                        { "kitaku_cd", kitaku_cd},
+                        { "syuka_date", syuka_date },
+                        { "tokuisaki_cd", tokuisaki_cd },
+                        { "todokesaki_cd", todokesaki_cd },
+                        { "matehan", matehan },
+                        { "bin_no", bin_no }
                     };
 
-                    //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI070, param);
-                    //TUMIKOMI070 result = JsonConvert.DeserializeObject<TUMIKOMI070>(resultJson);
-
-                    Dictionary<string, string> result = new Dictionary<string, string>();
-                    if(result == null)
+                    TUMIKOMI070 result = WebService.RequestTumikomi070(param);
+                    
+                    if (result == null)
                     {
                         CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
                         return;
                     }
 
-                    //string btvBunrui = result["bunrui"];
-                    //string btvKosu = result["cnt"];
-                    string btvBunrui = "01";
-                    string btvKosu = "1";
+                    string btvBunrui = result.bunrui;
+                    string btvKosu = result.cnt;
 
                     // JOB:ko_su = 0
                     // JOB: b_ko_su = JOB:b_ko_su.Remove(" ")
@@ -528,6 +336,7 @@ namespace HHT
                     switch (btvBunrui)
                     {
                         case "01" :
+                            
                             // JOB: case_su = btvKosu
                             break;
                         case "02":
@@ -576,234 +385,126 @@ namespace HHT
         {
             if (keycode == Keycode.Back)
             {
-                if (carLabelInputMode)
+                if (carLabelInputMode == false) {
+                    FragmentManager.PopBackStack();
+                }
+                else
                 {
-                    CancelTsumiKomi();
-                    return false;
+                     CancelTsumiKomi();
                 }
             }
             else if (keycode == Keycode.F1)
             {
-                GoToIdouMenu();
+                if(kansen_kbn == "0" && prefs.GetBoolean("scan_flg", false)) StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment));
             }
             else if (keycode == Keycode.F3)
             {
-                
-
+                // 移動メッセージ画面
                 if (!carLabelInputMode)
                 {
-                    if (zoubin_flg == "1")
-                    {
-                        // 移動メッセージ画面
-                        //StartFragment(FragmentManager, typeof());
-                    }
-                    else
-                    {
-                        // zeroQty()
-                        //JOB: menu_flg = 0
-
-                        // Return("sagyou11")
-                    }
+                    // JOB: menu_flg = 0 Return("sagyou11")
+                    // StartFragment(FragmentManager, typeof()); 
                 }
             }
 
             return true;
         }
 
+        public override bool OnBackPressed()
+        {
+            return false;
+        }
+
         private void CancelTsumiKomi()
         {
-            
-            var progress = ProgressDialog.Show(this.Activity, null, "積込作業をキャンセルしています。", true);
-            int resultCode = 1;
-
             new Thread(new ThreadStart(delegate {
-
                 Activity.RunOnUiThread(() =>
                 {
                     Thread.Sleep(1500);
+                    
+                    Dictionary<string, string> param = GetProcParam("");
+                    MTumikomiProc result = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "090" : "312", param);
 
-                    Dictionary<string, string> param = new Dictionary<string, string>
+                    if(result.poMsg != "")
                     {
-                        { "pTerminalID",  prefs.GetString("souko_cd", "103")},
-                        { "pProgramID", prefs.GetString("kitaku_cd", "2") },
-                        { "pSagyosyaCD", prefs.GetString("shuka_date", "180310") },
-                        { "pSoukoCD",  prefs.GetString("souko_cd", "103")},
-                        { "pSyukaDate", prefs.GetString("kitaku_cd", "2") },
-                        { "pBinNo", prefs.GetString("shuka_date", "180310") },
-                        { "pCourse", prefs.GetString("nohin_date", "1") },
-                        { "pTokuisakiCD", prefs.GetString("tokuisaki_cd", "1") },
-                        { "pKamotsuNo", prefs.GetString("todokesaki_cd", "1") },
-                        { "pHHT_No", prefs.GetString("bin_no", "310") }
-                    };
-
-                    if (zoubin_flg == "1" && kansen_kbn != 0)
-                    {
-                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI090, param);
-                        //TUMIKOMI090 result = JsonConvert.DeserializeObject<TUMIKOMI090>(resultJson);
-
-                        TUMIKOMI310 result = new TUMIKOMI310();
-                        switch (result.poRet)
-                        {
-                            case "1": CommonUtils.AlertDialog(view, "エラー", "貨物Noが見つかりません。", null); break;
-                            case "2": CommonUtils.AlertDialog(view, "エラー", "個数検品が完了していません。", null); break;
-                            case "3": CommonUtils.AlertDialog(view, "エラー", "他の作業者が作業中です。", null); break;
-                            case "4": CommonUtils.AlertDialog(view, "エラー", "既に積込済です。", null); break;
-                            case "5": CommonUtils.AlertDialog(view, "エラー", "他の便の貨物Noです。", null); break;
-                            case "8": resultCode = 8; break;
-                            case "0":
-                                resultCode = 0; //matehan = arrData[3] 
-                                break;
-                        }
+                        CommonUtils.AlertDialog(view, "エラー", result.poMsg, null);
+                        return;
                     }
-                    else
-                    {
-                        //string resultJson = CommonUtils.Post(WebService.TUMIKOMI.TUMIKOMI312, param);
-                        //TUMIKOMI312 result = JsonConvert.DeserializeObject<TUMIKOMI312>(resultJson);
-
-                        TUMIKOMI060 result = new TUMIKOMI060();
-                        switch (result.poRet)
-                        {
-                            case "1": CommonUtils.AlertDialog(view, "エラー", "貨物Noが見つかりません。", null); break;
-                            case "2": CommonUtils.AlertDialog(view, "エラー", "個数検品が完了していません。", null); break;
-                            case "3": CommonUtils.AlertDialog(view, "エラー", "他の作業者が作業中です。", null); break;
-                            case "4": CommonUtils.AlertDialog(view, "エラー", "既に積込済です。", null); break;
-                            case "5": CommonUtils.AlertDialog(view, "エラー", "他の便の貨物Noです。", null); break;
-                            case "8": resultCode = 8; break;
-                            case "0":
-                                resultCode = 0; //matehan = arrData[3] 
-                                break;
-                        }
-                    }
-
-                    resultCode = 0;
-
-                    if (resultCode == 0)
+                  
+                    if (result.poRet == "0")
                     {
                         carLabelInputMode = false;
                     }
-                    else if (resultCode == 8)
+                    else if (result.poRet == "8")
                     {
                         CommonUtils.AlertDialog(view, "エラー", ERR_UPDATE_001, null);
+                        return;
                     }
                 }
                 );
-                Activity.RunOnUiThread(() => progress.Dismiss());
             }
             )).Start();
         }
 
-        private void CompleteTsumiKomi()
+        // 積込完了時に生成されるファイル（納品で使います。）
+        private void CreateTsumiFiles()
         {
+            // CRATE TUMIKOMI FILE
+            // MAIN FILE
+            List<MFile> mFiles = WebService.RequestTumikomi100(souko_cd, kitaku_cd, syuka_date, bin_no, course, tokuisaki_cd, todokesaki_cd);
+            new MFileHelper().InsertALL(mFiles);
 
-            new Thread(new ThreadStart(delegate {
-                Activity.RunOnUiThread(() =>
-                {
-                    // TUMIKOMI100 -> main file
-                    //MFile mFile = WebService.RequestTumikomi100();
-                    MFile mFile = new MFile
-                    {
-                        kenpin_souko = "108",
-                        kitaku_cd = "2",
-                        syuka_date = "20180320",
-                        bin_no = "1",
-                        course = "101",
-                        driver_cd = "832",
-                        butsuryu_no = "1",
-                        nohin_yti_time = "1605",
-                        tokuisaki_cd = "0000",
-                        todokesaki_cd = "0374",
-                        tokuisaki_rk = "新白岡店",
-                        vendor_cd = "10041",
-                        vendor_nm = "【ＤＣ】㈱ＰＡＬＴＡＣ",
-                        default_vendor = "999999",
-                        default_vendor_nm = "※旭丘　クスリのアオキ",
-                        bunrui = "1",
-                        kamotsu_no = "9800000001940005404809700021",
-                        matehan = "99111010000037400228816",
-                        category = "3",
-                        category_nm = "バラ",
-                        state = "4"
-                    };
+            // It would be useless..
+            //PsFile psFile = WebService.RequestTumikomi180();
+            PsFile psFile = new PsFile { pass = "" };
+            new PsFileHelper().Insert(psFile);
 
-                    new MFileHelper().Insert(mFile);
+            // MAILBACK FILE 
+            List<MbFile> mbFiles = WebService.RequestTumikomi140(souko_cd, kitaku_cd, syuka_date, bin_no, course);
+            new MbFileHelper().InsertAll(mbFiles);
 
-                    // TUMIKOMI180 -> ps file
-                    //PsFile psFile = WebService.RequestTumikomi180();
-                    PsFile psFile = new PsFile{ pass = "" };
-                    new PsFileHelper().Insert(psFile);
+            // SOUKO FILE
+            SoFile soFile = WebService.RequestTumikomi160(souko_cd);
+            new SoFileHelper().Insert(soFile);
 
-                    // TUMIKOMI140 -> mail bag file
-                    //MbFile mbFile = WebService.RequestTumikomi140();
-                    //MbFile mbFile = new MbFile();
-                    //new MbFileHelper().Insert(mbFile);
+            // // It would be useless..
+            // TUMIKOMI190 -> ftp file ? 
+            //FtpFile ftpFile = WebService.RequestTumikomi190();
+            //FtpFile ftpFile = new FtpFile {  };
+            //new FtpFileHelper().Insert(ftpFile);
 
-                    //SoFile soFile = WebService.RequestTumikomi160();
-                    SoFile soFile = new SoFile { def_tokuisaki_cd = "0000", ido_vendor_cd = "999999" };
-                    new SoFileHelper().Insert(soFile);
+            // VENDOR FILE
+            string nohin_date = DateTime.Now.ToString("yyyyMMdd");
+            List<MateFile> mateFile = WebService.RequestTumikomi260(souko_cd, kitaku_cd, syuka_date, nohin_date, bin_no, course);
+            new MateFileHelper().InsertAll(mateFile);
 
-                    // TUMIKOMI190 -> ftp file ? 
-                    //FtpFile ftpFile = WebService.RequestTumikomi190();
-                    //FtpFile ftpFile = new FtpFile {  };
-                    //new FtpFileHelper().Insert(ftpFile);
+            // TOKUISAKI FILE
+            List<TokuiFile> tokuiFile = WebService.RequestTumikomi270();
+            new TokuiFileHelper().InsertAll(tokuiFile);
 
-                    // TUMIKOMI260 -> vendor file
-                    List<MateFile> mateFile = WebService.RequestTumikomi260();
-                    new MateFileHelper().InsertAll(mateFile);
-
-                    // TUMIKOMI270 -> tokuisaki file
-                    List<TokuiFile> tokuiFile = WebService.RequestTumikomi270();
-                    new TokuiFileHelper().InsertAll(tokuiFile);
-
-
-                    // 9. 配車テーブルの該当コースの各数量を実績数で更新する
-                    /*
-                    int result = 0;
-                    if (kansen_kbn == 0)
-                    {
-                        // ret =  proc_tumikomikenpin TUMIKOMI210
-                        result = WebService.RequestTumikomi210();
-                    }
-                    else
-                    {
-                        // ret =proc_tumikomikenpin TUMIKOMI314
-                        result = WebService.RequestTumikomi314();
-                    }
-
-                    if(result == "0" || result == "99"){
-                        if(result == "99"){
-                            JOB:tenpo_zan_flg = true
-                        }else{
-                            JOB:tenpo_zan_flg = false
-                        }
-                        Return("msg1")
-                    }else{
-                        // error
-                        // btvOkFlg = 1 <-- 파일 만드는 처리 스킵
-
-                    }
-
-
-                       ret = 0 or 99 -> comp_OK(),iniZero(4),
-                       99 -> tenpo_zan_flg = true or false;
-                       alert msg1;
-
-                        not 0, 99 -> btvOkFlg = 1
-                     */
-
-                }
-                );
-                Activity.RunOnUiThread(() =>
-                {
-
-                }
-                );
-
-            }
-            )).Start();
-
-
+            Log.Debug(TAG, "CreateTsumiFiles end");
             
         }
+
+        // PROC専用のパラメータ設定
+        private Dictionary<string, string> GetProcParam(string barcodeData)
+        {
+            return new Dictionary<string, string>
+                        {
+                            { "pTerminalID",  "432660068"},
+                            { "pProgramID", "TUM" },
+                            { "pSagyosyaCD", "99999" },
+                            { "pSoukoCD",  souko_cd},
+                            { "pSyukaDate", syuka_date},
+                            { "pBinNo", bin_no},
+                            { "pCourse", course },
+                            { "matehan", "" },
+                            { "pTokuisakiCD", tokuisaki_cd },
+                            { carLabelInputMode == false ? "pKamotsuNo" : "pSyaryoNo", barcodeData },
+                            { "pHHT_No", "11101" }
+                        };
+        }
+
     }
 }
  

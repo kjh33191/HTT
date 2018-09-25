@@ -99,8 +99,15 @@
     <Compile Include="KosuVendorSearchFragment.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU095.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU115.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU230.cs" />
     <Compile Include="Resources\Model\WebService\Mail\MAIL010.cs" />
     <Compile Include="Resources\Model\WebService\Mail\MAIL030.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI070.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI150.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI110.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI090.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI080.cs" />
+    <Compile Include="Resources\Model\WebService\Tumikomi\MTumikomiProc.cs" />
     <Compile Include="TsumikaeIdouMatehanFragment.cs" />
     <Compile Include="MailMenuFragment.cs" />
     <Compile Include="MailManageInputFragment.cs" />

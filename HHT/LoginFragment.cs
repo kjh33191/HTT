@@ -88,10 +88,11 @@ namespace HHT
             };
 
             // 以前ログイン情報を設定する。
-            SetLastLoginInfo();
+            //SetLastLoginInfo();
+            LoadLastLoginFromDB();
 
             // 担当者マスタ情報をロカールDBに保存する。
-            SaveTantoMaster();
+            //SaveTantoMaster();
 
             return view;
         }
@@ -147,7 +148,7 @@ namespace HHT
                             // 担当者名取得
                             LOGIN030 login030 = WebService.RequestLogin030(etDriverCode.Text);
                             editor.PutString("menu_kbn", login030.menu_kbn);
-                            editor.PutString("driver_nm", login030.tantohsya_nm);
+                            editor.PutString("driver_nm", login030.tantohsya_nm); 
                         }
                         catch (Exception e)
                         {
@@ -168,6 +169,8 @@ namespace HHT
                         editor.PutString("driver_nm", tanto.tantohsya_nm);
 
                     }
+
+                    SetSoukoName(etSoukoCode.Text);
 
                     // 正常の場合、前回ログイン情報を保存する
                     loginHelper.InsertIntoTableLoginInfo(new Login

@@ -98,7 +98,7 @@ namespace HHT
                     try
                     {
                         syuka_date = "20" + etSyukaDate.Text.Replace("/", "");
-                        TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, nohin_date, etCourse.Text);
+                        TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, etCourse.Text);
 
                         if (result == null)
                         {
@@ -114,6 +114,7 @@ namespace HHT
                         bin_no = result.bin_no;
                         kansen_kbn = result.kansen_kbn;
 
+                        editor.PutString("syuka_date", syuka_date);
                         editor.PutString("course", etCourse.Text);
                         editor.PutString("bin_no", bin_no);
                         editor.PutString("kansen_kbn", kansen_kbn);
@@ -182,7 +183,7 @@ namespace HHT
 
             foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
             {
-                this.Activity.RunOnUiThread(() =>
+                Activity.RunOnUiThread(() =>
                 {
                     string data = barcodeData.Data;
 
@@ -201,17 +202,17 @@ namespace HHT
 
                         try
                         {
-
                             string haiso_date = CommonUtils.GetDateYYMMDDwithSlash(btvHaisohDate);
 
-                            TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, nohin_date, btvCourse);
+                            TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, btvCourse);
                             
                             if (result.state == "03")
                             {
                                 CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", null);
                                 return;
                             }
-
+                            
+                            editor.PutString("syuka_date", syuka_date);
                             editor.PutString("course", btvCourse);
                             editor.PutString("bin_no", result.bin_no);
                             editor.PutString("kansen_kbn", result.kansen_kbn);
@@ -225,7 +226,6 @@ namespace HHT
                             return;
                         }
                     }
-                    
                 });
             }
         }
