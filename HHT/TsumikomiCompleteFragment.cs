@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Preferences;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 
@@ -38,6 +32,7 @@ namespace HHT
             // tenpo_zan_flg > 残り作業が存在留守場合、
             // scan_flg = false <-= 必要？
             // sagyou4
+            
             FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(1).Id, 0);
 
             // 残り作業ない

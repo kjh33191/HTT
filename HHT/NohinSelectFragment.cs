@@ -39,8 +39,8 @@ namespace HHT
             etTodokesaki = view.FindViewById<EditText>(Resource.Id.et_nohinSelect_todokesaki);
             etReceipt = view.FindViewById<EditText>(Resource.Id.et_nohinSelect_receipt);
 
-            etTodokesaki.Text = "0374";
-            etReceipt.Text = "J00000374";
+            etTodokesaki.Text = "0248";
+            etReceipt.Text = "J00000248";
 
             Button confirm = view.FindViewById<Button>(Resource.Id.btn_nohinSelect_confirm);
             confirm.Click += delegate {
@@ -155,6 +155,7 @@ namespace HHT
                         
                         editor.PutString("tokuisaki_cd", tsumikomiList[0].tokuisaki_cd);
                         editor.PutString("tokuisaki_nm", tsumikomiList[0].tokuisaki_rk);
+                        editor.PutString("todokesaki_cd", tsumikomiList[0].todokesaki_cd);
                         editor.PutString("vendor_cd", tsumikomiList[0].vendor_cd);
                         editor.PutString("vendor_nm", tsumikomiList[0].vendor_nm);
                         editor.PutString("mate_vendor_cd", tsumikomiList[0].default_vendor);

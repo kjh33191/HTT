@@ -11,7 +11,7 @@ namespace HHT
     {
         public readonly static string TAG = "WebService";
 
-        public readonly static string HOST_ADDRESS = "192.168.0.19";
+        public readonly static string HOST_ADDRESS = "192.168.0.13";
         public readonly static string WEB_SERVICE_URL = "http://" + HOST_ADDRESS + ":8787/";
 
         public class LOGIN
@@ -40,6 +40,8 @@ namespace HHT
             public readonly static string KOSU095 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu095";
             public readonly static string KOSU110 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu110";
             public readonly static string KOSU115 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu115";
+            public readonly static string KOSU120 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu120";
+            public readonly static string KOSU125 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu125";
             public readonly static string KOSU131 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu131";
             public readonly static string KOSU150 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu150";
             public readonly static string KOSU160 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu160";
@@ -341,7 +343,7 @@ namespace HHT
             }
         }
 
-        public static List<Todokesaki> RequestKosu060(string soukoCd, string kitakuCd, string syukaDate, string binNo)
+        public static List<KOSU060> RequestKosu060(string soukoCd, string kitakuCd, string syukaDate, string binNo)
         {
             Dictionary<string, string> param = new Dictionary<string, string>
             {
@@ -356,7 +358,7 @@ namespace HHT
 
             if (response.status == "0")
             {
-                return response.GetDataObject<List<Todokesaki>>();
+                return response.GetDataObject<List<KOSU060>>();
             }
             else
             {
@@ -365,7 +367,7 @@ namespace HHT
             }
         }
 
-        public static List<Todokesaki> RequestKosu065(string soukoCd, string kitakuCd, string syukaDate, string binNo)
+        public static List<KOSU060> RequestKosu065(string soukoCd, string kitakuCd, string syukaDate, string binNo)
         {
             Dictionary<string, string> param = new Dictionary<string, string>
             {
@@ -380,7 +382,7 @@ namespace HHT
 
             if (response.status == "0")
             {
-                return response.GetDataObject<List<Todokesaki>>();
+                return response.GetDataObject<List<KOSU060>>();
             }
             else
             {
@@ -511,6 +513,57 @@ namespace HHT
             if (response.status == "0")
             {
                 return response.GetDataObject<KOSU115>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        // 未検一覧取得（届先で検索）
+        public static List<KOSU120> RequestKosu120(string kenpin_souko, string kitaku_cd, string syuka_date, string tokuisaki_cd, string todokesaki_cd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko},
+                {"kitaku_cd", kitaku_cd},
+                {"syuka_date", syuka_date},
+                {"tokuisaki_cd", tokuisaki_cd},
+                {"todokesaki_cd", todokesaki_cd},
+            };
+
+            string resultJson = CommonUtils.Post(KOSU.KOSU120, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<KOSU120>>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+        // 未検一覧取得（ベンダーで検索）
+        public static List<KOSU120> RequestKosu125(string kenpin_souko, string kitaku_cd, string syuka_date, string vendor_cd)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                {"kenpin_souko", kenpin_souko},
+                {"kitaku_cd", kitaku_cd},
+                {"syuka_date", syuka_date},
+                {"vendor_cd", vendor_cd},
+            };
+
+            string resultJson = CommonUtils.Post(KOSU.KOSU125, param);
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<KOSU120>>();
             }
             else
             {

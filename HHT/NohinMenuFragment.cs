@@ -4,7 +4,6 @@ using Android.Preferences;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using HHT.Common;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
 using System.Collections.Generic;
@@ -58,7 +57,7 @@ namespace HHT
             Button button2 = view.FindViewById<Button>(Resource.Id.btn_nohinMenu_nohin);
             button2.Click += delegate {
                 bool errorFlag = false;
-
+                
                 if (!prefs.GetBoolean("mailBagFlag", false))
                 {
                     Log.Debug(TAG, "メールバッグ納品処理が終了していません。");
@@ -71,6 +70,7 @@ namespace HHT
                     errorFlag = true;
                     CommonUtils.AlertDialog(view, "確認", "納品処理は終了しています。", () => { return; });
                 }
+                
 
                 if (errorFlag == false)
                     StartFragment(FragmentManager, typeof(NohinWorkFragment));
@@ -80,14 +80,16 @@ namespace HHT
             Button button3 = view.FindViewById<Button>(Resource.Id.btn_nohinMenu_kaisyu); // 回収業務
             button3.Click += delegate {
                 bool errorFlag = false;
-
+                
+                /*
                 if (!prefs.GetBoolean("mailBagFlag", false))
                 {
                     Log.Debug(TAG, "メールバッグ納品処理が終了していません。");
                     errorFlag = true;
                     CommonUtils.AlertDialog(view, "確認", "メールバッグ納品処理が終了していません。", () => { return; });
                 }
-                else if (!prefs.GetBoolean("nohinWorkEndFlag", false))
+                else */
+                if (!prefs.GetBoolean("nohinWorkEndFlag", false))
                 {
                     Log.Debug(TAG, "納品処理が終了していません。");
                     errorFlag = true;
@@ -102,19 +104,20 @@ namespace HHT
 
                 if (errorFlag == false)
                     StartFragment(FragmentManager, typeof(NohinKaisyuMenuFragment));
-            }; // sagyou2
+            };
 
             Button button4 = view.FindViewById<Button>(Resource.Id.btn_nohinMenu_mailKaisyu);
             button4.Click += delegate {
                 bool errorFlag = false;
 
+                /*
                 if (!prefs.GetBoolean("mailBagFlag", false))
                 {
                     Log.Debug(TAG, "メールバッグ納品処理が終了していません。");
                     errorFlag = true;
                     CommonUtils.AlertDialog(view, "確認", "メールバッグ納品処理が終了していません。", () => { return; });
-                }
-                else if (!prefs.GetBoolean("kaisyuEndFlag", false))
+                } else */
+                if (!prefs.GetBoolean("kaisyuEndFlag", false))
                 {
                     Log.Debug(TAG, "回収処理が終了していません。");
                     errorFlag = true;
@@ -525,3 +528,4 @@ namespace HHT
         }
     }
 }
+ 

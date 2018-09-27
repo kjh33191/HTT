@@ -9,6 +9,7 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Com.Densowave.Bhtsdk.Barcode;
+using HHT.Common;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
 
@@ -98,32 +99,29 @@ namespace HHT
                         Thread.Sleep(1500);
 
                         Dictionary<string, string> param = GetProcParam(barcodeData.Data);
-                        //MTumikomiProc result = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "060" : "310", param); // IT HAS ERROR
-
-                        MTumikomiProc result = new MTumikomiProc();
-                        result.poMsg = "";
-                        if (result.poMsg != "")
+                        try
                         {
-                            CommonUtils.AlertDialog(view, "エラー", result.poMsg, null);
+                            // 432660068, TUM, 99999, 108, 20180320, 1, 355, 0000, 0248, 9800000002480005404995800031, 11101,,
+                            MTumikomiProc result = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "060" : "310", param); // IT HAS ERROR
+
+                            if (result.poMsg != "")
+                            {
+                                CommonUtils.AlertDialog(view, "エラー", result.poMsg, null);
+                                return;
+                            }
+
+                            matehan = result.poMatehan;
+                            etKosu.Text = result.poKosuCnt;
+                            
+                            CommonUtils.AlertDialog(view, "確認", "出荷ラベルが確認できました。", null);
+                         
+                            carLabelInputMode = true;
+                        }
+                        catch
+                        {
+                            CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n再度商品をスキャンして下さい。", null);
                             return;
                         }
-
-                        matehan = result.poMatehan;
-                        CommonUtils.AlertDialog(view, "確認", "出荷ラベルが確認できました。", null);
-
-                        // result.poMatehan
-
-                        // sagyou8
-                        /*
-                        if (zoubin_flg != 1)
-                        {
-                            // 貨物Noスキャン時、各分類のカウントを取得
-                            CountKamotsu(result.poMatehan);
-                        }
-                        */
-
-                        carLabelInputMode = true;
-
                     }
                     else　// 車両ラベル
                     {
@@ -160,79 +158,79 @@ namespace HHT
             int resultCode = 1;
 
             new Thread(new ThreadStart(delegate {
-                Activity.RunOnUiThread(() =>
+                Activity.RunOnUiThread(async () =>
                 {
                     Thread.Sleep(1500);
-
-                    Dictionary<string, string> param = GetProcParam(saryouData);
-                    //MTumikomiProc result = WebService.CallTumiKomiProc( kansen_kbn != "0" ? "080": "311", param);
-
-                    // ********* delete
-                    MTumikomiProc result = new MTumikomiProc();
-                    result.poMsg = "";
-                    result.poRet = "0";
-                    // ********* delete
-
-                    // プロシージャ内エラーの場合
-                    if (result.poMsg != "")
+                    try
                     {
-                        CommonUtils.AlertDialog(view, "エラー", result.poMsg, null);
-                        return;
-                    }
+                        Dictionary<string, string> param = GetProcParam(saryouData);
+                        MTumikomiProc result = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "080" : "311", param);
+                        resultCode = int.Parse(result.poMsg);
 
-                    resultCode = int.Parse(result.poRet);
-                   
-                    if (resultCode == 0 || resultCode == 2)
-                    {
-                        if (kansen_kbn == "0")
+                        if (resultCode == 0 || resultCode == 2)
                         {
-                            if (resultCode == 2)
+                            if (kansen_kbn == "0")
                             {
-                                CommonUtils.AlertConfirm(view, "確認", "積込可能な商品があります。\n積込みを完了\nしますか？", (flag) =>
+                                if (resultCode == 2)
                                 {
-                                    if (!flag)
-                                    {
-                                        carLabelInputMode = false;
-                                        return;
-                                    }
-                                    else
+                                    var okFlag = await DialogAsync.Show(Activity, "確認", "積込可能な商品があります。\n積込みを完了\nしますか？");
+
+                                    if (okFlag.Value)
                                     {
                                         Log.Debug(TAG, "CreateTsumiFiles Start");
-                                   
+
                                         CreateTsumiFiles();
 
                                         Log.Debug(TAG, "CreateTsumiFiles End");
                                     }
+                                    else
+                                    {
+                                        carLabelInputMode = false;
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    CreateTsumiFiles();
+                                }
+                            }
+
+                            //配車テーブルの該当コースの各数量を実績数で更新する
+                            var updateResult = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "210" : "314", param);
+
+                            if (updateResult.poRet == "0" || updateResult.poRet == "99")
+                            {
+                                //editor.PutBoolean("tenpo_zan_flg", updateResult.poRet == "99" ? true : false);
+                                //editor.Apply();
+                                //StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
+                                Activity.RunOnUiThread(() =>
+                                {
+                                    CommonUtils.AlertDialog(view, "", "積込検品が\n完了しました。", () => {
+                                        FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0);
+                                    });
                                 });
+                                
                             }
                             else
                             {
-                                CreateTsumiFiles();
+                                CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
+                                return;
                             }
-                        }
 
-                        //配車テーブルの該当コースの各数量を実績数で更新する
-                        var updateResult = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "210" : "314", param);
-                                
-                        if (updateResult.poRet == "0" || updateResult.poRet == "99")
-                        {
-                            editor.PutBoolean("tenpo_zan_flg", updateResult.poRet == "99" ? true : false);
-                            editor.Apply();
-                            StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
                         }
-                        else
+                        else if (resultCode == 1)
                         {
-                            CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
-                            return;
+                            // scan_flg = true	//スキャン済みフラグ
+                            // iniZero(4), Return("sagyou5")
+                            carLabelInputMode = false;
                         }
-
                     }
-                    else if (resultCode == 1)
+                    catch(Exception e)
                     {
-                        // scan_flg = true	//スキャン済みフラグ
-                        // iniZero(4), Return("sagyou5")
-                        carLabelInputMode = false;
+                        CommonUtils.AlertDialog(view, "エラー", "例外エラーが発生しました。\n" + e.ToString(), null);
+                        return;
                     }
+                    
                         
                 }
                 );
@@ -492,14 +490,15 @@ namespace HHT
             return new Dictionary<string, string>
                         {
                             { "pTerminalID",  "432660068"},
-                            { "pProgramID", "TUM" },
+                            { "pProgramID", "TUM_TEST" },
                             { "pSagyosyaCD", "99999" },
                             { "pSoukoCD",  souko_cd},
                             { "pSyukaDate", syuka_date},
                             { "pBinNo", bin_no},
                             { "pCourse", course },
-                            { "matehan", "" },
+                            { "pMatehan", matehan },
                             { "pTokuisakiCD", tokuisaki_cd },
+                            { "pTodokesakiCD", todokesaki_cd },
                             { carLabelInputMode == false ? "pKamotsuNo" : "pSyaryoNo", barcodeData },
                             { "pHHT_No", "11101" }
                         };

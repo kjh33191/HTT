@@ -31,6 +31,7 @@ namespace HHT
         ISharedPreferencesEditor editor;
 
         LOGIN010 login010;
+        string def_tokuisaki_cd, kitaku_cd;
 
         private readonly string ERROR = "エラー";
         private readonly string ERR_NOT_FOUND_SOUKO = "センター情報が見つかりませんでした。\n再確認してください。";
@@ -148,7 +149,22 @@ namespace HHT
                             // 担当者名取得
                             LOGIN030 login030 = WebService.RequestLogin030(etDriverCode.Text);
                             editor.PutString("menu_kbn", login030.menu_kbn);
-                            editor.PutString("driver_nm", login030.tantohsya_nm); 
+                            editor.PutString("driver_nm", login030.tantohsya_nm);
+
+                            SetSoukoName(etSoukoCode.Text);
+
+                            // 正常の場合、前回ログイン情報を保存する
+                            loginHelper.InsertIntoTableLoginInfo(new Login
+                            {
+                                souko_cd = etSoukoCode.Text,
+                                souko_nm = txtSoukoName.Text,
+                                tantousha_cd = etDriverCode.Text,
+                                menu_flg = login030.menu_kbn,
+                                tantohsya_nm = login030.tantohsya_nm,
+                                def_tokuisaki_cd = this.def_tokuisaki_cd,
+                                kitaku_cd = this.kitaku_cd
+                            });
+
                         }
                         catch (Exception e)
                         {
@@ -168,18 +184,21 @@ namespace HHT
                         editor.PutString("menu_kbn", tanto.menu_kbn);
                         editor.PutString("driver_nm", tanto.tantohsya_nm);
 
+                        SetSoukoName(etSoukoCode.Text);
+
+                        // 正常の場合、前回ログイン情報を保存する
+                        loginHelper.InsertIntoTableLoginInfo(new Login
+                        {
+                            souko_cd = etSoukoCode.Text,
+                            souko_nm = txtSoukoName.Text,
+                            tantousha_cd = etDriverCode.Text,
+                            menu_flg = tanto.menu_kbn,
+                            tantohsya_nm = tanto.tantohsya_nm,
+                            def_tokuisaki_cd = this.def_tokuisaki_cd,
+                            kitaku_cd = this.kitaku_cd
+                        });
                     }
-
-                    SetSoukoName(etSoukoCode.Text);
-
-                    // 正常の場合、前回ログイン情報を保存する
-                    loginHelper.InsertIntoTableLoginInfo(new Login
-                    {
-                        souko_cd = etSoukoCode.Text,
-                        souko_nm = txtSoukoName.Text,
-                        tantousha_cd = etDriverCode.Text
-                    });
-
+                    
                     editor.PutString("souko_cd", etSoukoCode.Text);
                     editor.PutString("souko_nm", login010.souko_nm);
                     editor.PutString("driver_cd", etDriverCode.Text);
@@ -243,6 +262,8 @@ namespace HHT
             {
                 login010 = WebService.RequestLogin010(soukoCd);
                 txtSoukoName.Text = login010.souko_nm;
+                def_tokuisaki_cd = login010.def_tokuisaki_cd;
+                kitaku_cd = login010.kitaku_cd;
             }
             catch
             {

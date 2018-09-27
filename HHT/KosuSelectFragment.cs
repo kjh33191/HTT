@@ -107,13 +107,11 @@ namespace HHT
                 {
                     if (e.HasFocus)
                     {
-                        SetFooterText("F1：届先検索　　　F4：確定");
-                        //searchButton.Visibility = ViewStates.Visible;
+                        SetFooterText("F1：届先検索");
                     }
                     else
                     {
-                        SetFooterText("F4：確定");
-                        //searchButton.Visibility = ViewStates.Gone;
+                        SetFooterText("");
                     }
                 };
 
@@ -303,15 +301,10 @@ namespace HHT
                         {
                             if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                             {
-                                TokuiFileHelper tokuiFIleHelper = new TokuiFileHelper();
-                                TokuiFile tokuiInfo = tokuiFIleHelper.SelectByPk(etTokuisaki.Text, etTodokesaki.Text);
-                                
                                 editor.PutString("syuka_date", "20" + etSyukaDate.Text.Replace("/", ""));
                                 editor.PutString("deliveryDate", etSyukaDate.Text);
                                 editor.PutString("tokuisaki_cd", etTokuisaki.Text);
-                                editor.PutString("tokuisaki_nm", tokuiInfo.tokuisaki_nm);
                                 editor.PutString("todokesaki_cd", etTodokesaki.Text);
-                                editor.PutString("vendor_cd", tokuiInfo.default_vendor);
                                 editor.PutInt("menuKbn", 1); // 届先検索フラグ設定
                                 editor.Apply();
 

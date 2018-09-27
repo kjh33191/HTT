@@ -1,6 +1,4 @@
-﻿
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -68,9 +66,9 @@ namespace HHT
             }
         }
 
-        private List<Todokesaki> GetTokuisakiMasterInfo()
+        private List<KOSU060> GetTokuisakiMasterInfo()
         {
-            List<Todokesaki> resultList = new List<Todokesaki>(); ;
+            List<KOSU060> resultList = new List<KOSU060>(); ;
             string soukoCd = prefs.GetString("souko_cd", "108");
             string kitakuCd = prefs.GetString("kitaku_cd", "2");
             string syuka_date = prefs.GetString("syuka_date", "20180320");

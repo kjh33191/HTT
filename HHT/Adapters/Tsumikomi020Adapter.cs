@@ -43,7 +43,7 @@ namespace HHT
             view = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.adapter_list_todoke, parent, false);
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_time).Text = item.nohin_yti_time;
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_tenpoName).Text = item.tokuisaki_rk;
-            view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_berth).Text = item.berth;
+            view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_berth).Text = item.kansen_kbn;
             
             string sumi = item.Qty.Substring(0, 7);
             string kei = item.Qty.Substring(7, 7);

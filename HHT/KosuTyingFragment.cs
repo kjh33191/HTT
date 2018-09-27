@@ -10,6 +10,7 @@ using Android.Content;
 using Android.Preferences;
 using System.Threading;
 using Android.Util;
+using HHT.Common;
 
 namespace HHT
 {
@@ -31,11 +32,10 @@ namespace HHT
 
         // Local Parameters
         private int kosuMenuflag;
-        private int totalCount;
         private string venderCd;
         private int kosuMax;
-        private bool isScanned = false;
-        
+        private bool hasKamotsuScanned;
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -44,7 +44,7 @@ namespace HHT
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             Log.Debug(TAG, "Start OnCreateView ");
-            
+
             view = inflater.Inflate(Resource.Layout.fragment_kosu_tying, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
@@ -55,7 +55,7 @@ namespace HHT
 
             // 遷移メニューより画面初期処理
             InitScreenByMenu(kosuMenuflag);
-            
+
             return view;
         }
 
@@ -106,9 +106,15 @@ namespace HHT
             txtDaisu = view.FindViewById<TextView>(Resource.Id.txt_todoke_daisu);
 
             btnStop = view.FindViewById<Button>(Resource.Id.btn_todoke_stop);
+            btnStop.Click += delegate { StartFragment(FragmentManager, typeof(KosuTyingConfrimFragment)); }; // 中断
+
+            btnMantan = view.FindViewById<Button>(Resource.Id.btn_todoke_mantan);　// 届先検品の満タンボタン
+            btnMantan.Click += delegate { GoMantanPage(); }; // 満タン
+
             btnCancel = view.FindViewById<Button>(Resource.Id.btn_todoke_cancel);
-            btnMantan = view.FindViewById<Button>(Resource.Id.btn_todoke_mantan);
-            btnComplete = view.FindViewById<Button>(Resource.Id.completeButton);
+            btnCancel.Click += delegate { CancelKamotsuScan(false); };　// 取消
+
+            btnComplete = view.FindViewById<Button>(Resource.Id.completeButton); // バラ検品の完了ボタン
             btnComplete.Click += delegate {
                 try
                 {
@@ -128,6 +134,8 @@ namespace HHT
                             txtHenpin.Text = "0";
                             txtKaisyu.Text = "0";
                             txtDaisu.Text = (int.Parse(txtDaisu.Text) + 1).ToString();
+                            btnComplete.Visibility = ViewStates.Invisible;
+                            hasKamotsuScanned = false;
                         }
                         else
                         {
@@ -152,13 +160,7 @@ namespace HHT
 
             gdTyingCanman = view.FindViewById<GridLayout>(Resource.Id.gd_tying_canman);
 
-            // 中断
-            btnStop.Click += delegate { StartFragment(FragmentManager, typeof(KosuTyingConfrimFragment)); };
-            btnCancel.Click += delegate { Cancel(); };　// 取消
-            btnMantan.Click += delegate { GoMantanPage(); }; // 満タン
-
             txtMiseName.Text = prefs.GetString("tokuisaki_nm", "");
-
             txtCase.Text = prefs.GetString("case_su", "0");
             txtOricon.Text = prefs.GetString("oricon_su", "0");
             txtHuteikei.Text = prefs.GetString("futeikei_su", "0");
@@ -169,339 +171,151 @@ namespace HHT
             txtKaisyu.Text = prefs.GetString("kaisyu_su", "0");
             txtTotal.Text = prefs.GetString("ko_su", "0");
             txtDaisu.Text = prefs.GetString("dai_su", "0");
-            
-            SetKosuMax();
+
+            try
+            {
+                kosuMax = WebService.RequestKosu210();
+            }
+            catch
+            {
+                CommonUtils.ShowAlertDialog(View, "エラー", "個数上限値がみつかりません。");
+                kosuMax = 10;
+            }
+
+            hasKamotsuScanned = false;
         }
-        
+
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
         {
             IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData = dataReceivedEvent.BarcodeData;
 
-            // 最大個数チェック
-            Int32.TryParse(txtTotal.Text, out totalCount);
+            Activity.RunOnUiThread(async () => {
+                // 最大個数チェック
+                bool isMax = int.Parse(txtTotal.Text) + 1 > kosuMax;
 
-            if (totalCount + 1 > kosuMax)
-            {
-                Activity.RunOnUiThread(() =>
+                if (isMax)
                 {
-                    CommonUtils.AlertConfirm(View, "注意", "検品数が" + kosuMax + "を超えています。続けますか？", (flag) =>
+                    // 最大検品数を超えた場合
+                    var result = await DialogAsync.Show(Activity, "確認", "検品数が" + kosuMax + "を超えています。続けますか？");
+                    if (result.Value)
                     {
-                        if (flag)
-                        {
-                            CountItem(listBarcodeData);
-                        }
-                        else
-                        {
-                            // if menu_flg = vender 
-                            // JOB:tsumi_vendor_cd = JOB:vendor_cd
-                            // JOB: tsumi_vendor_nm = JOB:vendor_nm
-                            // return ("sagyou16")	//満タン処理
-                            SetSumQty();
-                            StartFragment(FragmentManager, typeof(KosuMantanFragment));
-                            return;
-                        }
-                    });
-                });
-            }
-            else
-            {
-                CountItem(listBarcodeData);
-            }
+                        CountItem(listBarcodeData);
+                    }
+                    else
+                    {
+                        GoMantanPage();
+                    }
+                }
+                else
+                {
+                    CountItem(listBarcodeData);
+                }
+            });
         }
 
 
         public void CountItem(IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData)
         {
-            new Thread(new ThreadStart(delegate {
-                Activity.RunOnUiThread(() =>
-                {
-                    foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
-                    {
-                        string kamotsu_no = barcodeData.Data;
-
-                        Dictionary<string, string> param = GetProcedureParam(kamotsu_no);
-
-                        KOSU070 kosuKenpin = new KOSU070();
-                        try
-                        {
-                            if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
-                            {
-                                kosuKenpin = WebService.RequestKosu070(param);
-                            }
-                            else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
-                            {
-                                kosuKenpin = WebService.RequestKosu150(param);
-                            }
-                            else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
-                            {
-                                kosuKenpin = WebService.RequestKosu170(param);
-                            }
-
-                            // result["poLabelType"] 0：ケース、1：オリコン、2：不定形、3：店移動、4：破材、5：返品、6：販促物、7：回収
-                            if (kosuKenpin.poMsg != "")
-                            {
-                                CommonUtils.AlertDialog(view, "", kosuKenpin.poMsg, null);
-                                return;
-                            }
-                            
-                            switch (kosuKenpin.poLabelType)
-                            {
-                                case "0":
-                                    txtCase.Text = (Int32.Parse(txtCase.Text) + 1).ToString();
-                                    break;
-                                case "1":
-                                    txtOricon.Text = (Int32.Parse(txtOricon.Text) + 1).ToString();
-                                    break;
-                                case "2":
-                                    txtHuteikei.Text = (Int32.Parse(txtHuteikei.Text) + 1).ToString();
-                                    break;
-                                case "3":
-                                    txtMiseidou.Text = (Int32.Parse(txtMiseidou.Text) + 1).ToString();
-                                    break;
-                                case "4":
-                                    txtHazai.Text = (Int32.Parse(txtHazai.Text) + 1).ToString();
-                                    break;
-                                case "5":
-                                    txtHenpin.Text = (Int32.Parse(txtHenpin.Text) + 1).ToString();
-                                    break;
-                                case "6":
-                                    txtHansoku.Text = (Int32.Parse(txtHansoku.Text) + 1).ToString();
-                                    break;
-                                case "7":
-                                    txtKaisyu.Text = (Int32.Parse(txtKaisyu.Text) + 1).ToString();
-                                    break;
-                            }
-
-                            txtMiseName.Text = kosuKenpin.poTokuisakiNm;
-                            txtTotal.Text = (Int32.Parse(txtTotal.Text) + 1).ToString();
-                            editor.PutString("todokesaki_cd", kosuKenpin.poTodokesakiCD);
-                            editor.Apply();
-                            isScanned = true;
-
-                            if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
-                            {
-                                SetFooterText("  F2 :取消                    F3:満タン");
-                                btnStop.Visibility = ViewStates.Gone;
-                                gdTyingCanman.Visibility = ViewStates.Visible;
-                            }
-                            else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
-                            {
-                                SetFooterText("  F3:満タン");
-                                btnStop.Visibility = ViewStates.Gone;
-                                gdTyingCanman.Visibility = ViewStates.Visible;
-                            }
-                            else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
-                            {
-                                SetFooterText("");
-                                btnComplete.Visibility = ViewStates.Visible;
-                            }
-                        }
-                        catch
-                        {
-                            CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
-                            Log.Error(Tag, "");
-                            return;
-                        }
-
-                    }
-                }
-                );
-            }
-            )).Start();
-        }
-
-        public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
-        {
-            if (keycode == Keycode.Back)
+            foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
             {
-                if(isScanned)
+                string kamotsu_no = barcodeData.Data;
+
+                Dictionary<string, string> param = GetProcedureParam(kamotsu_no);
+
+                KOSU070 kosuKenpin = new KOSU070();
+                try
                 {
                     if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                     {
-
-                        CommonUtils.AlertConfirm(view, "確認", "処理を中断して前画面に戻りますか？", (flag) =>
-                        {
-                            if (flag)
-                            {
-
-                                KOSU070 result = WebService.RequestKosu085(GetProcedureParam(""));
-                                if (result.poMsg != "")
-                                {
-                                    CommonUtils.AlertDialog(view, "", "", null);
-                                    return;
-                                }
-
-                                string menu_kbn = prefs.GetString("menu_kbn", "");
-                                string driver_nm = prefs.GetString("driver_nm", "");
-                                string souko_cd = prefs.GetString("souko_cd", "");
-                                string souko_nm = prefs.GetString("souko_nm", "");
-                                string driver_cd = prefs.GetString("driver_cd", "");
-                                string kitaku_cd = prefs.GetString("kitaku_cd", "");
-                                string def_tokuisaki_cd = prefs.GetString("def_tokuisaki_cd", "");
-                                string tsuhshin_kbn = prefs.GetString("tsuhshin_kbn", "");
-                                string souko_kbn = prefs.GetString("souko_kbn", "");
-
-                                editor.Clear();
-                                editor.Commit();
-
-                                editor.PutString("menu_kbn", menu_kbn);
-                                editor.PutString("driver_nm", driver_nm);
-                                editor.PutString("souko_cd", souko_cd);
-                                editor.PutString("souko_nm", souko_nm);
-                                editor.PutString("driver_cd", driver_cd);
-                                editor.PutString("kitaku_cd", kitaku_cd);
-                                editor.PutString("def_tokuisaki_cd", def_tokuisaki_cd);
-                                editor.PutString("tsuhshin_kbn", tsuhshin_kbn);
-                                editor.PutString("souko_kbn", souko_kbn);
-                                editor.Apply();
-
-                                this.Activity.FragmentManager.PopBackStack();
-                            }
-                        });
+                        kosuKenpin = WebService.RequestKosu070(param);
                     }
                     else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
                     {
-                        CommonUtils.AlertConfirm(view, "確認", "処理を中断して前画面に戻りますか？", (flag) =>
-                        {
-                            if (flag)
-                            {
-                                KOSU070 result = WebService.RequestKosu165(GetProcedureParam(""));
-                                if(result.poMsg != "")
-                                {
-                                    CommonUtils.AlertDialog(view, "", "", null);
-                                    return;
-                                }
-
-                                string menu_kbn = prefs.GetString("menu_kbn", "");
-                                string driver_nm = prefs.GetString("driver_nm", "");
-                                string souko_cd = prefs.GetString("souko_cd", "");
-                                string souko_nm = prefs.GetString("souko_nm", "");
-                                string driver_cd = prefs.GetString("driver_cd", "");
-                                string kitaku_cd = prefs.GetString("kitaku_cd", "");
-                                string def_tokuisaki_cd = prefs.GetString("def_tokuisaki_cd", "");
-                                string tsuhshin_kbn = prefs.GetString("tsuhshin_kbn", "");
-                                string souko_kbn = prefs.GetString("souko_kbn", "");
-
-                                editor.Clear();
-                                editor.Commit();
-
-                                editor.PutString("menu_kbn", menu_kbn);
-                                editor.PutString("driver_nm", driver_nm);
-                                editor.PutString("souko_cd", souko_cd);
-                                editor.PutString("souko_nm", souko_nm);
-                                editor.PutString("driver_cd", driver_cd);
-                                editor.PutString("kitaku_cd", kitaku_cd);
-                                editor.PutString("def_tokuisaki_cd", def_tokuisaki_cd);
-                                editor.PutString("tsuhshin_kbn", tsuhshin_kbn);
-                                editor.PutString("souko_kbn", souko_kbn);
-                                editor.Apply();
-
-                                this.Activity.FragmentManager.PopBackStack();
-                            }
-                        });
+                        kosuKenpin = WebService.RequestKosu150(param);
                     }
                     else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
                     {
-                        CommonUtils.AlertConfirm(view, "確認", "スキャンした内容を破棄し、メニューに戻りますか？", (flag) =>
-                        {
-                            if (flag)
-                            {
-                                string pSagyosyaCD = prefs.GetString("driver_cd", "");
-                                string pSoukoCD = prefs.GetString("souko_cd", "");
-                                string pSyukaDate = prefs.GetString("syuka_date", "");
-                                string pTokuisakiCD = prefs.GetString("tokuisaki_cd", "");
-                                string pTodokesakiCD = prefs.GetString("todokesaki_cd", "");
-                                string pVendorCD = prefs.GetString("vendor_cd", "");
-                                string pTsumiVendorCD = "";
-                                string pKamotsuNo = "";
-                                string pBinNo = prefs.GetString("bin_no", "0");
-                                string pHHT_No = "11101";
-
-                                string pMatehan = "0";
-                                string pJskCaseSu = "0";
-                                string pJskOriconSu = "0";
-                                string pJskFuteikeiSu = "0";
-                                string pJskHazaiSu = "0";
-                                string pJskIdoSu = "0";
-                                string pJskHenpinSu = "0";
-                                string pJskHansokuSu = "0";
-
-                                Dictionary<string, string> param = new Dictionary<string, string>
-                                {
-                                    { "pTerminalID",  "432660068"},
-                                    { "pProgramID",  "KOS"},
-                                    { "pSagyosyaCD",  pSagyosyaCD},
-                                    { "pSoukoCD",  pSoukoCD},
-                                    { "pSyukaDate",  pSyukaDate},
-                                    { "pTokuisakiCD" ,  pTokuisakiCD},
-                                    { "pTodokesakiCD" ,  pTodokesakiCD},
-                                    { "pVendorCD",  pVendorCD},
-                                    { "pTsumiVendorCD",  pTsumiVendorCD},
-                                    { "pKamotsuNo",  pKamotsuNo},
-                                    { "pBinNo",  pBinNo},
-                                    { "pHHT_No",  pHHT_No},
-                                    { "pMatehan",  pMatehan},
-                                    { "pJskCaseSu",  pJskCaseSu},
-                                    { "pJskOriconSu",  pJskOriconSu},
-                                    { "pJskFuteikeiSu",  pJskFuteikeiSu},
-                                    { "pJskTcSu",  "0"},
-                                    { "pJskMailbinSu",  "0"},
-                                    { "pJskHazaiSu",  pJskHazaiSu},
-                                    { "pJskIdoSu",  pJskIdoSu},
-                                    { "pJskHenpinSu",  pJskHenpinSu},
-                                    { "pJskHansokuSu",  pJskHansokuSu}
-                                };
-
-                                WebService.RequestKosu185(param);
-
-                                string menu_kbn = prefs.GetString("menu_kbn", "");
-                                string driver_nm = prefs.GetString("driver_nm", "");
-                                string souko_cd = prefs.GetString("souko_cd", "");
-                                string souko_nm = prefs.GetString("souko_nm", "");
-                                string driver_cd = prefs.GetString("driver_cd", "");
-                                string kitaku_cd = prefs.GetString("kitaku_cd", "");
-                                string def_tokuisaki_cd = prefs.GetString("def_tokuisaki_cd", "");
-                                string tsuhshin_kbn = prefs.GetString("tsuhshin_kbn", "");
-                                string souko_kbn = prefs.GetString("souko_kbn", "");
-
-                                editor.Clear();
-                                editor.Commit();
-
-                                editor.PutString("menu_kbn", menu_kbn);
-                                editor.PutString("driver_nm", driver_nm);
-                                editor.PutString("souko_cd", souko_cd);
-                                editor.PutString("souko_nm", souko_nm);
-                                editor.PutString("driver_cd", driver_cd);
-                                editor.PutString("kitaku_cd", kitaku_cd);
-                                editor.PutString("def_tokuisaki_cd", def_tokuisaki_cd);
-                                editor.PutString("tsuhshin_kbn", tsuhshin_kbn);
-                                editor.PutString("souko_kbn", souko_kbn);
-                                editor.PutInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.BARA);
-
-                                editor.Apply();
-
-                                this.Activity.FragmentManager.PopBackStack();
-                            }
-                        });
+                        kosuKenpin = WebService.RequestKosu170(param);
                     }
-                }
-                else
-                {
-                    if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
+
+                    if (kosuKenpin.poMsg != "")
                     {
-                        FragmentManager.PopBackStack();
+                        CommonUtils.AlertDialog(view, "", kosuKenpin.poMsg, null);
+                        return;
+                    }
+
+                    switch (kosuKenpin.poLabelType)
+                    {
+                        case "0":
+                            txtCase.Text = (Int32.Parse(txtCase.Text) + 1).ToString();
+                            break;
+                        case "1":
+                            txtOricon.Text = (Int32.Parse(txtOricon.Text) + 1).ToString();
+                            break;
+                        case "2":
+                            txtHuteikei.Text = (Int32.Parse(txtHuteikei.Text) + 1).ToString();
+                            break;
+                        case "3":
+                            txtMiseidou.Text = (Int32.Parse(txtMiseidou.Text) + 1).ToString();
+                            break;
+                        case "4":
+                            txtHazai.Text = (Int32.Parse(txtHazai.Text) + 1).ToString();
+                            break;
+                        case "5":
+                            txtHenpin.Text = (Int32.Parse(txtHenpin.Text) + 1).ToString();
+                            break;
+                        case "6":
+                            txtHansoku.Text = (Int32.Parse(txtHansoku.Text) + 1).ToString();
+                            break;
+                        case "7":
+                            txtKaisyu.Text = (Int32.Parse(txtKaisyu.Text) + 1).ToString();
+                            break;
+                    }
+
+                    txtMiseName.Text = kosuKenpin.poTokuisakiNm;
+                    txtTenpoLocation.Text = kosuKenpin.poTenpoLocaCD;
+                    txtTotal.Text = (Int32.Parse(txtTotal.Text) + 1).ToString();
+                    editor.PutString("todokesaki_cd", kosuKenpin.poTodokesakiCD);
+                    editor.Apply();
+                    hasKamotsuScanned = true;
+
+                    if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
+                    {
+                        SetFooterText("  F2 :取消                    F3:満タン");
+                        btnStop.Visibility = ViewStates.Gone;
+                        gdTyingCanman.Visibility = ViewStates.Visible;
+                    }
+                    else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
+                    {
+                        SetFooterText("  F3:満タン");
+                        btnStop.Visibility = ViewStates.Gone;
+                        gdTyingCanman.Visibility = ViewStates.Visible;
+                    }
+                    else if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
+                    {
+                        SetFooterText("");
+                        btnComplete.Visibility = ViewStates.Visible;
                     }
                 }
-
-                return true;
+                catch
+                {
+                    CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                    Log.Error(Tag, "");
+                    return;
+                }
             }
-            else if (keycode == Keycode.F1)
+        }
+
+        // キーハンドリング
+        public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
+        {
+            if (keycode == Keycode.F1)
             {
                 StartFragment(FragmentManager, typeof(KosuTyingConfrimFragment));
             }
             else if (keycode == Keycode.F2)
             {
-                Cancel(); // 取消
+                CancelKamotsuScan(false); // 取消
             }
             else if (keycode == Keycode.F3)
             {
@@ -511,11 +325,25 @@ namespace HHT
             return true;
         }
 
+        // バックボタン押した時
         public override bool OnBackPressed()
         {
+            if (hasKamotsuScanned)
+            {
+                CancelKamotsuScan(true);
+            }
+            else
+            {
+                if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
+        // 紐づけ情報リセット
         private void ScanCntReset()
         {
             txtCase.Text = "0";
@@ -535,17 +363,7 @@ namespace HHT
             SetFooterText("F1:中断");
         }
 
-        private void SetKosuMax()
-        {
-            try {
-                kosuMax = WebService.RequestKosu210();
-            }
-            catch {
-                CommonUtils.ShowAlertDialog(View, "エラー", "個数上限値がみつかりません。");
-                kosuMax = 10;
-            }
-        }
-
+        // 紐づけ情報保存
         public void SetSumQty()
         {
             editor.PutString("case_su", txtCase.Text);
@@ -561,6 +379,7 @@ namespace HHT
             editor.Apply();
         }
 
+        // プロシージャパラメータ設定
         private Dictionary<string, string> GetProcedureParam(string kamotsu_no)
         {
             string pSagyosyaCD = prefs.GetString("driver_cd", "");
@@ -612,53 +431,75 @@ namespace HHT
             return param;
         }
 
-        private void Cancel()
+        // キャンセル処理
+        private void CancelKamotsuScan(bool backFlag)
         {
-            if (txtTotal.Text == "0")
-            {
-                return;
-            }
+            string message = backFlag == false ? "スキャンデータを取り消します。\nよろしいですか？" : "スキャンした内容を破棄し、メニューに戻りますか？";
 
-            CommonUtils.AlertConfirm(view, "確認", "スキャンデータを取り消します。\nよろしいですか？", (flag) =>
+            CommonUtils.AlertConfirm(view, "確認", message, (flag) =>
             {
-                new Thread(new ThreadStart(delegate {
-                    Activity.RunOnUiThread(() =>
+                if (flag)
+                {
+                    string errMsg = RequestCancelKamotuScan(GetProcedureParam(""));
+                    if (errMsg != "")
                     {
-                        if (flag)
-                        {
+                        CommonUtils.AlertDialog(view, "エラー", errMsg, null);
+                        return;
+                    }
 
+                    if (backFlag == true)
+                    {
+                        editor.Remove("case_su");
+                        editor.Remove("oricon_su");
+                        editor.Remove("futeikei_su");
+                        editor.Remove("ido_su");
+                        editor.Remove("hazai_su");
+                        editor.Remove("henpin_su");
+                        editor.Remove("hansoku_su");
+                        editor.Remove("kaisyu_su");
+                        editor.Remove("ko_su");
+                        editor.Remove("dai_su");
+                        editor.Commit();
+
+                        this.Activity.FragmentManager.PopBackStack();
+                    }
+                    else
+                    {
+                        if (kosuMenuflag != (int)Const.KOSU_MENU.TODOKE)
+                        {
+                            // 店舗名削除
+                            txtMiseName.Text = "";
                         }
 
-
-                    });
-                }));
-                        // TODOKE(proc_kosukenpin(085))
-                        // vendor(proc_kosukenpin(165))
-
-                        // erRet == 0 Then
                         ScanCntReset();
-                // loca_cd= "";
-                // If JOB:menu_flg == JOB:MENU_VENDOR THEN
-                // JOB: tokuisaki_cd = ""
-                // JOB: todokesaki_cd = ""
-                // JOB: tokuisaki_nm = ""
-
-                // erRet == 7 Then
-                // デッドロック発生
-                // i = i + 1
-                // If i > 2 Then
-                // DEVICE:read_NG()
-                // Handy: ShowMessageBox("更新出来ませんでした。\n管理者に連絡してください。", "confirm")
-
-                // else (0,7 x)
-                // ShowMessageBox("取消処理が失敗しました。","confirm")
-
+                        txtTenpoLocation.Text = "";
+                    }
+                }
             });
+        }
+
+        private string RequestCancelKamotuScan(Dictionary<string, string>　param)
+        {
+            KOSU070 result;
+            if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
+            {
+                result = WebService.RequestKosu085(param);
+            }
+            else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
+            {
+                result = WebService.RequestKosu165(param);
+            }
+            else
+            {
+                result = WebService.RequestKosu185(param);
+            }
+
+            return result.poMsg;
         }
 
         private void GoMantanPage()
         {
-            if (isScanned)
+            if (hasKamotsuScanned)
             {
                 SetSumQty();
 
@@ -669,7 +510,6 @@ namespace HHT
                     editor.Apply();
                 }
 
-                // 満タン(sagyou16)
                 StartFragment(FragmentManager, typeof(KosuMantanFragment));
             }
         }

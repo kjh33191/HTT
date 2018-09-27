@@ -1,7 +1,7 @@
 ﻿
 namespace HHT.Resources.Model
 {
-    public class Tokuisaki
+    public class KOSU060
     {
         public string tsumikomi_yti_time { get; set; }
         public string tokuisaki_cd { get; set; }
@@ -13,6 +13,5 @@ namespace HHT.Resources.Model
         public string DATE { get; set; }
         public string bin_no { get; set; }
         public string torikomi_course { get; set; }
-
     }
 }

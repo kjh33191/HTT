@@ -29,9 +29,7 @@ namespace HHT
 
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
-
-        TokuisakiHelper tokuisakiHelper;
-
+        
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -58,7 +56,7 @@ namespace HHT
         {
             var progress = ProgressDialog.Show(this.Activity, null, "届先検索中。。。", true);
 
-            List<Todokesaki> todokeList = GetTokuisakiMasterInfo();
+            List<KOSU060> todokeList = GetTokuisakiMasterInfo();
 
             if(todokeList.Count > 0)
             {
@@ -92,9 +90,9 @@ namespace HHT
             )).Start();
         }
 
-        private List<Todokesaki> GetTokuisakiMasterInfo()
+        private List<KOSU060> GetTokuisakiMasterInfo()
         {
-            List<Todokesaki> resultList = new List<Todokesaki>(); ;
+            List<KOSU060> resultList = new List<KOSU060>(); ;
             string soukoCd = prefs.GetString("souko_cd", "108");
             string kitakuCd = prefs.GetString("kitaku_cd", "2");
             string syuka_date = prefs.GetString("syuka_date", "20180320");

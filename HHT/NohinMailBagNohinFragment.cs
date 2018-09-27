@@ -57,7 +57,6 @@ namespace HHT
             Button kaizoButton = view.FindViewById<Button>(Resource.Id.btn_nohinMailBagNohin_kaizo);
             kaizoButton.Click += delegate { StartFragment(FragmentManager, typeof(NohinMailBagPasswordFragment)); };
 
-
             Button muButton = view.FindViewById<Button>(Resource.Id.btn_nohinMailBagNohin_mu);
             muButton.Click += delegate {
                 CommonUtils.AlertConfirm(view, "確認", "メールバッグ納品業務を終了しますか？", (flag) => {
@@ -87,7 +86,6 @@ namespace HHT
                 CommonUtils.AlertConfirm(view, "", "メールバッグ納品業務を終了しますか？", (flag) => {
                     if (flag)
                     {
-                        
                         // SndMBN_+ 시리얼 +  .txt의 Empty File을 만든다. 
                         // 이미 존재한다면 패스
                         FragmentManager.PopBackStack();
@@ -97,7 +95,6 @@ namespace HHT
 
                     }
                 });
-
             }
 
             return true;

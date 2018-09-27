@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
+﻿using System.Collections.Generic;
 using Android.Views;
 using Android.Widget;
 using HHT.Resources.Model;
 
 namespace HHT
 {
-    class TodokesakiAdapter : BaseAdapter<Todokesaki>
+    class TodokesakiAdapter : BaseAdapter<KOSU060>
     {
-        private List<Todokesaki> items;
+        private List<KOSU060> items;
 
-        public TodokesakiAdapter(List<Todokesaki> items)
+        public TodokesakiAdapter(List<KOSU060> items)
         {
             this.items = items;
         }
@@ -59,6 +51,6 @@ namespace HHT
             get { return items.Count; }
         }
 
-        public override Todokesaki this[int position] => items[position]; 
+        public override KOSU060 this[int position] => items[position]; 
     }
 }

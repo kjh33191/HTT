@@ -109,10 +109,11 @@ namespace HHT
                             KOSU050 kosu050 = WebService.RequestKosu050(tokuisaki_cd, todokesaki_cd);
                             editor.PutString("tokuisaki_nm", kosu050.tokuisaki_rk);
                             editor.PutString("default_vendor", kosu050.default_vendor);
+                            editor.PutString("vendor_cd", kosu050.default_vendor);
                             editor.PutString("vendor_nm", kosu050.vendor_nm);
                             editor.PutString("syuka_date", syuka_date);
                             editor.PutString("bin_no", bin_no);
-
+                            
                             editor.Apply();
 
                             StartFragment(FragmentManager, typeof(KosuConfirmFragment));

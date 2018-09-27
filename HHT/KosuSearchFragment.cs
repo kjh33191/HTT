@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
-using Newtonsoft.Json;
 
 namespace HHT
 {
@@ -24,13 +15,12 @@ namespace HHT
     {
         private View view;
         private TodokesakiAdapter todokesakiAdapter;
-
-        private int kosuMenuflag;
-
+        
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
-        TokuisakiHelper tokuisakiHelper;
+        ListView listView;
+        private int kosuMenuflag;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -47,7 +37,7 @@ namespace HHT
             kosuMenuflag = prefs.GetInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.TODOKE); // 画面区分
 
             SetTitle("届先指定検品");
-            SetFooterText("");
+            SetFooterText("F1：未検");
 
             SetTodokesakiAsync();
 
@@ -58,11 +48,11 @@ namespace HHT
         {
             var progress = ProgressDialog.Show(this.Activity, null, "届先検索中。。。", true);
 
-            List<Todokesaki> todokeList = GetTokuisakiMasterInfo();
+            List<KOSU060> todokeList = GetTokuisakiMasterInfo();
 
             if(todokeList.Count > 0)
             {
-                ListView listView = view.FindViewById<ListView>(Resource.Id.listView1);
+                listView = view.FindViewById<ListView>(Resource.Id.listView1);
                 listView.ItemClick += listView_ItemClick;
 
                 todokesakiAdapter = new TodokesakiAdapter(todokeList);
@@ -92,9 +82,9 @@ namespace HHT
             )).Start();
         }
 
-        private List<Todokesaki> GetTokuisakiMasterInfo()
+        private List<KOSU060> GetTokuisakiMasterInfo()
         {
-            List<Todokesaki> resultList = new List<Todokesaki>(); ;
+            List<KOSU060> resultList = new List<KOSU060>(); ;
             string soukoCd = prefs.GetString("souko_cd", "108");
             string kitakuCd = prefs.GetString("kitaku_cd", "2");
             string syuka_date = prefs.GetString("syuka_date", "20180320");
@@ -130,6 +120,23 @@ namespace HHT
             StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
             
         }
-        
+
+
+        public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
+        {
+            if (keycode == Keycode.F1)
+            {
+                // 未検画面へ遷移(sagyou19)
+                var item = todokesakiAdapter[listView.SelectedItemPosition];
+                editor.PutString("tokuisaki_cd", item.tokuisaki_cd);
+                editor.PutString("todokesaki_cd", item.todokesaki_cd);
+                editor.Apply();
+
+                StartFragment(FragmentManager, typeof(KosuMikenFragment));
+            }
+
+            return true;
+        }
+
     }
 }

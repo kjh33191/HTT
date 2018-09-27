@@ -1,25 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Com.Densowave.Bhtsdk.Barcode;
 
 namespace HHT
 {
     public class MailManageSelectFragment : BaseFragment
     {
         private readonly string TAG = "MailManageSelectFragment";
-        View view;
-        ISharedPreferences prefs;
-        ISharedPreferencesEditor editor;
 
-        EditText etHaisoDate, etBin;
+        private ISharedPreferences prefs;
+        private ISharedPreferencesEditor editor;
+
+        private View view;
+        private EditText etHaisoDate, etBin;
         
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -67,7 +64,7 @@ namespace HHT
                 {
                     try
                     {
-                        etHaisoDate.Text = CommonUtils.GetDateYYMMDDwithSlash(etHaisoDate.Text);
+                        etHaisoDate.Text = CommonUtils.GetDateYYYYMMDDwithSlash(etHaisoDate.Text);
                     }
                     catch
                     {
@@ -78,9 +75,9 @@ namespace HHT
                 }
             };
 
-            etHaisoDate.RequestFocus();
             etHaisoDate.Text = DateTime.Now.ToString("yyyy/MM/dd");
-            
+            etBin.RequestFocus();
+
         }
         
         private void Confirm()
@@ -102,7 +99,7 @@ namespace HHT
 
             // 登録済みメールバッグ数を取得
             string souko_cd = prefs.GetString("souko_cd", "");
-            string haisoDate = "20" + etHaisoDate.Text.Replace("/", "");
+            string haisoDate = etHaisoDate.Text.Replace("/", "");
 
             try
             {

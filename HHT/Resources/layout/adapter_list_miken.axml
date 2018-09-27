@@ -5,50 +5,33 @@
     android:layout_height="fill_parent"
     android:minWidth="25px"
     android:minHeight="25px"
-    android:columnCount="4">
+    android:columnCount="3">
     <TextView
-        android:text="1.11:00"
+        android:text="CASE"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textView8"
+        android:id="@+id/bunrui"
         android:layout_width="80dp"
         android:layout_height="30dp"
         android:layout_marginLeft="10dp" />
     <TextView
-        android:text="xxxxxxxxxx"
+        android:text="0446005404803300021"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textView9"
-        android:layout_width="110dp"
+        android:id="@+id/kamotsu_no"
+        android:layout_width="200dp"
         android:layout_height="30dp"
         android:layout_columnSpan="2" />
     <TextView
-        android:text="33"
+        android:text="2083202"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textView10"
-        android:layout_width="40dp"
-        android:layout_height="30dp" />
-    <ProgressBar
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar1"
-        android:max="90"
-        android:progress="30"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_columnSpan="2"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="10dp" />
-    <TextView
-        android:text="0/99"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textView11"
-        android:layout_width="50dp"
+        android:id="@+id/case_loca"
+        android:layout_width="120dp"
         android:layout_height="30dp"
-        android:layout_marginRight="10dp" />
+        android:layout_column="1" />
     <TextView
-        android:text="78%"
+        android:text="236"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textView9"
-        android:layout_marginBottom="30dp"
-        android:layout_width="50dp"
-        android:layout_height="30dp" />
+        android:id="@+id/syuka_home"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:layout_column="2" />
 </GridLayout>

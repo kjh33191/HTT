@@ -81,6 +81,7 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\MikenAdapter.cs" />
     <Compile Include="Adapters\VendorAdapter.cs" />
     <Compile Include="Adapters\TenpoAdapter.cs" />
     <Compile Include="Adapters\Tsumikomi020Adapter.cs" />
@@ -96,9 +97,12 @@
     <Compile Include="IdouNohinSelectFragment.cs" />
     <Compile Include="IdouRegistWorkFragment.cs" />
     <Compile Include="IdouRegistSelectFragment.cs" />
+    <Compile Include="KosuMikenFragment.cs" />
     <Compile Include="KosuVendorSearchFragment.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU060.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU095.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU115.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU131.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU230.cs" />
     <Compile Include="Resources\Model\WebService\Mail\MAIL010.cs" />
     <Compile Include="Resources\Model\WebService\Mail\MAIL030.cs" />
@@ -166,7 +170,6 @@
     <Compile Include="MatehanSearchFragment.cs" />
     <Compile Include="MatehanMenuFragment.cs" />
     <Compile Include="Resources\DataHelper\TantoHelper.cs" />
-    <Compile Include="Resources\DataHelper\TokuisakiHelper.cs" />
     <Compile Include="Resources\Model\Mail.cs" />
     <Compile Include="Resources\Model\Password.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU050.cs" />
@@ -174,9 +177,7 @@
     <Compile Include="Resources\Model\WebService\Matehan\MATE030.cs" />
     <Compile Include="Resources\Model\WebService\Matehan\MATE020.cs" />
     <Compile Include="Resources\Model\WebService\ResponseData.cs" />
-    <Compile Include="Resources\Model\Tokuisaki.cs" />
     <Compile Include="Resources\Model\File\MFile.cs" />
-    <Compile Include="Resources\Model\Todokesaki.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU070.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI010.cs" />
     <Compile Include="Resources\Model\WebService\Tumikomi\TUMIKOMI311.cs" />
@@ -198,7 +199,7 @@
     <Compile Include="NyukaMenuFragment.cs" />
     <Compile Include="Resources\DataHelper\LoginHelper.cs" />
     <Compile Include="Resources\DataHelper\DataBase.cs" />
-    <Compile Include="Resources\Model\WebService\Kosu\KOSU131.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU120.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU200.cs" />
     <Compile Include="Resources\Model\Kosukenpin.cs" />
     <Compile Include="Resources\Model\Login.cs" />
@@ -570,6 +571,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\dialog_custom.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_kosu_miken.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
