@@ -29,8 +29,9 @@
             android:text="Complete abasdfasdfasdfsadfasdfasdf"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginEnd="20dp"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
+            android:textColor="#ff0d47a1"
             android:id="@+id/txt_nohinKaisyuMatehan_vendorName"
             android:layout_marginBottom="20dp"
             android:layout_columnSpan="2" />
@@ -40,11 +41,13 @@
             android:id="@+id/txt_nohinKaisyuMatehan_matehan1"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:visibility="invisible"
             android:layout_marginBottom="10dp"
             android:layout_width="100dp" />
         <EditText
             android:inputType="numberDecimal"
             android:gravity="fill_horizontal"
+            android:visibility="invisible"
             android:id="@+id/et_nohinKaisyuMatehan_matehan1"
             android:layout_gravity="fill_horizontal" />
         <TextView
@@ -53,17 +56,20 @@
             android:id="@+id/txt_nohinKaisyuMatehan_matehan2"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:visibility="invisible"
             android:layout_marginBottom="10dp"
             android:layout_width="100dp" />
         <EditText
             android:inputType="numberDecimal"
             android:gravity="fill_horizontal"
+            android:visibility="invisible"
             android:id="@+id/et_nohinKaisyuMatehan_matehan2"
             android:layout_gravity="fill_horizontal" />
         <TextView
             android:text="Matehan3"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/txt_nohinKaisyuMatehan_matehan3"
+            android:visibility="invisible"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="10dp"
@@ -71,12 +77,14 @@
         <EditText
             android:inputType="numberDecimal"
             android:gravity="fill_horizontal"
+            android:visibility="invisible"
             android:id="@+id/et_nohinKaisyuMatehan_matehan3"
             android:layout_gravity="fill_horizontal" />
         <TextView
             android:text="Matehan4"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/txt_nohinKaisyuMatehan_matehan4"
+            android:visibility="invisible"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="10dp"
@@ -85,6 +93,7 @@
             android:inputType="numberDecimal"
             android:gravity="fill_horizontal"
             android:id="@+id/et_nohinKaisyuMatehan_matehan4"
+            android:visibility="invisible"
             android:layout_gravity="fill_horizontal" />
     </GridLayout>
     <Button

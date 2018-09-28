@@ -44,6 +44,24 @@ namespace HHT.Resources.DataHelper
                 return null;
             }
         }
+
+        public List<SndNohinMate> SelectByMateVendorCd(string wMateVendorCd)
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    string sql = @"select * from SndNohinMate where wMateVendorCd = ?";
+                    return connection.Query<SndNohinMate>(sql, wMateVendorCd).ToList();
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return null;
+            }
+        }
+
         public bool DeleteAll()
         {
             try

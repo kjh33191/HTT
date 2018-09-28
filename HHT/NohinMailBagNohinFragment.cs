@@ -109,7 +109,7 @@ namespace HHT
                 this.Activity.RunOnUiThread(() =>
                 {
                     string data = barcodeData.Data;   
-                    data = "J00000374";
+                    data = "J00000248";
                     MbFileHelper mbFileHelper = new MbFileHelper();
 
                     if (mbFileHelper.HasExistMailBagData(data))

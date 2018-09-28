@@ -81,7 +81,7 @@ namespace HHT
 よろしいですか？
                                         ";
 
-            CommonUtils.AlertConfirm(view, "確認", confirmMsg, (flag) =>
+            CommonUtils.AlertConfirm(view, "確認", "よろしいですか？", (flag) =>
             {
                 if (flag)
                 {

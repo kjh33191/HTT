@@ -30,7 +30,6 @@ namespace HHT
             SetFooterText("F4:確定");
             
             view = inflater.Inflate(Resource.Layout.fragment_kosu_bin_input, container, false);
-
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 

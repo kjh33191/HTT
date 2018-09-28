@@ -71,7 +71,6 @@ namespace HHT
                     CommonUtils.AlertDialog(view, "確認", "納品処理は終了しています。", () => { return; });
                 }
                 
-
                 if (errorFlag == false)
                     StartFragment(FragmentManager, typeof(NohinWorkFragment));
 
@@ -80,7 +79,7 @@ namespace HHT
             Button button3 = view.FindViewById<Button>(Resource.Id.btn_nohinMenu_kaisyu); // 回収業務
             button3.Click += delegate {
                 bool errorFlag = false;
-                
+
                 /*
                 if (!prefs.GetBoolean("mailBagFlag", false))
                 {
@@ -88,7 +87,7 @@ namespace HHT
                     errorFlag = true;
                     CommonUtils.AlertDialog(view, "確認", "メールバッグ納品処理が終了していません。", () => { return; });
                 }
-                else */
+                else 
                 if (!prefs.GetBoolean("nohinWorkEndFlag", false))
                 {
                     Log.Debug(TAG, "納品処理が終了していません。");
@@ -101,7 +100,7 @@ namespace HHT
                     errorFlag = true;
                     CommonUtils.AlertDialog(view, "確認", "納品処理が終了していません。", () => { return; });
                 }
-
+                */
                 if (errorFlag == false)
                     StartFragment(FragmentManager, typeof(NohinKaisyuMenuFragment));
             };
@@ -116,7 +115,7 @@ namespace HHT
                     Log.Debug(TAG, "メールバッグ納品処理が終了していません。");
                     errorFlag = true;
                     CommonUtils.AlertDialog(view, "確認", "メールバッグ納品処理が終了していません。", () => { return; });
-                } else */
+                } else 
                 if (!prefs.GetBoolean("kaisyuEndFlag", false))
                 {
                     Log.Debug(TAG, "回収処理が終了していません。");
@@ -129,7 +128,7 @@ namespace HHT
                     errorFlag = true;
                     CommonUtils.AlertDialog(view, "確認", "メールバッグ回収処理は終了しています。", () => { return; });
                 }
-
+                */
                 if (errorFlag == false)
                     StartFragment(FragmentManager, typeof(NohinMailBagKaisyuFragment)); }; // sagyou2
 
@@ -237,43 +236,43 @@ namespace HHT
 
                                     Log.Debug(TAG, "商品回収データ送信完了");
 
+                                    Activity.RunOnUiThread(() =>
+                                    {
+                                        // 削除処理
+                                        mailHelper.DeleteAll();
+                                        mailKaisyuHelper.DeleteAll();
+                                        mateHelper.DeleteAll();
+                                        workHelper.DeleteAll();
+                                        syohinKaisyuHelper.DeleteAll();
+
+                                        //new MFileHelper().DeleteAll();
+                                        //new MbFileHelper().DeleteAll();
+
+                                        ((MainActivity)this.Activity).DismissDialog();
+
+                                        CommonUtils.AlertDialog(view, "", "データ送信完了しました。", () =>
+                                        {
+                                            FragmentManager.PopBackStack();
+                                            FragmentManager.PopBackStack();
+                                        });
+                                    });
                                 }
                             });
                         }
                         );
-                        Activity.RunOnUiThread(() =>
-                        {
-                            // 削除処理
-                            mailHelper.DeleteAll();
-                            mailKaisyuHelper.DeleteAll();
-                            mateHelper.DeleteAll();
-                            workHelper.DeleteAll();
-                            syohinKaisyuHelper.DeleteAll();
-
-                            //new MFileHelper().DeleteAll();
-                            //new MbFileHelper().DeleteAll();
-
-                        });
-                        Activity.RunOnUiThread(() =>
-                        {
-                            CommonUtils.AlertDialog(view, "", "データ送信完了しました。", () =>
-                            {
-                                ((MainActivity)this.Activity).DismissDialog();
-                                FragmentManager.PopBackStack();
-                                FragmentManager.PopBackStack();
-                            });
-
-                        });
                     }
 
             )).Start();
                 }
-                
             }
 
             return true;
         }
 
+        public override bool OnBackPressed()
+        {
+            return false;
+        }
 
         private void DataSend()
         {

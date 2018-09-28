@@ -21,6 +21,7 @@ namespace HHT
         private ISharedPreferencesEditor editor;
         private List<string> arrMailBag;
         private int mail_bag;
+        EditText etKaisyuMail;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -45,7 +46,7 @@ namespace HHT
 
             TextView tvTokuisaki = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMail_tokuisakiNm);
             TextView tvTodokesaki = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMail_todokisakiNm);
-            EditText etKaisyuMail = view.FindViewById<EditText>(Resource.Id.et_nohinKaisyuMail_kaisyuMailbag);
+            etKaisyuMail = view.FindViewById<EditText>(Resource.Id.et_nohinKaisyuMail_kaisyuMailbag);
             Button btnConfirm = view.FindViewById<Button>(Resource.Id.et_nohinKaisyuMail_Confirm);
 
             tvTokuisaki.Text = prefs.GetString("tokuisaki_nm", "");
@@ -142,7 +143,6 @@ namespace HHT
                             {
                                 return;
                             }
-                            
                         }
 
                         string btvKey1 = btvTokuisaki + btvTodokesaki;
@@ -160,6 +160,8 @@ namespace HHT
                         {
                             arrMailBag.Add(data);
                             mail_bag++;
+
+                            etKaisyuMail.Text = mail_bag.ToString();
                         }
                         else
                         {

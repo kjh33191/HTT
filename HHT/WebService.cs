@@ -1478,7 +1478,7 @@ namespace HHT
             if (response.status == "0")
             {
                 Dictionary<string, string> result = response.GetDataObject();
-                return int.Parse(result["kohmoku"]);
+                return int.Parse(result["poRet"]);
             }
             else
             {

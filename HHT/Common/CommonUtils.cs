@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Android;
@@ -13,8 +11,6 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Net;
-using Android.OS;
-using Android.Runtime;
 using Android.Support.V4.App;
 using Android.Support.V4.Content;
 using Android.Telephony;
@@ -23,8 +19,6 @@ using Android.Views.InputMethods;
 using Android.Widget;
 using Java.Lang;
 using Java.Net;
-using Java.Util;
-using Newtonsoft.Json;
 
 namespace HHT
 {
