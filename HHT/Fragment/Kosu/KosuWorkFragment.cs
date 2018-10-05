@@ -349,7 +349,15 @@ namespace HHT
         {
             if (hasKamotsuScanned)
             {
-                CancelKamotsuScan(false);
+                if (kosuMenuflag == (int)Const.KOSU_MENU.BARA)
+                {
+                    CancelKamotsuScan(true);
+                }
+                else
+                {
+                    CancelKamotsuScan(false);
+                    return true;
+                }
             }
             else
             {

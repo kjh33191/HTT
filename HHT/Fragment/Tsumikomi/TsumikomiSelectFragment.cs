@@ -5,7 +5,7 @@ using Android.Content;
 using Android.OS;
 using Android.Preferences;
 using Android.Views;
-using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Resources.Model;
 
@@ -17,8 +17,8 @@ namespace HHT
         ISharedPreferencesEditor editor;
 
         View view;
-        EditText etSyukaDate, etCourse;
-        Button btnConfirm;
+        BootstrapEditText etSyukaDate, etCourse;
+        BootstrapButton btnConfirm;
 
         private string souko_cd;
         private string kitaku_cd;
@@ -52,7 +52,7 @@ namespace HHT
             kansen_kbn = prefs.GetString("kansen_kbn", "");
 
             // ITEM EVENT SETTING 
-            etSyukaDate = view.FindViewById<EditText>(Resource.Id.et_tsumikomiSelect_syukaDate);
+            etSyukaDate = view.FindViewById<BootstrapEditText>(Resource.Id.et_tsumikomiSelect_syukaDate);
             etSyukaDate.FocusChange += (sender, e) => {
                 if (e.HasFocus)
                 {
@@ -76,9 +76,21 @@ namespace HHT
                 }
             };
 
-            etCourse = view.FindViewById<EditText>(Resource.Id.et_tsumikomiSelect_course);
+            etCourse = view.FindViewById<BootstrapEditText>(Resource.Id.et_tsumikomiSelect_course);
+            etCourse.KeyPress += (sender, e) => {
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    CommonUtils.HideKeyboard(Activity);
+                    Confirm();
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            };
 
-            btnConfirm = view.FindViewById<Button>(Resource.Id.btn_tsumikomiSelect_confirm);
+            btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_tsumikomiSelect_confirm);
             btnConfirm.Click += delegate { Confirm(); };
 
             // FIRST FOCUS

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
+﻿using System.Collections.Generic;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using HHT.Resources.Model;
 
 namespace HHT
@@ -50,11 +43,9 @@ namespace HHT
             string mate = item.Qty.Substring(14, 7);
 
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_per).Text = int.Parse(sumi).ToString() + "/" + int.Parse(kei).ToString();
-
-            ProgressBar pgBar = view.FindViewById<ProgressBar>(Resource.Id.txt_adp_todoke_progressbar);
             
-            pgBar.Max = int.Parse(kei);
-            pgBar.Progress = int.Parse(sumi);
+            BootstrapProgressBar pgBar = view.FindViewById<BootstrapProgressBar>(Resource.Id.txt_adp_todoke_progressbar);
+            pgBar.Progress = ((int.Parse(sumi) / int.Parse(kei)) * 100);
 
             return view;
         }
