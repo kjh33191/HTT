@@ -104,7 +104,7 @@ namespace HHT
                     editor.PutString("vendor_cd", item.vendor_cd);
                     editor.PutString("vendor_nm", item.vendor_nm);
                     editor.Apply();
-                    StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
+                    StartFragment(FragmentManager, typeof(KosuWorkFragment));
                 }
             });
         }

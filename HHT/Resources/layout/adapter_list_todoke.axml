@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -8,24 +9,39 @@
     android:columnCount="3">
     <TextView
         android:text="11:00"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="20sp"
+        android:textStyle="bold"
         android:id="@+id/txt_adp_todoke_time"
         android:layout_width="100dp"
         android:layout_height="30dp"
         android:layout_marginLeft="10dp" />
     <TextView
         android:text="xxxxxxxxxx"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="20sp"
+        android:textStyle="bold"
         android:id="@+id/txt_adp_todoke_tenpoName"
         android:layout_width="140dp"
         android:layout_height="30dp" />
     <TextView
         android:text="33"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="20sp"
+        android:textStyle="bold"
         android:id="@+id/txt_adp_todoke_berth"
         android:layout_width="40dp"
         android:layout_height="30dp" />
-    <ProgressBar
+    <com.beardedhen.androidbootstrap.BootstrapProgressBar
+        android:layout_width="200dp"
+        android:layout_columnSpan="2"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="10dp"
+        android:id="@+id/txt_adp_todoke_progressbar"
+        app:animated="true"
+        app:bootstrapBrand="primary"
+        app:bootstrapProgress="78"
+        app:bootstrapshowPercentage="true" />
+<!--
+      <ProgressBar
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/txt_adp_todoke_progressbar"
@@ -35,9 +51,10 @@
         android:layout_columnSpan="2"
         android:layout_marginRight="10dp"
         android:layout_marginTop="2dp"
-        android:layout_marginLeft="10dp" />
+        android:layout_marginLeft="10dp" />-->
     <TextView
         android:text="0/99"
+        android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/txt_adp_todoke_per"
         android:layout_width="50dp"

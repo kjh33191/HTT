@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:minWidth="25px"
-    android:minHeight="25px"
-    android:layout_width="fill_parent"
-    android:id="@+id/linearLayout2"
-    android:layout_weight="1"
-    android:background="#ff0277bd"
-    android:layout_height="48dp">
-    <TextView
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="?attr/colorPrimary"
+    android:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+    <LinearLayout
+        android:id="@+id/toolbarmenucontainer"
         android:layout_width="match_parent"
+        android:weightSum="2"
         android:layout_height="match_parent"
-        android:text="(c) Xamarin 2016"
-        android:id="@+id/tv_foot_body"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:layout_gravity="left"
-        android:layout_marginLeft="20dp"
-        android:gravity="left|center_vertical"
-        android:textStyle="normal" />
-</LinearLayout>
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text=""
+            android:id="@+id/tv_foot_body"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:layout_gravity="left"
+            android:gravity="left|center_vertical"
+            android:layout_weight="1" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text=""
+            android:id="@+id/tv_foot_body1"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:layout_gravity="left"
+            android:gravity="left|center_vertical"
+            android:layout_weight="1" />
+    </LinearLayout>
+</android.support.v7.widget.Toolbar>

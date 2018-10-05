@@ -1,8 +1,6 @@
 ﻿using Android.App;
 using Android.Content;
-using Android.OS;
 using Android.Preferences;
-using Android.Util;
 using HHT.Resources.DataHelper;
 using System.Threading.Tasks;
 
@@ -28,9 +26,15 @@ namespace HHT
             {
                 db = new DataBase();
                 db.CreateDataBase();
+                string hostIp = db.GetHostIpAddress();
 
-                //db.ClearAll();
+                if(hostIp != null && hostIp != "")
+                {
+                    WebService.SetHostIpAddress(hostIp);
+                }
                 
+                //db.ClearAll();
+
                 StartActivity(new Intent(Application.Context, typeof(MainActivity)));
                 
             });

@@ -60,15 +60,18 @@ namespace HHT
                 }
                 else
                 {
-                    try
+                    if(etSyukaDate.Text != "")
                     {
-                        etSyukaDate.Text = CommonUtils.GetDateYYMMDDwithSlash(etSyukaDate.Text);
-                    }
-                    catch
-                    {
-                        CommonUtils.ShowAlertDialog(view, "日付形式ではありません", "正しい日付を入力してください");
-                        etSyukaDate.Text = "";
-                        etSyukaDate.RequestFocus();
+                        try
+                        {
+                            etSyukaDate.Text = CommonUtils.GetDateYYMMDDwithSlash(etSyukaDate.Text);
+                        }
+                        catch
+                        {
+                            CommonUtils.ShowAlertDialog(view, "", "日付を正しく入力してください");
+                            etSyukaDate.Text = "";
+                            etSyukaDate.RequestFocus();
+                        }
                     }
                 }
             };
@@ -90,6 +93,20 @@ namespace HHT
         // CHECK INPUT AND MOVE TO NEXT FRAGMENT
         private void Confirm()
         {
+            if(etSyukaDate.Text == "")
+            {
+                CommonUtils.AlertDialog(View, "", "配送日を入力してください。", null);
+                etSyukaDate.RequestFocus();
+                return;
+            }
+
+            if (etCourse.Text == "")
+            {
+                CommonUtils.AlertDialog(View, "", "コースNoを入力してください。", null);
+                etCourse.RequestFocus();
+                return;
+            }
+
             ((MainActivity)this.Activity).ShowProgress("便情報を確認しています。");
 
             new Thread(new ThreadStart(delegate {
@@ -139,7 +156,7 @@ namespace HHT
             string message = "配送日".PadLeft(5) + " : " + etSyukaDate.Text + "\n";
             message += "コース".PadLeft(5) + " : " + etCourse.Text + "\n";
             message += "便No".PadLeft(5) + " : " + bin_no + "\n\n";
-            message += "よろしいですか？".PadLeft(5) + " : " + bin_no + "\n";
+            message += "よろしいですか？";
 
             CommonUtils.AlertConfirm(view, "確認", message, (flag)=> {
                 if (flag)
@@ -170,7 +187,7 @@ namespace HHT
         {
             if (keycode == Keycode.F4)
             {
-                ShowConfirmMessage();
+                Confirm();
                 return false;
             }
 

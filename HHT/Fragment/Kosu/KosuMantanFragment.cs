@@ -7,6 +7,7 @@ using HHT.Resources.Model;
 using Android.Content;
 using Android.Preferences;
 using static Android.Widget.AdapterView;
+using Android.Graphics.Drawables;
 
 namespace HHT
 {
@@ -15,6 +16,7 @@ namespace HHT
         private View view;
         private List<KOSU200> matehanList;
         private EditText etMantanVendor;
+        private TextView txtVenderName;
         private ListView listView;
 
         ISharedPreferences prefs;
@@ -31,57 +33,73 @@ namespace HHT
             view = inflater.Inflate(Resource.Layout.fragment_kosu_mantan, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
-
-            SetFooterText("");
+            HideFooter();
 
             kosuMenuflag = prefs.GetInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.TODOKE); // 画面区分
 
-            etMantanVendor = view.FindViewById<EditText>(Resource.Id.et_mantan_vendor);
-            etMantanVendor.FocusChange += delegate {
-                if (!etMantanVendor.IsFocused)
-                {
-                    // find vendor name
-
-                    // find vendor matehan list
-                }
-            };
-
-            TextView txtVenderName = view.FindViewById<TextView>(Resource.Id.vendorName);
-            txtVenderName.Text = prefs.GetString("vendor_nm", "");
-
-            string vendorCode = prefs.GetString("vendor_cd", "");
-            etMantanVendor.Text = vendorCode;
-
-            // ベンダー別マテハンコード取得
-            matehanList = WebService.RequestKosu200(vendorCode);
             listView = view.FindViewById<ListView>(Resource.Id.lv_matehanList);
-
-            List<string> temp = new List<string>();
-            int count = 1;
-            foreach (KOSU200 matehan in matehanList)
-            {
-                temp.Add(count+ ".  "+ matehan.matehan_nm);
-                count++;
-            }
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<string>(Activity, Android.Resource.Layout.SimpleListItem1, temp);
-            listView.Adapter = adapter;
-
             listView.ItemClick += (object sender, ItemClickEventArgs e) =>
             {
                 SelectListViewItem(e.Position);
             };
+
+            txtVenderName = view.FindViewById<TextView>(Resource.Id.vendorName);
+            txtVenderName.Text = prefs.GetString("vendor_nm", "");
+            
+            etMantanVendor = view.FindViewById<EditText>(Resource.Id.et_mantan_vendor);
+            etMantanVendor.Text = prefs.GetString("vendor_cd", "");
+            /*
+            etMantanVendor.FocusChange += delegate {
+                if (!etMantanVendor.IsFocused)
+                {
+                    SetMatehanList();
+                }
+                else
+                {
+                    listView.Selected = false;
+                }
+            };
+            */
+            etMantanVendor.KeyPress += (sender, e) => {
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    CommonUtils.HideKeyboard(Activity);
+                    SetMatehanList();
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            };
+            
+            SetMatehanList();
+
+            listView.RequestFocus(); listView.RequestFocusFromTouch();
+            listView.SetSelection(2);
             
             return view;
         }
-
-        public override void OnResume()
+        
+        private void SetMatehanList()
         {
-            base.OnResume();
+            string venderName = WebService.RequestKosu220(etMantanVendor.Text);
+            txtVenderName.Text = venderName;
+            // ベンダーコードがみつかりません。
+            
+            // ベンダー別マテハンコード取得
+            matehanList = WebService.RequestKosu200(etMantanVendor.Text);
+            
+            List<string> temp = new List<string>();
+            int count = 1;
+            foreach (KOSU200 matehan in matehanList)
+            {
+                temp.Add(count + ".  " + matehan.matehan_nm);
+                count++;
+            }
 
-            listView.ChoiceMode = ChoiceMode.Single;
-            listView.SetItemChecked(0, true);
-            listView.RequestFocus();
+            ArrayAdapter<String> adapter = new ArrayAdapter<string>(Activity, Resource.Layout.adapter_list_matehan, temp);
+            listView.Adapter = adapter;
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -162,12 +180,14 @@ namespace HHT
                             else
                             {
                                 CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                                Vibrate();
                                 return;
                             }
                         }
                         catch
                         {
                             CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                            Vibrate();
                             return;
                         }
                         
@@ -176,22 +196,7 @@ namespace HHT
                 );
             }
         }
-
-        public void iniZeroData2()
-        {
-            /*
-            JOB: case_su = 0		//ケース
-            JOB: oricon_su = 0		//オリコン
-            JOB: futeikei_su = 0		//不定形
-            JOB: ido_su = 0		//店移動
-            JOB: hansoku_su = 0		//販促物
-            JOB: hazai_su = 0		//破材
-            JOB: henpin_su = 0		//返品数
-            JOB: kaisyu_su = 0		//回収
-            */
-        }
-
-
+        
         private Dictionary<string, string> GetProcedureParam(string pMatehan)
         {
             string pSagyosyaCD = prefs.GetString("driver_cd", "");

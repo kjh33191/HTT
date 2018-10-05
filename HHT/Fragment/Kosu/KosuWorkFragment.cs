@@ -8,13 +8,13 @@ using System.Collections.Generic;
 using HHT.Resources.Model;
 using Android.Content;
 using Android.Preferences;
-using System.Threading;
 using Android.Util;
 using HHT.Common;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
-    public class TodokeTyingWorkFragment : BaseFragment
+    public class KosuWorkFragment : BaseFragment
     {
         private readonly string TAG = "KosuWorkFragment";
 
@@ -23,7 +23,7 @@ namespace HHT
         private TextView txtVendorName, txtMiseName, txtTenpoLocation, txtCase, txtHuteikei
             , txtMiseidou, txtHansoku, txtTotal
             , txtOricon, txtHazai, txtHenpin, txtKaisyu, txtDaisu;
-        private Button btnStop, btnCancel, btnMantan, btnComplete;
+        private BootstrapButton btnStop, btnCancel, btnMantan, btnComplete;
         private GridLayout gdTyingCanman;
 
         // For Handling Parameters
@@ -35,6 +35,7 @@ namespace HHT
         private string venderCd;
         private int kosuMax;
         private bool hasKamotsuScanned;
+        private string tempTotal, tempDaisu;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -66,12 +67,12 @@ namespace HHT
             if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
             {
                 SetTitle("届先指定検品");
-                SetFooterText("F1:中断");
+                SetFooterText("F1：中断");
             }
             else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
             {
                 SetTitle("ベンダー指定検品");
-                SetFooterText("F1:中断");
+                SetFooterText("F1：中断");
                 venderCd = prefs.GetString("vendor_cd", "");
                 txtVendorName.Text = prefs.GetString("vendor_nm", "");
             }
@@ -105,17 +106,19 @@ namespace HHT
             txtKaisyu = view.FindViewById<TextView>(Resource.Id.txt_todoke_kaisyu);
             txtDaisu = view.FindViewById<TextView>(Resource.Id.txt_todoke_daisu);
 
-            btnStop = view.FindViewById<Button>(Resource.Id.btn_todoke_stop);
-            btnStop.Click += delegate { StartFragment(FragmentManager, typeof(KosuTyingConfrimFragment)); }; // 中断
+            btnStop = view.FindViewById<BootstrapButton>(Resource.Id.btn_todoke_stop);
+            btnStop.Click += delegate { StartFragment(FragmentManager, typeof(KosuWorkConfirmFragment)); }; // 中断
 
-            btnMantan = view.FindViewById<Button>(Resource.Id.btn_todoke_mantan);　// 届先検品の満タンボタン
+            btnMantan = view.FindViewById<BootstrapButton>(Resource.Id.btn_todoke_mantan);　// 届先検品の満タンボタン
             btnMantan.Click += delegate { GoMantanPage(); }; // 満タン
 
-            btnCancel = view.FindViewById<Button>(Resource.Id.btn_todoke_cancel);
+            btnCancel = view.FindViewById<BootstrapButton>(Resource.Id.btn_todoke_cancel);
             btnCancel.Click += delegate { CancelKamotsuScan(false); };　// 取消
 
-            btnComplete = view.FindViewById<Button>(Resource.Id.completeButton); // バラ検品の完了ボタン
-            btnComplete.Click += delegate {
+            btnComplete = view.FindViewById<BootstrapButton>(Resource.Id.completeButton); // バラ検品の完了ボタン
+            btnComplete.Visibility = ViewStates.Gone;
+            btnComplete.Click += delegate
+            {
                 try
                 {
                     KOSU070 kosu070 = WebService.RequestKosu180(GetProcedureParam(""));
@@ -148,12 +151,14 @@ namespace HHT
                     else
                     {
                         CommonUtils.AlertDialog(view, "", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                        Vibrate();
                     }
                 }
                 catch
                 {
                     CommonUtils.AlertDialog(view, "エラー", "満タン処理完了に失敗しました。", null);
                     Log.Error(Tag, "");
+                    Vibrate();
                     return;
                 }
             };
@@ -171,18 +176,33 @@ namespace HHT
             txtKaisyu.Text = prefs.GetString("kaisyu_su", "0");
             txtTotal.Text = prefs.GetString("ko_su", "0");
             txtDaisu.Text = prefs.GetString("dai_su", "0");
+            tempTotal = txtTotal.Text;
+            tempDaisu = txtDaisu.Text;
 
+            // 満タンまたは中断画面から戻った場合はボタン表示
+            int count = int.Parse(txtCase.Text) + int.Parse(txtOricon.Text) + int.Parse(txtHuteikei.Text) + int.Parse(txtMiseidou.Text)
+                + int.Parse(txtHazai.Text) + int.Parse(txtHenpin.Text) + int.Parse(txtHansoku.Text) + int.Parse(txtKaisyu.Text);
+
+            if (count == 0)
+            {
+                hasKamotsuScanned = false;
+            }
+            else
+            {
+                hasKamotsuScanned = true;
+                btnStop.Visibility = ViewStates.Gone;
+                gdTyingCanman.Visibility = ViewStates.Visible;   
+            }
+            
             try
             {
                 kosuMax = WebService.RequestKosu210();
             }
             catch
             {
-                CommonUtils.ShowAlertDialog(View, "エラー", "個数上限値がみつかりません。");
-                kosuMax = 10;
+                kosuMax = 100;
             }
-
-            hasKamotsuScanned = false;
+            
         }
 
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
@@ -281,13 +301,11 @@ namespace HHT
 
                     if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                     {
-                        SetFooterText("  F2 :取消                    F3:満タン");
                         btnStop.Visibility = ViewStates.Gone;
                         gdTyingCanman.Visibility = ViewStates.Visible;
                     }
                     else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
                     {
-                        SetFooterText("  F3:満タン");
                         btnStop.Visibility = ViewStates.Gone;
                         gdTyingCanman.Visibility = ViewStates.Visible;
                     }
@@ -300,6 +318,7 @@ namespace HHT
                 catch
                 {
                     CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                    Vibrate();
                     Log.Error(Tag, "");
                     return;
                 }
@@ -311,7 +330,7 @@ namespace HHT
         {
             if (keycode == Keycode.F1)
             {
-                StartFragment(FragmentManager, typeof(KosuTyingConfrimFragment));
+                StartFragment(FragmentManager, typeof(KosuWorkConfirmFragment));
             }
             else if (keycode == Keycode.F2)
             {
@@ -330,7 +349,7 @@ namespace HHT
         {
             if (hasKamotsuScanned)
             {
-                CancelKamotsuScan(true);
+                CancelKamotsuScan(false);
             }
             else
             {
@@ -444,6 +463,7 @@ namespace HHT
                     if (errMsg != "")
                     {
                         CommonUtils.AlertDialog(view, "エラー", errMsg, null);
+                        Vibrate();
                         return;
                     }
 
@@ -472,6 +492,8 @@ namespace HHT
                         }
 
                         ScanCntReset();
+                        txtTotal.Text = tempTotal;
+                        txtDaisu.Text = tempDaisu;
                         txtTenpoLocation.Text = "";
                     }
                 }

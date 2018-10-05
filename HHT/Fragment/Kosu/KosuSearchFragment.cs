@@ -6,7 +6,6 @@ using Android.OS;
 using Android.Preferences;
 using Android.Views;
 using Android.Widget;
-using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
 
 namespace HHT
@@ -62,17 +61,9 @@ namespace HHT
             {
                 CommonUtils.AlertDialog(view, "確認", "表示データがありません。", () =>
                 {
-                    if(kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
-                    {
-                        // sagyou4
-                        FragmentManager.PopBackStack();
-                    }
-                    else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
-                    {
-                        // sagyou9
-                        // ベンダー検索画面へ
-                    }
+                  FragmentManager.PopBackStack();  
                 });
+                Vibrate();
             }
 
             new Thread(new ThreadStart(delegate
@@ -117,7 +108,7 @@ namespace HHT
 
             editor.Apply();
 
-            StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment));
+            StartFragment(FragmentManager, typeof(KosuWorkFragment));
             
         }
 

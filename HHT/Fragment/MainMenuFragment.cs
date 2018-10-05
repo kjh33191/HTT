@@ -9,6 +9,7 @@ using Android.Views;
 using Android.Widget;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -55,23 +56,23 @@ namespace HHT
                 // ドライバの場合
                 LinearLayout driverLayout = view.FindViewById<LinearLayout>(Resource.Id.driverLayout);
                 driverLayout.Visibility = ViewStates.Visible;
-
-                Button btnNyuka = view.FindViewById<Button>(Resource.Id.driverNyuka);
+                
+                BootstrapButton btnNyuka = view.FindViewById<BootstrapButton>(Resource.Id.driverNyuka);
                 btnNyuka.Click += delegate { StartFragment(FragmentManager, typeof(NyukaMenuFragment)); };
 
-                Button btnTsumikae = view.FindViewById<Button>(Resource.Id.driverIdou);
+                BootstrapButton btnTsumikae = view.FindViewById<BootstrapButton>(Resource.Id.driverIdou);
                 btnTsumikae.Click += delegate { StartFragment(FragmentManager, typeof(TsumikaeMenuFragment)); };
 
-                Button btnTsumikomi = view.FindViewById<Button>(Resource.Id.driverTsumikomi);
+                BootstrapButton btnTsumikomi = view.FindViewById<BootstrapButton>(Resource.Id.driverTsumikomi);
                 btnTsumikomi.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiSelectFragment)); };
 
-                Button btnNohin = view.FindViewById<Button>(Resource.Id.driverNohin);
+                BootstrapButton btnNohin = view.FindViewById<BootstrapButton>(Resource.Id.driverNohin);
                 btnNohin.Click += delegate { StartFragment(FragmentManager, typeof(NohinSelectFragment)); };
 
-                Button btnDataSend = view.FindViewById<Button>(Resource.Id.driverSend);
+                BootstrapButton btnDataSend = view.FindViewById<BootstrapButton>(Resource.Id.driverSend);
                 btnDataSend.Click += delegate { DataSend(); };
 
-                Button btnIdouNohin = view.FindViewById<Button>(Resource.Id.driverIdouNohin);
+                BootstrapButton btnIdouNohin = view.FindViewById<BootstrapButton>(Resource.Id.driverIdouNohin);
                 btnIdouNohin.Click += delegate { StartFragment(FragmentManager, typeof(IdouNohinSelectFragment)); };
 
 
@@ -189,6 +190,7 @@ namespace HHT
             if(count == 0)
             {
                 CommonUtils.AlertDialog(view, "", "送信するデータが存在しません。", () => {});
+                Vibrate();
                 return;
             }
             else

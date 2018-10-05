@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,35 +13,52 @@
         android:columnCount="2">
         <TextView
             android:text="配送日"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:layout_marginRight="10dp"
             android:id="@+id/textView1" />
-        <EditText
-            android:inputType="numberDecimal"
-            android:layout_width="120dp"
-            android:id="@+id/et_binInput_deliveryDate"
+        <com.beardedhen.androidbootstrap.BootstrapEditText
+            android:id="@+id/syukaDate"
+            android:inputType="date"
             android:hint="yyMMdd"
-            android:focusable="false"
-            android:layout_gravity="fill_horizontal" />
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="fill_horizontal"
+            android:enabled="false"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl" />
         <TextView
             android:text="便"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:layout_marginRight="10dp"
             android:id="@+id/textView2" />
+        <com.beardedhen.androidbootstrap.BootstrapEditText
+            android:id="@+id/binNo"
+            android:inputType="numberDecimal"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="fill_horizontal"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl" />
+    <!--
         <EditText
             android:text=""
             android:inputType="numberDecimal"
             android:id="@+id/et_binInput_binNo"
             android:layout_width="120dp"
             android:layout_gravity="fill_horizontal" />
+                        -->
     </GridLayout>
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/wrapping_button"
         android:text="確定"
+        android:id="@+id/btn_binInput_confirm"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:id="@+id/btn_binInput_confirm"
-        android:layout_gravity="center_horizontal" />
+        android:layout_marginRight="0dp"
+        android:textSize="20dp"
+        android:layout_gravity="center_horizontal"
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl"
+        app:roundedCorners="true" />
 </LinearLayout>

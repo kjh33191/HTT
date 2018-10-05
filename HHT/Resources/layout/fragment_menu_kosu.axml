@@ -4,9 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_vertical|left"
-    android:layout_marginLeft="40dp"
-    android:layout_marginRight="40dp"
-    android:layout_marginBottom="30dp">
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="20dp">
     <Button
         android:text="1. 届先指定検品"
         android:layout_width="match_parent"
@@ -14,13 +13,13 @@
         android:id="@+id/todokeInspButton"
         android:paddingStart="20dp"
         android:textAlignment="textStart"
-        android:textSize="18sp"
+        android:textSize="25sp"
         android:textStyle="bold" />
     <Button
         android:text="2. ベンダー指定検品"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:textSize="18sp"
+        android:textSize="25sp"
         android:textStyle="bold"
         android:paddingStart="20dp"
         android:textAlignment="textStart"
@@ -29,7 +28,7 @@
         android:text="3. バラ検品"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:textSize="18sp"
+        android:textSize="25sp"
         android:textStyle="bold"
         android:paddingStart="20dp"
         android:textAlignment="textStart"

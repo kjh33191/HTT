@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Android;
@@ -110,8 +111,8 @@ namespace HHT
         // ヘッダータイトル設定
         public static void SetTitle(Activity activity, string title)
         {
-            TextView toolbarTitle = activity.FindViewById<TextView>(Resource.Id.toolbar_title);
-            toolbarTitle.Text = title;
+            //TextView toolbarTitle = activity.FindViewById<TextView>(Resource.Id.toolbar_title);
+            //toolbarTitle.Text = title;
         }
 
         // ソフトキーボードを隠す
@@ -134,53 +135,21 @@ namespace HHT
             return networkInfo != null && networkInfo.IsConnectedOrConnecting;
         }
 
-        public static bool IsHostReachable(string host)
+        public static async Task<bool> IsHostReachable(string host)
         {
-            if (string.IsNullOrEmpty(WebService.HOST_ADDRESS))
+            if (string.IsNullOrEmpty(WebService.GetHostIpAddress()))
                 return false;
 
-            bool isReachable = true;
+            bool isReachable = false;
 
-            Thread thread = new Thread(() =>
+            Ping x = new Ping();
+            PingReply reply = x.Send(IPAddress.Parse(host)); //enter ip of the machine
+            if (reply.Status == IPStatus.Success) // here we check for the reply status if it is success it means the host is reachable
             {
-                try
-                {
-                    //isReachable = InetAddress.GetByName(host).IsReachable(2000);
-
-                    /* 
-                     * It's important to note that isReachable tries ICMP ping and then TCP echo (port 7).
-                     * These are often closed down on HTTP servers.
-                     * So a perfectly good working API with a web server on port 80 will be reported as unreachable
-                     * if ICMP and TCP port 7 are filtered out!
-                     */
-
-                    //if (!isReachable){
-                    URL url = new URL("http://" + WebService.HOST_ADDRESS);
-
-                    URLConnection connection = url.OpenConnection();
-
-                    //if(connection.ContentLength != -1){
-                    //isReachable = true;
-                    if (connection.ContentLength == -1)
-                    {
-                        isReachable = false;
-                    }
-                    //}
-
-                }
-                catch (UnknownHostException e)
-                {
-                    isReachable = false;
-                }
-                catch (IOException e)
-                {
-                    isReachable = false;
-                }
-
-            });
-            thread.Start();
-
-            return isReachable;
+                isReachable = true;
+            }
+            
+            return await Task.FromResult(isReachable);
         }
 
         public static string GetDeviceID(Context context)

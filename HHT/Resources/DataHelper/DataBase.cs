@@ -2,6 +2,8 @@
 using Android.Util;
 using HHT.Resources.Model;
 using SQLite;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HHT.Resources.DataHelper
 {
@@ -22,6 +24,8 @@ namespace HHT.Resources.DataHelper
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
                 {
+                    connection.CreateTable<Model.Config>();
+
                     connection.CreateTable<Tanto>();
                     connection.CreateTable<Login>();
 
@@ -85,6 +89,57 @@ namespace HHT.Resources.DataHelper
                 return false;
             }
         }
-        
+
+        public string GetHostIpAddress()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    List<Model.Config> config = connection.Table<Model.Config>().ToList();
+
+                    if (config.Count > 0)
+                    {
+                        return config[0].hostIp;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return null;
+            }
+        }
+
+        public bool SetHostIpAddress(string hostIp)
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    List<Model.Config> configList = connection.Table<Model.Config>().ToList();
+                    Model.Config config = new Model.Config();
+                    config.hostIp = hostIp;
+
+                    if (configList.Count > 0)
+                    {
+                        connection.DeleteAll<Model.Config>();
+                    }
+
+                    connection.Insert(config);
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+
+            return true;
+        }
     }
 }

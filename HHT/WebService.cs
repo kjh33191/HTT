@@ -11,8 +11,8 @@ namespace HHT
     {
         public readonly static string TAG = "WebService";
 
-        public readonly static string HOST_ADDRESS = "192.168.0.13";
-        public readonly static string WEB_SERVICE_URL = "http://" + HOST_ADDRESS + ":8787/";
+        private static string HOST_ADDRESS = "192.168.0.13";
+        private static string WEB_SERVICE_URL = "http://" + HOST_ADDRESS + ":8787/";
 
         public class LOGIN
         {
@@ -496,7 +496,7 @@ namespace HHT
         }
 
         // 紐付完了
-        public static KOSU115 RequestKosu115(string kenpin_souko, string kitaku_cd, string syuka_date, string vendor_cd)
+        public static KOSU110 RequestKosu115(string kenpin_souko, string kitaku_cd, string syuka_date, string vendor_cd)
         {
 
             Dictionary<string, string> param = new Dictionary<string, string>
@@ -512,7 +512,7 @@ namespace HHT
 
             if (response.status == "0")
             {
-                return response.GetDataObject<KOSU115>();
+                return response.GetDataObject<KOSU110>();
             }
             else
             {
@@ -734,7 +734,7 @@ namespace HHT
         // ベンダー検索(マテハン積付)
         public static string RequestKosu220(string vendor_cd)
         {
-            string resultJson = CommonUtils.Post(KOSU.KOSU220, new Dictionary<string, string>());
+            string resultJson = CommonUtils.Post(KOSU.KOSU220, new Dictionary<string, string> { { "vendor_cd", vendor_cd } });
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
             if (response.status == "0")
@@ -1647,7 +1647,7 @@ namespace HHT
             Dictionary<string, string> param = new Dictionary<string, string>
             {
                 {"kamotsu_no", kamotsu_no },
-                {"tenkansyuka_date_state", syuka_date },
+                {"syuka_date", syuka_date },
             };
 
             string resultJson = CommonUtils.Post(TIDOU.TIDOU001, param);
@@ -2247,9 +2247,19 @@ namespace HHT
                 throw new Exception(response.message);
             }
         }
-        
+
         #endregion
 
+        public static void SetHostIpAddress(string hostIp)
+        {
+            HOST_ADDRESS = hostIp;
+            WEB_SERVICE_URL = "http://" + hostIp + ":8787/";
+        }
+
+        public static string GetHostIpAddress()
+        {
+            return HOST_ADDRESS;
+        }
     }
 
 }

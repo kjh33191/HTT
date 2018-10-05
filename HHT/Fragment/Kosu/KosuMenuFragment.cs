@@ -23,6 +23,7 @@ namespace HHT
 
             SetTitle("入荷検品");
             SetFooterText("");
+            HideFooter();
 
             var view = inflater.Inflate(Resource.Layout.fragment_menu_kosu, container, false);
             Button button1 = view.FindViewById<Button>(Resource.Id.todokeInspButton);

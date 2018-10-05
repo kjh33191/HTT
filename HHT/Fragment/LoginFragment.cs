@@ -11,6 +11,7 @@ using Android.Content;
 using Android.Preferences;
 using Android.Util;
 using Android.Media;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -23,16 +24,16 @@ namespace HHT
         private LoginHelper loginHelper;
         private TantoHelper tantoHelper;
 
-        private EditText etSoukoCode, etDriverCode;
+        private BootstrapEditText etSoukoCode, etDriverCode;
         private TextView txtSoukoName;
-        private Button btnLogin;
+        private BootstrapButton btnLogin;
 
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
         LOGIN010 login010;
         string def_tokuisaki_cd, kitaku_cd;
-
+        
         private readonly string ERROR = "エラー";
         private readonly string ERR_NOT_FOUND_SOUKO = "センター情報が見つかりませんでした。\n再確認してください。";
         private readonly string ERR_NO_INPUT_SOUKO = "倉庫コードを\n入力して下さい。";
@@ -48,16 +49,18 @@ namespace HHT
             view = inflater.Inflate(Resource.Layout.fragment_login, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
-
+            
             loginHelper = new LoginHelper();
 
-            SetTitle("ログイン");
+            ((MainActivity)this.Activity).SupportActionBar.Title = "ログイン";
+            //SetTitle("ログイン");
             SetFooterText("");
-
-            etSoukoCode = view.FindViewById<EditText>(Resource.Id.et_login_soukoCode);
+            HideFooter();
+            
+            etSoukoCode = view.FindViewById<BootstrapEditText>(Resource.Id.soukoCode);
             txtSoukoName = view.FindViewById<TextView>(Resource.Id.tv_login_soukoName);
-            etDriverCode = view.FindViewById<EditText>(Resource.Id.et_login_driverCode);
-            btnLogin = view.FindViewById<Button>(Resource.Id.loginButton);
+            etDriverCode = view.FindViewById<BootstrapEditText>(Resource.Id.tantoCode);
+            btnLogin = view.FindViewById<BootstrapButton>(Resource.Id.loginButton);
 
             etDriverCode.KeyPress += (sender, e) =>{
                 if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
@@ -113,6 +116,7 @@ namespace HHT
                     etSoukoCode.RequestFocus();
                 });
 
+                Vibrate();
                 Log.Warn(TAG, "SoukoCode is Empty");
                 return;
             }
@@ -122,11 +126,16 @@ namespace HHT
                 string alertTitle = Resources.GetString(Resource.String.error);
                 string alertBody = Resources.GetString(Resource.String.errorMsg002);
 
+                CustomDialogFragment dialog = new CustomDialogFragment();
+                dialog.Cancelable = false;
+                dialog.Show(FragmentManager, "");
+
                 CommonUtils.AlertDialog(view, alertTitle, "担当者コードを\n入力して下さい。", () => {
                     etDriverCode.Text = "";
                     etDriverCode.RequestFocus();
                 });
 
+                Vibrate();
                 Log.Warn(TAG, "DriverCode is Empty");
                 return;
             }
@@ -134,10 +143,10 @@ namespace HHT
             ((MainActivity)this.Activity).ShowProgress("ログイン情報を確認しています。");
 
             new Thread(new ThreadStart(delegate {
-                Activity.RunOnUiThread(() =>
+                Activity.RunOnUiThread(async () =>
                 {
 
-                    if (CommonUtils.IsHostReachable(WebService.HOST_ADDRESS))
+                    if (await CommonUtils.IsHostReachable(WebService.GetHostIpAddress()))
                     {
                         Log.Verbose(TAG, "Status : Host Reached");
 
@@ -173,6 +182,7 @@ namespace HHT
                                 etDriverCode.RequestFocus();
                             });
 
+                            Vibrate();
                             hasError = true;
                             Log.Error(TAG, "Login Failed ：" + e.StackTrace.ToString());
                             return;
@@ -180,6 +190,14 @@ namespace HHT
                     }
                     else
                     {
+                        Vibrate();
+                        CommonUtils.AlertDialog(view, "ERROR", "サーバから答えがありません。(Temp)", () => {
+                        });
+                        hasError = true;
+                        return;
+
+                        /*
+                        tantoHelper = new TantoHelper();
                         Tanto tanto = tantoHelper.SelectTantoInfo(etDriverCode.Text);
                         editor.PutString("menu_kbn", tanto.menu_kbn);
                         editor.PutString("driver_nm", tanto.tantohsya_nm);
@@ -197,6 +215,8 @@ namespace HHT
                             def_tokuisaki_cd = this.def_tokuisaki_cd,
                             kitaku_cd = this.kitaku_cd
                         });
+
+                        */
                     }
                     
                     editor.PutString("souko_cd", etSoukoCode.Text);
@@ -278,25 +298,31 @@ namespace HHT
         // 以前ログイン情報を設定する。
         private void SetLastLoginInfo()
         {
-            if (CommonUtils.IsHostReachable(WebService.HOST_ADDRESS))
-            {
-                try
+            new Thread(new ThreadStart(delegate {
+                Activity.RunOnUiThread(async () =>
                 {
-                    LOGIN020 loginInfo = WebService.RequestLogin020("11101");
-                    etSoukoCode.Text = loginInfo.souko_cd;
-                    SetSoukoName(loginInfo.souko_cd);
-                    etDriverCode.RequestFocus();
+                    if (await CommonUtils.IsHostReachable(WebService.GetHostIpAddress()))
+                    {
+                        try
+                        {
+                            LOGIN020 loginInfo = WebService.RequestLogin020("11101");
+                            etSoukoCode.Text = loginInfo.souko_cd;
+                            SetSoukoName(loginInfo.souko_cd);
+                            etDriverCode.RequestFocus();
+                        }
+                        catch
+                        {
+                            LoadLastLoginFromDB();
+                        }
+                    }
+                    else
+                    {
+                        LoadLastLoginFromDB();
+                    }
                 }
-                catch
-                {
-                    LoadLastLoginFromDB();
-                }
+                );
             }
-            else
-            {
-                LoadLastLoginFromDB();
-            }
-
+            )).Start();
         }
 
         // ホストと連携されていない場合、ローカルから最終ログイン情報を設定する。
@@ -335,6 +361,10 @@ namespace HHT
             if (keycode == Keycode.Back)
             {
                 return false;
+            }
+            else if (keycode == Keycode.F3)
+            {
+                StartFragment(FragmentManager, typeof(ConfigFragment));
             }
             else if (keycode == Keycode.F4)
             {

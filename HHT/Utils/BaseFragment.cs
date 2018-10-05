@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Preferences;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Com.Densowave.Bhtsdk.Barcode;
@@ -17,16 +10,10 @@ namespace HHT
 {
     public class BaseFragment : Fragment
     {
-        TextView toolbarTitle;
-        TextView txtFooterBody;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
-            toolbarTitle = this.Activity.FindViewById<TextView>(Resource.Id.toolbar_title);
-            txtFooterBody = this.Activity.FindViewById<TextView>(Resource.Id.tv_foot_body);
-
         }
 
         protected void StartFragment(FragmentManager fm, Type fragmentClass)
@@ -35,7 +22,8 @@ namespace HHT
             try
             {
                 fragment = (BaseFragment)Activator.CreateInstance(fragmentClass);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
 
             }
@@ -44,11 +32,12 @@ namespace HHT
                 .BeginTransaction()
                 .Replace(Resource.Id.fragmentContainer, fragment)
                 //.Add(Resource.Id.fragmentContainer, fragment)
+                .SetTransition(FragmentTransit.FragmentFade)
                 .AddToBackStack(null)
                 .Commit();
         }
 
-        protected void StartFragment(FragmentManager fm, Type fragmentClass,Bundle bundle)
+        protected void StartFragment(FragmentManager fm, Type fragmentClass, Bundle bundle)
         {
             BaseFragment fragment = null;
             try
@@ -86,12 +75,27 @@ namespace HHT
 
         public void SetTitle(string title)
         {
-            toolbarTitle.Text = title;
+            ((MainActivity)this.Activity).SupportActionBar.Title = title;
         }
 
         public void SetFooterText(string content)
         {
-            txtFooterBody.Text = content;
+            this.Activity.FindViewById<TextView>(Resource.Id.tv_foot_body).Text = content;
+        }
+
+        public void ShowFooter()
+        {
+            this.Activity.FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.footerLayout).Visibility = ViewStates.Visible;
+        }
+
+        public void HideFooter()
+        {
+            this.Activity.FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.footerLayout).Visibility = ViewStates.Gone;
+        }
+
+        public void Vibrate()
+        {
+            ((Vibrator)Activity.GetSystemService(Android.Content.Context.VibratorService)).Vibrate(1000);
         }
     }
 }

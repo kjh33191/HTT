@@ -8,7 +8,8 @@
     android:gravity="center_vertical|left">
     <TextView
         android:text="回収ラベル"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="20sp"
+        android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView1" />
@@ -21,56 +22,45 @@
         android:textAlignment="center" />
     <TextView
         android:text="移動先店舗"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="20sp"
+        android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView1" />
     <EditText
-        android:inputType="date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/et_idouTenpo"
+        android:focusable="false"
         android:text=""
         android:textAlignment="center" />
-    <TextView
-        android:text="移動先得意先"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
-    <EditText
-        android:inputType="date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/et_idouTokuisaki"
-        android:text=""
-        android:textAlignment="center" />
-    <TextView
-        android:text="移動先届先"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
-    <EditText
-        android:inputType="date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/et_idouTodokesaki"
-        android:text=""
-        android:textAlignment="center" />
-    <TextView
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt_areaName" />
-    <TextView
-        android:text="よろしいですか？"
-        android:visibility="invisible"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt_ConfirmMessage" />
+        android:columnCount="2">
+        <TextView
+            android:text="移動先得意先"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView1" />
+        <EditText
+            android:inputType="date"
+            android:id="@+id/et_idouTokuisaki"
+            android:text=""
+            android:layout_gravity="fill_horizontal"
+            android:textAlignment="center" />
+        <TextView
+            android:text="移動先届先"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/textView1" />
+        <EditText
+            android:inputType="date"
+            android:id="@+id/et_idouTodokesaki"
+            android:text=""
+            android:layout_gravity="fill_horizontal"
+            android:textAlignment="center" />
+    </GridLayout>
     <Button
         android:text="確定"
         android:layout_width="150dp"

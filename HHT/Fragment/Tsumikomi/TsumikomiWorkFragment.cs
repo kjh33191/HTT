@@ -71,7 +71,9 @@ namespace HHT
 
             zoubin_flg = prefs.GetInt("zoubin_flg", 1);
             kansen_kbn = prefs.GetString("kansen_kbn", "1");
-            
+
+            etKosu.SetBackgroundColor(Android.Graphics.Color.Yellow);
+
             if (zoubin_flg == 1)
             {
                 GetTenpoMatehanInfo();  // 作業5, 6 定番コース단골코스(zoubin_flg = 1)
@@ -112,10 +114,16 @@ namespace HHT
 
                             matehan = result.poMatehan;
                             etKosu.Text = result.poKosuCnt;
-                            
-                            CommonUtils.AlertDialog(view, "確認", "出荷ラベルが確認できました。", null);
-                         
+
+                            //	正常登録
+                            Vibrator vibrator = (Vibrator)this.Activity.GetSystemService(Context.VibratorService);// (Context.VIBRATE_SERVICE)  
+                            long millisecond = 1000;  // 1초  
+                            vibrator.Vibrate(millisecond);
+
                             carLabelInputMode = true;
+                            btnIdou.Visibility = ViewStates.Invisible;
+                            etCarLabel.SetBackgroundColor(Android.Graphics.Color.Yellow);
+                            etKosu.SetBackgroundColor(Android.Graphics.Color.White);
                         }
                         catch
                         {
@@ -205,6 +213,11 @@ namespace HHT
                                 //StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
                                 Activity.RunOnUiThread(() =>
                                 {
+                                    //	正常登録
+                                    Vibrator vibrator = (Vibrator)this.Activity.GetSystemService(Context.VibratorService);// (Context.VIBRATE_SERVICE)  
+                                    long millisecond = 1000;  // 1초  
+                                    vibrator.Vibrate(millisecond);
+
                                     CommonUtils.AlertDialog(view, "", "積込検品が\n完了しました。", () => {
                                         FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0);
                                     });
@@ -293,92 +306,6 @@ namespace HHT
 
         }
         
-        // 貨物Noスキャン時、各分類のカウントを取得 TUMIKOMI070 sagyou8 
-        private int CountKamotsu(string matehan)
-        {
-            var progress = ProgressDialog.Show(this.Activity, "Please wait...", "Contacting server. Please wait...", true);
-            int resultCode = 1;
-            
-            new Thread(new ThreadStart(delegate {
-
-                Activity.RunOnUiThread(() =>
-                {
-                    Thread.Sleep(1500);
-
-                    Dictionary<string, string> param = new Dictionary<string, string>
-                    {
-                        { "kenpin_souko",  souko_cd},
-                        { "kitaku_cd", kitaku_cd},
-                        { "syuka_date", syuka_date },
-                        { "tokuisaki_cd", tokuisaki_cd },
-                        { "todokesaki_cd", todokesaki_cd },
-                        { "matehan", matehan },
-                        { "bin_no", bin_no }
-                    };
-
-                    TUMIKOMI070 result = WebService.RequestTumikomi070(param);
-                    
-                    if (result == null)
-                    {
-                        CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
-                        return;
-                    }
-
-                    string btvBunrui = result.bunrui;
-                    string btvKosu = result.cnt;
-
-                    // JOB:ko_su = 0
-                    // JOB: b_ko_su = JOB:b_ko_su.Remove(" ")
-                    // JOB: dai_su = JOB:dai_su + 1
-
-                    switch (btvBunrui)
-                    {
-                        case "01" :
-                            
-                            // JOB: case_su = btvKosu
-                            break;
-                        case "02":
-                            // JOB: oricon_su = btvKosu
-                            break;
-                        case "03":
-                            // JOB: sonota_su = JOB:sonota_su + btvKosu
-                            break;
-                        case "04":
-                            // JOB: ido_su = btvKosu
-                            break;
-                        case "05":
-                            // JOB: mail_su = btvKosu
-                            break;
-                        case "06":
-                            // JOB: sonota_su = JOB:sonota_su + btvKosu
-                            break;
-                        case "07":
-                            // JOB: futeikei_su = btvKosu
-                            break;
-                        case "08":
-                            // JOB: sonota_su = JOB:sonota_su + btvKosu
-                            break;
-                        case "09":
-                            // JOB: hansoku_su = btvKosu
-                            break;
-                        default:
-                            // JOB: sonota_su = JOB:sonota_su + btvKosu
-                            break;
-                    }
-
-                    // JOB: b_ko_su = JOB:b_ko_su + btvKosu
-                    // JOB: ko_su = JOB:ko_su + btvKosu
-
-                }
-                );
-                Activity.RunOnUiThread(() => progress.Dismiss());
-
-            }
-            )).Start();
-
-            return resultCode;
-        }
-
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
             if (keycode == Keycode.Back)
@@ -389,6 +316,9 @@ namespace HHT
                 else
                 {
                      CancelTsumiKomi();
+                    btnIdou.Visibility = ViewStates.Visible;
+                    etKosu.SetBackgroundColor(Android.Graphics.Color.Yellow);
+                    etCarLabel.SetBackgroundColor(Android.Graphics.Color.White);
                 }
             }
             else if (keycode == Keycode.F1)

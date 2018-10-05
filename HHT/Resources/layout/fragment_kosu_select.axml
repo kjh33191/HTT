@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,18 +14,19 @@
         android:columnCount="3">
         <TextView
             android:text="配送日"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:layout_marginRight="10dp"
             android:id="@+id/textView1" />
-        <EditText
-            android:inputType="date"
-            android:layout_width="120dp"
+        <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/todoke_et_deliveryDate"
-            android:focusable="true"
+            android:inputType="date"
             android:hint="yyMMdd"
             android:layout_columnSpan="2"
-            android:layout_gravity="fill_horizontal" />
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="fill_horizontal"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl" />
     </GridLayout>
     <GridLayout
         android:layout_width="match_parent"
@@ -36,35 +38,40 @@
             android:text="得意先"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginRight="10dp"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:id="@+id/textView2" />
-        <EditText
-            android:text=""
-            android:inputType="numberSigned"
-            android:layout_width="120dp"
-            android:id="@+id/et_todoke_tokuisaki"
+        <com.beardedhen.androidbootstrap.BootstrapEditText
+            android:id="@+id/tokuiCode"
+            android:inputType="date"
             android:layout_columnSpan="2"
-            android:layout_gravity="fill_horizontal" />
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="10dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl" />
         <TextView
             android:text="届先"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginRight="10dp"
             android:textAlignment="textEnd"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:id="@+id/textView3" />
-        <EditText
-            android:text=""
+        <com.beardedhen.androidbootstrap.BootstrapEditText
+            android:id="@+id/todokeCode"
             android:inputType="numberSigned"
-            android:layout_width="120dp"
-            android:id="@+id/et_todoke_todokesaki" />
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:padding="0dp"
-            android:src="@drawable/baseline_search_black_24"
-            android:id="@+id/btn_search_todoke" />
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="10dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl" />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
+            android:text="検索"
+            android:id="@+id/todokeSearch"
+            android:layout_marginRight="0dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="false" />
     </GridLayout>
     <GridLayout
         android:layout_width="match_parent"
@@ -76,18 +83,24 @@
             android:text="ﾍﾞﾝﾀﾞｰ"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginRight="10dp"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:id="@+id/textView3" />
-        <EditText
-            android:text=""
+        <com.beardedhen.androidbootstrap.BootstrapEditText
+            android:id="@+id/vendorCode"
             android:inputType="numberSigned"
-            android:layout_width="120dp"
-            android:id="@+id/et_kosuSelect_vendorCode" />
-        <Button
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="10dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl" />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
             android:text="検索"
-            android:textSize="15sp"
-            android:id="@+id/btn_kosuSelect_vendorSearch" />
+            android:id="@+id/btn_kosuSelect_vendorSearch"
+            android:layout_marginRight="0dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="false" />
     </GridLayout>
     <TextView
         android:text="よろしいですか？"
@@ -99,11 +112,17 @@
         android:textStyle="bold"
         android:visibility="gone"
         android:id="@+id/txt_kosuSelect_confirmMsg" />
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/wrapping_button"
         android:text="確定"
+        android:id="@+id/btn_todoke_confirm"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:id="@+id/btn_todoke_confirm"
-        android:layout_gravity="center_horizontal" />
+        android:layout_marginRight="0dp"
+        android:textSize="20dp"
+        android:layout_gravity="center_horizontal"
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl"
+        app:roundedCorners="true" />
 </LinearLayout>

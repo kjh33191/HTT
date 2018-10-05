@@ -43,20 +43,43 @@ namespace HHT
             etReceipt.Text = "J00000248";
 
             Button confirm = view.FindViewById<Button>(Resource.Id.btn_nohinSelect_confirm);
+            confirm.FocusChange += delegate { if (confirm.IsFocused) CommonUtils.HideKeyboard(this.Activity); };
             confirm.Click += delegate {
-                
-                string jyuryo = etReceipt.Text;
-                if(jyuryo[0] != 'J')
+
+                // 得意先チェック
+                string tokui = etTokuisaki.Text;
+                if(tokui == "")
                 {
-                    CommonUtils.AlertDialog(View, "エラー", "受領書ではありません。", () => {
-                        etTodokesaki.RequestFocus();
-                    });
+                    CommonUtils.AlertDialog(View, "エラー", "得意先コードを入力してください。", () => { etTokuisaki.RequestFocus(); });
+                    return;
+                }
+
+                // 届先チェック
+                string todoke = etTodokesaki.Text;
+                if (todoke == "")
+                {
+                    CommonUtils.AlertDialog(View, "エラー", "届先コードを入力してください。", () => { etTodokesaki.RequestFocus(); });
+                    return;
+                }
+
+                // 受領書チェック
+                string jyuryo = etReceipt.Text;
+                if (jyuryo == "")
+                {
+                    CommonUtils.AlertDialog(View, "エラー", "受領書をスキャンしてください。", () => { etReceipt.RequestFocus(); });
+                    return;
+                }
+
+                if (jyuryo[0] != 'J')
+                {
+                    CommonUtils.AlertDialog(View, "エラー", "受領書ではありません。", () => { etTodokesaki.RequestFocus();});
                     return;
                 }
 
                 Confirm();
                 
             };
+            
 
             etTodokesaki.RequestFocus();
 

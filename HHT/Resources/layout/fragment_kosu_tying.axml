@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="30dp"
-    android:paddingLeft="20dp">
+    android:paddingTop="5dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
     <TextView
         android:text=""
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/vendorName"
-        android:textSize="20sp"
+        android:textSize="23sp"
         android:textStyle="bold"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="5dp" />
     <TextView
         android:text="■　XXXXX店"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txtMiseName"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="5dp" />
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,7 +32,7 @@
         <TextView
             android:text="店舗ロケ："
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:id="@+id/textView6"
             android:layout_column="0" />
@@ -46,11 +47,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
         android:orientation="horizontal">
         <TableLayout
-            android:layout_width="130dp"
-            android:layout_marginBottom="25dp"
+            android:layout_width="150dp"
+            android:layout_marginBottom="10dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">
             <TableRow
@@ -58,17 +58,17 @@
                 android:layout_height="match_parent">
                 <TextView
                     android:text="ケース"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_case"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -81,17 +81,17 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="不定形"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_huteikei"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -103,17 +103,17 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="店移動"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_miseidou"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -125,17 +125,17 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="販促物"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_hansoku"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -147,18 +147,18 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="個数"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:paddingLeft="5dp"
                     android:textColor="#ff1e88e5" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_total"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -166,7 +166,7 @@
             </TableRow>
         </TableLayout>
         <TableLayout
-            android:layout_width="130dp"
+            android:layout_width="150dp"
             android:layout_marginBottom="25dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">
@@ -175,17 +175,17 @@
                 android:layout_height="match_parent">
                 <TextView
                     android:text="ｵﾘｺﾝ"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_oricon"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -198,17 +198,17 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="破材"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_hazai"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -220,17 +220,17 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="返品"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_henpin"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -242,17 +242,17 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="回収"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_kaisyu"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -264,18 +264,18 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="台数"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/textView7"
-                    android:layout_width="80dp"
+                    android:layout_width="90dp"
                     android:background="@drawable/border"
                     android:textStyle="bold"
                     android:textColor="#ff1e88e5"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
                     android:id="@+id/txt_todoke_daisu"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:background="@drawable/border"
@@ -283,34 +283,60 @@
             </TableRow>
         </TableLayout>
     </LinearLayout>
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/wrapping_button"
         android:text="中断"
         android:id="@+id/btn_todoke_stop"
-        android:layout_width="140dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-    <Button
+        android:layout_marginRight="0dp"
+        android:textSize="20dp"
+        android:layout_gravity="center"
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl"
+        app:roundedCorners="true" />
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/wrapping_button"
         android:text="完了"
         android:id="@+id/completeButton"
-        android:layout_width="140dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="0dp"
+        android:textSize="20dp"
+        android:layout_gravity="center"
         android:visibility="gone"
-        android:layout_gravity="center" />
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl"
+        app:roundedCorners="true" />
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/gd_tying_canman"
         android:visibility="gone"
         android:columnCount="2">
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
             android:text="取消"
             android:id="@+id/btn_todoke_cancel"
-            android:layout_width="140dp"
-            android:layout_gravity="center" />
-        <Button
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:layout_gravity="center"
+            android:layout_marginRight="0dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="true" />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
             android:text="満タン"
             android:id="@+id/btn_todoke_mantan"
-            android:layout_width="140dp"
-            android:layout_gravity="center" />
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="0dp"
+            android:textSize="20dp"
+            android:layout_gravity="center"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="true" />
     </GridLayout>
 </LinearLayout>

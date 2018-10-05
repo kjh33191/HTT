@@ -12,11 +12,11 @@ namespace HHT
 {
     public class IdouRegistSelectFragment : BaseFragment
     {
-        View view;
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
-        EditText etKaisyuDate, etHaisoDate;
+        private View view;
+        private EditText etKaisyuDate, etHaisoDate;
         
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -60,17 +60,15 @@ namespace HHT
                 }
             };
 
-
             etHaisoDate = view.FindViewById<EditText>(Resource.Id.et_idouRegistSelect_haisoDate);
-            etHaisoDate.Text = DateTime.Now.AddDays(1).ToString("yyyy/MM/dd");
-
             etHaisoDate.Click += (sender, e) => {
                 DateTime today = DateTime.Today;
                 DatePickerDialog dialog = new DatePickerDialog(this.Activity, OnDateSet, today.Year, today.Month, today.Day);
                 dialog.DatePicker.MinDate = today.Millisecond;
                 dialog.Show();
             };
-
+            etHaisoDate.Text = DateTime.Now.AddDays(1).ToString("yyyy/MM/dd");
+            
             Button btnConfirm = view.FindViewById<Button>(Resource.Id.btn_idouRegistSelect_confirm);
             btnConfirm.Click += delegate { Confirm(); };
             
@@ -82,18 +80,16 @@ namespace HHT
         }
         
         private void Confirm()
-        {    
-           StartFragment(FragmentManager, typeof(IdouRegistWorkFragment));
+        {
+            editor.PutString("syuka_date", etKaisyuDate.Text.Replace("/", ""));
+            editor.PutString("kaisyu_date", etKaisyuDate.Text.Replace("/", ""));
+            editor.PutString("haisou_date", etHaisoDate.Text.Replace("/", ""));
+            editor.Apply();
+            StartFragment(FragmentManager, typeof(IdouRegistWorkFragment));
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-
-            if (keycode == Keycode.F4)
-            {
-                
-            }
-
             return true;
         }
 

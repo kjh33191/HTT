@@ -3,9 +3,9 @@ using Android.Content;
 using Android.OS;
 using Android.Preferences;
 using Android.Views;
-using Android.Widget;
 using HHT.Resources.Model;
 using System.Threading;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -14,11 +14,11 @@ namespace HHT
         private View view;
         private int menuKbn;
         private string deliveryDate, tokuisaki, todokesaki;
-        private EditText etDeliveryDate, etBinNo;
-        private Button btnConfirm;
+        private BootstrapEditText etDeliveryDate, etBinNo;
+        private BootstrapButton btnConfirm;
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
-
+        
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -27,7 +27,7 @@ namespace HHT
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             SetTitle("届先指定検品");
-            SetFooterText("F4:確定");
+            SetFooterText("");
             
             view = inflater.Inflate(Resource.Layout.fragment_kosu_bin_input, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
@@ -38,13 +38,24 @@ namespace HHT
             todokesaki = prefs.GetString("todokesaki", "");
             menuKbn = prefs.GetInt("menuKbn", 1);
 
-            etDeliveryDate = view.FindViewById<EditText>(Resource.Id.et_binInput_deliveryDate);
+            etDeliveryDate = view.FindViewById<BootstrapEditText>(Resource.Id.syukaDate);
             etDeliveryDate.Text = deliveryDate;
             
-            etBinNo = view.FindViewById<EditText>(Resource.Id.et_binInput_binNo);
+            etBinNo = view.FindViewById<BootstrapEditText>(Resource.Id.binNo);
+            etBinNo.KeyPress += (sender, e) => {
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    Confirm();
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            };
             etBinNo.RequestFocus();
 
-            btnConfirm = view.FindViewById<Button>(Resource.Id.btn_binInput_confirm);
+            btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_binInput_confirm);
             btnConfirm.Click += delegate { Confirm(); };
 
             return view;
@@ -55,6 +66,7 @@ namespace HHT
             if (etBinNo.Text == "")
             {
                 CommonUtils.AlertDialog(view, "エラー", "便番号が入力されていません。", null);
+                Vibrate();
             }
             else
             {
@@ -98,6 +110,7 @@ namespace HHT
                         if (status == 99)
                         {
                             CommonUtils.AlertDialog(view, "エラー", "検品可能なデータがありません。", null);
+                            Vibrate();
                         }
                         else if (status >= 1)
                         {

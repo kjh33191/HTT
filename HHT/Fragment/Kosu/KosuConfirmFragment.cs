@@ -25,7 +25,7 @@ namespace HHT
             SetFooterText("");
 
             Button confirmButton = view.FindViewById<Button>(Resource.Id.btn_confirm_confirmBtn);
-            confirmButton.Click += delegate { StartFragment(FragmentManager, typeof(TodokeTyingWorkFragment)); };
+            confirmButton.Click += delegate { StartFragment(FragmentManager, typeof(KosuWorkFragment)); };
 
             txtDeliveryDate = view.FindViewById<EditText>(Resource.Id.et_confirm_deliveryDate);
             txtTodokesaki = view.FindViewById<EditText>(Resource.Id.et_confirm_todokesaki);

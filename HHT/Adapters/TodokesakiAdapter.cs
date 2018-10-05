@@ -2,6 +2,7 @@
 using Android.Views;
 using Android.Widget;
 using HHT.Resources.Model;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -38,10 +39,8 @@ namespace HHT
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_berth).Text = item.berth;
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_per).Text = item.kosu_sumi + "/" + item.kosu_kei;
 
-            ProgressBar pgBar = view.FindViewById<ProgressBar>(Resource.Id.txt_adp_todoke_progressbar);
-            
-            pgBar.Max = int.Parse(item.kosu_kei);
-            pgBar.Progress = int.Parse(item.kosu_sumi);
+            BootstrapProgressBar pgBar = view.FindViewById<BootstrapProgressBar>(Resource.Id.txt_adp_todoke_progressbar);
+            pgBar.Progress = int.Parse(item.kosu_sumi) / int.Parse(item.kosu_kei);
 
             return view;
         }

@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
 using Android.Views;
 using Android.Widget;
-using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
 
 namespace HHT
@@ -14,7 +12,6 @@ namespace HHT
     public class KosuMikenFragment : BaseFragment
     {
         private View view;
-        private TodokesakiAdapter todokesakiAdapter;
 
         private int kosuMenuflag;
 
@@ -61,17 +58,5 @@ namespace HHT
 
             return view;
         }
-        
-        public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
-        {
-            if (keycode == Keycode.F1)
-            {
-                // 未検画面へ遷移
-
-            }
-            
-            return true;
-        }
-
     }
 }

@@ -85,7 +85,7 @@ namespace HHT
             // Input Check
             if(etHaisoDate.Text == "")
             {
-                CommonUtils.ShowAlertDialog(view, "", "配送日を入力してください");
+                CommonUtils.ShowAlertDialog(view, "", "日付を入力してください。");
                 etHaisoDate.RequestFocus();
                 return;
             }

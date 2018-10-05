@@ -21,8 +21,6 @@ namespace HHT
         private const string TAG = "MainActivity";
 
         static ProgressDialog progress;
-        static LinearLayout footerLayout;
-        static TextView txtFooterBody;
 
         private BarcodeManager_ mBarcodeManager = null;
         private BarcodeScanner_ mBarcodeScanner = null;
@@ -50,9 +48,6 @@ namespace HHT
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
-            footerLayout = FindViewById<LinearLayout>(Resource.Id.footerLayout);
-            txtFooterBody = FindViewById<TextView>(Resource.Id.tv_foot_body);
-
             try
             {
                 MainActivity mainActivity = this;
@@ -78,21 +73,6 @@ namespace HHT
                 return base.OnKeyDown(keyCode, e);
             }
             return base.OnKeyDown(keyCode, e);
-        }
-
-        public static void ShowFooter()
-        {
-            footerLayout.Visibility = ViewStates.Visible;
-        }
-
-        public static void HideFooter()
-        {
-            footerLayout.Visibility = ViewStates.Gone;
-        }
-
-        public static void SetTextFooter(string content)
-        {
-            txtFooterBody.Text = content;
         }
 
         public void ShowProgress(string message)

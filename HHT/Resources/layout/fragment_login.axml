@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:minWidth="25px"
     android:minHeight="25px"
     android:layout_width="fill_parent"
     android:id="@+id/linearLayout2"
     android:paddingLeft="20dp"
-    android:paddingTop="20dp"
     android:paddingRight="20dp"
     android:layout_weight="1"
     android:layout_height="fill_parent">
@@ -15,16 +15,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_marginTop="40dp"
         android:id="@+id/textView1"
-        android:paddingTop="40dp"
         android:textStyle="bold"
-        android:textSize="20sp" />
-    <EditText
+        android:textSize="25sp" />
+    <com.beardedhen.androidbootstrap.BootstrapEditText
+        android:id="@+id/soukoCode"
         android:inputType="number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="fill_horizontal"
         android:layout_weight="1"
-        android:id="@+id/et_login_soukoCode" />
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl" />
     <TextView
         android:text=""
         android:layout_width="match_parent"
@@ -42,29 +46,28 @@
         android:layout_weight="1"
         android:layout_marginTop="20dp"
         android:textStyle="bold"
-        android:textSize="20sp" />
-    <EditText
-        android:inputType="numberSigned"
+        android:textSize="25sp" />
+    <com.beardedhen.androidbootstrap.BootstrapEditText
+        android:id="@+id/tantoCode"
+        android:inputType="number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="fill_horizontal"
         android:layout_weight="1"
-        android:id="@+id/et_login_driverCode" />
-    <TextView
-        android:text=""
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:id="@+id/tv_login_driverName" />
-    <Button
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl" />
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/wrapping_button"
         android:text="ログイン"
+        android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/loginButton"
-        android:layout_weight="1"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="40dp"
-        android:onClick="Login"
-        android:background="@drawable/bootstrap_button"
-        android:textColor="#ffffffff"
-        android:textSize="20sp" />
+        android:layout_marginRight="0dp"
+        android:textSize="20dp"
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl"
+        app:roundedCorners="true" />
 </LinearLayout>

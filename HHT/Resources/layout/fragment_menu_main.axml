@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fillViewport="false"
@@ -8,7 +9,9 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20dp">
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp">
         <LinearLayout
             android:visibility="gone"
             android:orientation="vertical"
@@ -19,7 +22,7 @@
             android:id="@+id/konaiLayout"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:layout_marginBottom="30dp">
+            android:layout_marginBottom="27dp">
             <Button
                 android:text="1:入荷検品"
                 android:layout_width="match_parent"
@@ -73,39 +76,73 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/driverLayout"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:layout_marginBottom="30dp">
-            <Button
+            android:layout_marginBottom="27dp">
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/wrapping_button"
                 android:text="1:入荷検品"
+                android:id="@+id/driverNyuka"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:id="@+id/driverNyuka" />
-            <Button
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="0dp"
+                android:textSize="20dp"
+                app:bootstrapSize="xl"
+                app:roundedCorners="true" />
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/wrapping_button"
                 android:text="2:積替移動"
+                android:id="@+id/driverIdou"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:id="@+id/driverIdou" />
-            <Button
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="0dp"
+                android:textSize="20dp"
+                app:bootstrapSize="xl"
+                app:roundedCorners="true" />
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/wrapping_button"
                 android:text="3:積込検品"
+                android:id="@+id/driverTsumikomi"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:id="@+id/driverTsumikomi" />
-            <Button
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="0dp"
+                android:textSize="20dp"
+                app:bootstrapSize="xl"
+                app:roundedCorners="true" />
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/wrapping_button"
                 android:text="4:納品検品"
+                android:id="@+id/driverNohin"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:id="@+id/driverNohin" />
-            <Button
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="0dp"
+                android:textSize="20dp"
+                app:bootstrapSize="xl"
+                app:roundedCorners="true" />
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/wrapping_button"
                 android:text="5:データ送信"
+                android:id="@+id/driverSend"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:id="@+id/driverSend" />
-            <Button
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="0dp"
+                android:textSize="20dp"
+                app:bootstrapSize="xl"
+                app:roundedCorners="true" />
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/wrapping_button"
                 android:text="6:移動先店舗納品"
+                android:id="@+id/driverIdouNohin"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:id="@+id/driverIdouNohin" />
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="0dp"
+                android:textSize="20dp"
+                app:bootstrapSize="xl"
+                app:roundedCorners="true" />
         </LinearLayout>
         <LinearLayout
             android:orientation="vertical"
@@ -115,99 +152,95 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/managerLayout"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:layout_marginBottom="30dp">
+            android:layout_marginBottom="27dp">
             <Button
                 android:text="1:入荷検品"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:id="@+id/btn_main_manager_nyuka"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
                 android:layout_weight="1"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                style="@style/Widget.AppCompat.Button" />
+                android:textSize="27dp"
+                android:textStyle="bold" />
             <Button
                 android:text="2:積替移動"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:id="@+id/btn_main_manager_tsumikae"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
                 android:layout_weight="1"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                style="@style/Widget.AppCompat.Button" />
+                android:textSize="27dp"
+                android:textStyle="bold" />
             <Button
                 android:text="3:積込検品"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:id="@+id/btn_main_manager_tsumikomi"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
-                android:textSize="20dp"
+                android:textSize="27dp"
                 android:textStyle="bold"
                 style="@style/Widget.AppCompat.Button" />
             <Button
                 android:text="4:納品検品"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:id="@+id/btn_main_manager_nohin"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
-                android:textSize="20dp"
+                android:textSize="27dp"
                 android:textStyle="bold"
                 style="@style/Widget.AppCompat.Button" />
             <Button
                 android:text="5:データ送信"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:id="@+id/btn_main_manager_dataSend"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
-                android:textSize="18sp"
+                android:textSize="27dp"
                 android:textStyle="bold"
                 style="@style/Widget.AppCompat.Button" />
             <Button
                 android:text="6:マテハン登録"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:id="@+id/btn_main_manager_matehanRegist"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
-                android:textSize="18sp"
+                android:textSize="27dp"
                 android:textStyle="bold"
                 style="@style/Widget.AppCompat.Button" />
             <Button
                 android:text="7:メールバッグ"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:id="@+id/btn_main_manager_mailBag"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
-                android:textSize="18sp"
+                android:textSize="27dp"
                 android:textStyle="bold"
                 style="@style/Widget.AppCompat.Button" />
             <Button
                 android:text="8:移動先店舗登録"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:id="@+id/btn_main_manager_idousakiRegist"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
-                android:textSize="18sp"
+                android:textSize="27dp"
                 android:textStyle="bold"
                 style="@style/Widget.AppCompat.Button" />
             <Button
                 android:text="9:移動先店舗納品"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:id="@+id/btn_main_manager_idousakiNohin"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
-                android:textSize="18sp"
+                android:textSize="27dp"
                 android:textStyle="bold"
                 style="@style/Widget.AppCompat.Button" />
         </LinearLayout>
@@ -221,7 +254,7 @@
             android:id="@+id/tc2Layout"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:layout_marginBottom="30dp">
+            android:layout_marginBottom="27dp">
             <Button
                 android:text="1:ＴＣ２型入荷検品"
                 android:layout_width="match_parent"
