@@ -25,7 +25,7 @@ namespace HHT
             SetTitle("納品検品");
             SetFooterText("");
 
-            string menuFlag = prefs.GetString("menu_flg", "");
+            string menuFlag = prefs.GetString("menu_flg", "1");
 
             TextView message = view.FindViewById<TextView>(Resource.Id.txt_nohinComplete_message);
             if (menuFlag == "1")
@@ -37,12 +37,12 @@ namespace HHT
                 message.Text = "納品検品が\n完了しました。\n\nお疲れ様でした！";
             }
             
-            
             Button confirmButton = view.FindViewById<Button>(Resource.Id.btn_nohinComplete_confirm);
             confirmButton.Click += delegate {
                 if (menuFlag == "1")
                 {
-                    
+                    editor.PutBoolean("mailBagFlag", true);
+                    editor.Apply();
                 }
                 else
                 {

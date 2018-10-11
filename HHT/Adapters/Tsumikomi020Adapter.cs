@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Android.Views;
 using Android.Widget;
 using Com.Beardedhen.Androidbootstrap;
@@ -45,7 +46,7 @@ namespace HHT
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_per).Text = int.Parse(sumi).ToString() + "/" + int.Parse(kei).ToString();
             
             BootstrapProgressBar pgBar = view.FindViewById<BootstrapProgressBar>(Resource.Id.txt_adp_todoke_progressbar);
-            pgBar.Progress = ((int.Parse(sumi) / int.Parse(kei)) * 100);
+            pgBar.Progress = Convert.ToInt32((double.Parse(sumi) / double.Parse(kei)) * 100);
 
             return view;
         }

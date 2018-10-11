@@ -4,6 +4,7 @@ using Android.Preferences;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
@@ -20,7 +21,7 @@ namespace HHT
         private SndNohinMailHelper sndNohinMailHelper;
         private MbFileHelper mbFileHelper;
 
-        EditText etMailBagNumber;
+        private BootstrapEditText etMailBagNumber;
         private string tokuisakiCd;
         private string todokesakiCd;
         private int mailbackCnt;
@@ -47,57 +48,70 @@ namespace HHT
             TextView txtTokusakiName = view.FindViewById<TextView>(Resource.Id.txt_nohinMailBagNohin_tokuisakiNm);
             txtTokusakiName.Text = prefs.GetString("tokuisaki_nm", "");
 
-            etMailBagNumber = view.FindViewById<EditText>(Resource.Id.et_nohinMailBagNohin_mailbagNumber);
+            etMailBagNumber = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinMailBagNohin_mailbagNumber);
             etMailBagNumber.Text = "0";
-            etMailBagNumber.RequestFocus();
+
+            List<SndNohinMail> mailList = sndNohinMailHelper.SelectAll();
+            if (mailList.Count > 0) etMailBagNumber.Text = mailList.Count.ToString();
 
             // メールバッグ件数取得
             mailbackCnt = mbFileHelper.GetMailbackCount();
 
-            Button kaizoButton = view.FindViewById<Button>(Resource.Id.btn_nohinMailBagNohin_kaizo);
-            kaizoButton.Click += delegate { StartFragment(FragmentManager, typeof(NohinMailBagPasswordFragment)); };
+            BootstrapButton kaizoButton = view.FindViewById<BootstrapButton>(Resource.Id.btn_nohinMailBagNohin_kaizo);
+            kaizoButton.Click += delegate {
+                //menu_flg
+                editor.PutString("menu_flg", "1");
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(NohinMailBagPasswordFragment)); };
 
-            Button muButton = view.FindViewById<Button>(Resource.Id.btn_nohinMailBagNohin_mu);
-            muButton.Click += delegate {
-                CommonUtils.AlertConfirm(view, "確認", "メールバッグ納品業務を終了しますか？", (flag) => {
-                    if (flag)
-                    {
-                        //MSG1: appendFile()
-                        Log.Debug(TAG, "F3 return pushed : " + prefs.GetString("tokuisaki_cd", "") + ", " + prefs.GetString("tokuisaki_nm", ""));
-                        editor.PutBoolean("mailBagFlag", true);
-                        editor.Apply();
-                        FragmentManager.PopBackStack();
-                    }
-                });
-            };
-            
+            BootstrapButton muButton = view.FindViewById<BootstrapButton>(Resource.Id.btn_nohinMailBagNohin_mu);
+            muButton.Click += delegate { CompleteMailNohin(); };
+
+            if (mailbackCnt != 0)
+            {
+                muButton.Enabled = false;
+            }
+
             return view;
+        }
+
+        private void CompleteMailNohin()
+        {
+            CommonUtils.AlertConfirm(view, "", "メールバッグ納品業務を終了しますか？", (flag) => {
+                if (flag)
+                {
+                    Log.Debug(TAG, "F3 return pushed : " + prefs.GetString("tokuisaki_cd", "") + ", " + prefs.GetString("tokuisaki_nm", ""));
+                    editor.PutBoolean("mailBagFlag", true);
+                    editor.Apply();
+                    FragmentManager.PopBackStack();
+                }
+                else
+                {
+
+                }
+            });
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-
             if (keycode == Keycode.F1)
             {
                 StartFragment(FragmentManager, typeof(NohinMailBagPasswordFragment));
             }
             if (keycode == Keycode.F3)
             {
-                CommonUtils.AlertConfirm(view, "", "メールバッグ納品業務を終了しますか？", (flag) => {
-                    if (flag)
-                    {
-                        // SndMBN_+ 시리얼 +  .txt의 Empty File을 만든다. 
-                        // 이미 존재한다면 패스
-                        FragmentManager.PopBackStack();
-                    }
-                    else
-                    {
-
-                    }
-                });
+                if (mailbackCnt == 0)
+                {
+                    CompleteMailNohin();
+                }
             }
 
             return true;
+        }
+
+        public override bool OnBackPressed()
+        {
+            return false;
         }
 
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
@@ -109,7 +123,6 @@ namespace HHT
                 this.Activity.RunOnUiThread(() =>
                 {
                     string data = barcodeData.Data;   
-                    data = "J00000248";
                     MbFileHelper mbFileHelper = new MbFileHelper();
 
                     if (mbFileHelper.HasExistMailBagData(data))
@@ -145,6 +158,11 @@ namespace HHT
                         if (mail_bag_su == mailbackCnt)
                         {
                             editor.PutBoolean("mailBagFlag", true);
+                            // ("   =メールバッグ=   ")
+                            // ("メールバッグの")
+                            // ("納品が完了しました。")
+                            editor.PutString("menu_flg", "1");
+                            editor.Apply();
                             StartFragment(FragmentManager, typeof(NohinCompleteFragment));
                         }
                     }
@@ -197,7 +215,6 @@ namespace HHT
                 wNohinDate = prefs.GetString("nohin_date", ""),
                 wNohinTime = prefs.GetString("nohin_time", "")
             };
-
             sndNohinMailHelper.Insert(sndNohinMail);
         }
     }

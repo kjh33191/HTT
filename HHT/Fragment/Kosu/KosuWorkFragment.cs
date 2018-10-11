@@ -113,7 +113,10 @@ namespace HHT
             btnMantan.Click += delegate { GoMantanPage(); }; // 満タン
 
             btnCancel = view.FindViewById<BootstrapButton>(Resource.Id.btn_todoke_cancel);
-            btnCancel.Click += delegate { CancelKamotsuScan(false); };　// 取消
+            btnCancel.Click += delegate {
+                CancelKamotsuScan(false);
+                hasKamotsuScanned = false;
+            };　// 取消
 
             btnComplete = view.FindViewById<BootstrapButton>(Resource.Id.completeButton); // バラ検品の完了ボタン
             btnComplete.Visibility = ViewStates.Gone;
@@ -356,7 +359,8 @@ namespace HHT
                 else
                 {
                     CancelKamotsuScan(false);
-                    return true;
+                    hasKamotsuScanned = false;
+                    return false;
                 }
             }
             else

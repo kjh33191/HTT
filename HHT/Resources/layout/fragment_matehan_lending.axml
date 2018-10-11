@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,35 +14,41 @@
         android:columnCount="3">
         <TextView
             android:text="貸出日"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:layout_marginRight="10dp"
             android:id="@+id/textView1" />
-        <EditText
-            android:inputType="date"
-            android:layout_width="120dp"
+        <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/et_matehan_kasidatuDate"
-            android:focusable="true"
+            android:inputType="date"
             android:hint="yyMMdd"
             android:layout_columnSpan="2"
-            android:layout_gravity="fill_horizontal" />
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="fill_horizontal"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl" />
         <TextView
             android:text="貸出先"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginRight="10dp"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:id="@+id/textView2" />
-        <EditText
-            android:text=""
-            android:inputType="numberSigned"
-            android:layout_width="120dp"
+        <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/et_matehan_kasidatuTarget"
-            android:layout_gravity="fill_horizontal" />
-        <Button
+            android:inputType="numberSigned"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="10dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl" />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
             android:text="検索"
-            android:textSize="15sp"
-            android:id="@+id/btn_matehan_kasidasiSakiSearch" />
+            android:id="@+id/btn_matehan_kasidasiSakiSearch"
+            android:layout_marginRight="0dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="false" />
     </GridLayout>
     <TextView
         android:text=""
@@ -51,7 +58,6 @@
         android:layout_marginTop="20dp"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:visibility="gone"
         android:id="@+id/tv_matehan_targetName" />
     <TextView
         android:text="よろしいですか？"
@@ -61,13 +67,19 @@
         android:layout_marginTop="20dp"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:id="@+id/tv_matehan_confirmMsg" />
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/wrapping_button"
         android:text="確定"
+        android:id="@+id/btn_matehan_confirm"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="0dp"
+        android:textSize="20dp"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/btn_matehan_confirm" />
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl"
+        app:roundedCorners="true" />
 </LinearLayout>

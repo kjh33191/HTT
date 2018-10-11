@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="30dp"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp">
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
     <TextView
         android:text="積付マテハンを選択"
         android:textSize="25sp"
@@ -19,11 +19,11 @@
         android:paddingTop="10dp"
         android:paddingBottom="30dp"
         android:rowCount="2"
-        android:columnCount="2"
+        android:columnCount="3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:text="ベンダー :"
+            android:text="ベンダー"
             android:id="@+id/textView2"
             android:textSize="23sp"
             android:textStyle="bold"
@@ -39,11 +39,14 @@
             android:layout_weight="1"
             app:bootstrapBrand="primary"
             app:bootstrapSize="xl" />
-    <!--
-      <EditText
-            android:inputType="numberDecimal"
-            android:layout_width="150dp"
-            android:id="@+id/et_mantan_vendor" />-->
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
+            android:text="検索"
+            android:id="@+id/vendorSearch"
+            android:layout_marginRight="0dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="false" />
         <TextView
             android:text=""
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -52,7 +55,7 @@
             android:textStyle="bold"
             android:layout_gravity="fill"
             android:layout_row="1"
-            android:layout_columnSpan="2"
+            android:layout_columnSpan="3"
             android:textColor="#ff0d47a1" />
     </GridLayout>
     <ListView

@@ -108,6 +108,7 @@ namespace HHT
             if(etSyukaDate.Text == "")
             {
                 CommonUtils.AlertDialog(View, "", "配送日を入力してください。", null);
+                Vibrate();
                 etSyukaDate.RequestFocus();
                 return;
             }
@@ -115,6 +116,7 @@ namespace HHT
             if (etCourse.Text == "")
             {
                 CommonUtils.AlertDialog(View, "", "コースNoを入力してください。", null);
+                Vibrate();
                 etCourse.RequestFocus();
                 return;
             }
@@ -132,17 +134,28 @@ namespace HHT
                         if (result == null)
                         {
                             CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", null);
+                            Vibrate();
                             return;
                         }
                         else if (result.state == "03")
                         {
                             CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", null);
+                            Vibrate();
                             return;
                         }
 
                         bin_no = result.bin_no;
                         kansen_kbn = result.kansen_kbn;
+                        
 
+                        List<TUMIKOMI020> todokeList = WebService.RequestTumikomi020(souko_cd, kitaku_cd, syuka_date, bin_no, etCourse.Text);
+                        if (todokeList.Count == 0)
+                        {
+                            CommonUtils.AlertDialog(view, "", "表示データがありません。", null);
+                            Vibrate();
+                            return;
+                        }
+                        
                         editor.PutString("syuka_date", syuka_date);
                         editor.PutString("course", etCourse.Text);
                         editor.PutString("bin_no", bin_no);
@@ -221,6 +234,7 @@ namespace HHT
                         if (data.Length < 12)
                         {
                             CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", null);
+                            Vibrate();
                             return;
                         }
                        
@@ -238,6 +252,7 @@ namespace HHT
                             if (result.state == "03")
                             {
                                 CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", null);
+                                Vibrate();
                                 return;
                             }
                             
@@ -252,6 +267,7 @@ namespace HHT
                         catch
                         {
                             CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", null);
+                            Vibrate();
                             return;
                         }
                     }

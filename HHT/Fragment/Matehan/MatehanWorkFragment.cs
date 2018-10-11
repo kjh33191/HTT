@@ -10,9 +10,9 @@ using System.Collections.Generic;
 
 namespace HHT
 {
-    public class NohinKaisyuMatehanFragment : BaseFragment
+    public class MatehanWorkFragment : BaseFragment
     {
-        private readonly string TAG = "NohinKaisyuMatehanFragment";
+        private readonly string TAG = "MatehanWorkFragment";
 
         private ISharedPreferences prefs;
         private ISharedPreferencesEditor editor;
@@ -22,12 +22,13 @@ namespace HHT
 
         private SndNohinMateHelper nohinMateHelper;
         private MateFileHelper mateFileHelper;
-        
-        TextView matehan1Nm, matehan2Nm, matehan3Nm, matehan4Nm;
+
+        TextView matehan1Nm, matehan2Nm, matehan3Nm, matehan4Nm
+            , mateRental1, mateRental2, mateRental3, mateRental4;
         BootstrapEditText matehan1Su, matehan2Su, matehan3Su, matehan4Su;
 
-        private string motoVendorCd;
-
+        List<MATE030> mate030List;
+        
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -35,7 +36,7 @@ namespace HHT
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            view = inflater.Inflate(Resource.Layout.fragment_nohin_kaisyu_matehan, container, false);
+            view = inflater.Inflate(Resource.Layout.fragment_matehan_work, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 
@@ -44,8 +45,7 @@ namespace HHT
             mateFileHelper = new MateFileHelper();
 
             // コンポーネント初期化
-            SetTitle("マテハン回収");
-            SetFooterText("");
+            SetTitle("貸出登録");
 
             TextView vendorNm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_vendorName);
             matehan1Nm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_matehan1);
@@ -53,51 +53,34 @@ namespace HHT
             matehan3Nm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_matehan3);
             matehan4Nm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_matehan4);
 
-            EditText vendorCd = view.FindViewById<EditText>(Resource.Id.et_nohinKaisyuMatehan_vendorCode);
             matehan1Su = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinKaisyuMatehan_matehan1);
             matehan2Su = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinKaisyuMatehan_matehan2);
             matehan3Su = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinKaisyuMatehan_matehan3);
             matehan4Su = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinKaisyuMatehan_matehan4);
 
+            mateRental1 = view.FindViewById<TextView>(Resource.Id.matehanRental1);
+            mateRental2 = view.FindViewById<TextView>(Resource.Id.matehanRental2);
+            mateRental3 = view.FindViewById<TextView>(Resource.Id.matehanRental3);
+            mateRental4 = view.FindViewById<TextView>(Resource.Id.matehanRental4);
+
             BootstrapButton button1 = view.FindViewById<BootstrapButton>(Resource.Id.btn_nohinKaisyuMatehan_confirm);
             button1.Click += delegate { ConfirmMatehanKaisyu(); };
 
-            vendorCd.Text = prefs.GetString("mate_vendor_cd", "");
-            vendorNm.Text = prefs.GetString("mate_vendor_nm", "");
+            vendorNm.Text = prefs.GetString("vendor_nm", "");
+            
+            mate030List = WebService.RequestMate030(prefs.GetString("vendor_cd", ""));
+            matehanList = new List<MateFile>();
 
-            vendorCd.FocusChange += delegate {
-                if (!vendorCd.IsFocused)
-                {
-                    if (vendorCd.Text != "")
-                    {
-                        matehanList = mateFileHelper.SelectByVendorCd(vendorCd.Text);
+            foreach (MATE030 mate030 in mate030List)
+            {
+                string code_name = WebService.RequestMate040(mate030.matehan_cd);
+                MateFile mateFile = new MateFile();
+                mateFile.matehan_cd = mate030.matehan_cd;
+                mateFile.matehan_nm = code_name;
+                matehanList.Add(mateFile);
+            }
 
-                        if (matehanList.Count == 0)
-                        {
-                            CommonUtils.AlertDialog(view, "", "ベンダーコードが存在しません。", () => { vendorCd.Text = motoVendorCd; vendorCd.RequestFocus(); });
-                            return;
-                        }
-                        else
-                        {
-                            SetMateVendorInfo(vendorCd.Text);
-                            motoVendorCd = vendorCd.Text;
-                            vendorNm.Text = matehanList[0].vendor_nm;
-                            
-                            editor.PutString("mate_vendor_cd", vendorCd.Text);
-                            editor.PutString("mate_vendor_nm", matehanList[0].vendor_nm);
-                            editor.Apply();
-
-                            matehan1Su.RequestFocus();
-
-                        }
-                    }
-                }
-            };
-
-            matehanList = mateFileHelper.SelectByVendorCd(prefs.GetString("mate_vendor_cd", ""));
-            SetMateVendorInfo(prefs.GetString("mate_vendor_cd", ""));
-            motoVendorCd = prefs.GetString("mate_vendor_cd", "");
-
+            SetMateVendorInfo(prefs.GetString("vendor_cd", ""));
             matehan1Su.RequestFocus();
             
             return view;
@@ -113,6 +96,10 @@ namespace HHT
             matehan3Nm.Visibility = ViewStates.Invisible;
             matehan4Su.Visibility = ViewStates.Invisible;
             matehan4Nm.Visibility = ViewStates.Invisible;
+            mateRental1.Visibility = ViewStates.Invisible;
+            mateRental2.Visibility = ViewStates.Invisible;
+            mateRental3.Visibility = ViewStates.Invisible;
+            mateRental4.Visibility = ViewStates.Invisible;
 
             int index = 0;
             foreach (MateFile matehan in matehanList)
@@ -124,24 +111,32 @@ namespace HHT
                         matehan1Nm.Text = matehanList[index].matehan_nm;
                         matehan1Su.Visibility = ViewStates.Visible;
                         matehan1Nm.Visibility = ViewStates.Visible;
+                        mateRental1.Visibility = ViewStates.Visible;
+                        mateRental1.Text = "/" + mate030List[index].matehan_rental;
                         break;
                     case 1:
                         matehan2Su.Text = "0";
                         matehan2Nm.Text = matehanList[index].matehan_nm;
                         matehan2Su.Visibility = ViewStates.Visible;
                         matehan2Nm.Visibility = ViewStates.Visible;
+                        mateRental2.Visibility = ViewStates.Visible;
+                        mateRental2.Text = "/" + mate030List[index].matehan_rental;
                         break;
                     case 2:
                         matehan3Su.Text = "0";
                         matehan3Nm.Text = matehanList[index].matehan_nm;
                         matehan3Su.Visibility = ViewStates.Visible;
                         matehan3Nm.Visibility = ViewStates.Visible;
+                        mateRental3.Visibility = ViewStates.Visible;
+                        mateRental2.Text = "/" + mate030List[index].matehan_rental;
                         break;
                     case 3:
                         matehan4Su.Text = "0";
                         matehan4Nm.Text = matehanList[index].matehan_nm;
                         matehan4Su.Visibility = ViewStates.Visible;
                         matehan4Nm.Visibility = ViewStates.Visible;
+                        mateRental4.Visibility = ViewStates.Visible;
+                        mateRental2.Text = "/" + mate030List[index].matehan_rental;
                         break;
                     default: break;
                 }
@@ -149,29 +144,88 @@ namespace HHT
                 index++;
             }
             
-            List<SndNohinMate> items = nohinMateHelper.SelectByMateVendorCd(mateVendorCd);
-            foreach (SndNohinMate item in items)
-            {
-                if (item.wMatehan == "01") matehan1Su.Text = item.wMatehanSu;
-                else if (item.wMatehan == "02") matehan2Su.Text = item.wMatehanSu;
-                else if (item.wMatehan == "03") matehan3Su.Text = item.wMatehanSu;
-                else if (item.wMatehan == "04") matehan4Su.Text = item.wMatehanSu;
-            }
         }
 
         private void ConfirmMatehanKaisyu()
         {
+            if (matehan1Su.Text != "" && matehan1Su.Text != "0")
+            {
+                int btvVal1 = int.Parse(matehan1Su.Text);
+                int btvVal2 = int.Parse(mate030List[0].matehan_rental);
+
+                if(btvVal1 > btvVal2)
+                {
+                    CommonUtils.AlertDialog(view, "", "貸出数量が許容数を超えました。", null);
+                    return;
+                }
+            }
+
+            if (matehan2Su.Text != "" && matehan2Su.Text != "0")
+            {
+                int btvVal1 = int.Parse(matehan2Su.Text);
+                int btvVal2 = int.Parse(mate030List[1].matehan_rental);
+
+                if (btvVal1 > btvVal2)
+                {
+                    CommonUtils.AlertDialog(view, "", "貸出数量が許容数を超えました。", null);
+                    return;
+                }
+            }
+
+            if (matehan3Su.Text != "" && matehan3Su.Text != "0")
+            {
+                int btvVal1 = int.Parse(matehan3Su.Text);
+                int btvVal2 = int.Parse(mate030List[2].matehan_rental);
+
+                if (btvVal1 > btvVal2)
+                {
+                    CommonUtils.AlertDialog(view, "", "貸出数量が許容数を超えました。", null);
+                    return;
+                }
+            }
+
+            if (matehan4Su.Text != "" && matehan4Su.Text != "0")
+            {
+                int btvVal1 = int.Parse(matehan4Su.Text);
+                int btvVal2 = int.Parse(mate030List[3].matehan_rental);
+
+                if (btvVal1 > btvVal2)
+                {
+                    CommonUtils.AlertDialog(view, "", "貸出数量が許容数を超えました。", null);
+                    return;
+                }
+            }
+
             CommonUtils.AlertConfirm(view, "", "よろしいですか？", (flag) => {
                 if (flag)
                 {
-                    
-                    CreateKaisyuData();
+                    // proc_hht_kasidasi
+                    Dictionary<string, string> param = new Dictionary<string, string>
+                    {
+                        { "pTerminalID", "test"},
+                        { "pProgramID", "HHT"},
+                        { "pSagyosyaCD", prefs.GetString("sagyousya_cd", "")},
+                        { "pSoukoCD", prefs.GetString("souko_cd", "")},
+                        { "pKitakuCD", prefs.GetString("kitaku_cd", "")},
+                        { "pNyusyukoDate", prefs.GetString("kasidasi_date", "")},
+                        { "pNyusyukoSu1", matehan1Su.Text == "" ? "0" : matehan1Su.Text},
+                        { "pNyusyukoSu2", matehan2Su.Text == "" ? "0" : matehan2Su.Text},
+                        { "pNyusyukoSu3", matehan3Su.Text == "" ? "0" : matehan3Su.Text},
+                        { "pNyusyukoSu4", matehan4Su.Text == "" ? "0" : matehan4Su.Text},
+                        { "pMatehanVendor", prefs.GetString("vendor_cd", "")},
+                        { "pMatehanCd1", matehanList.Count > 0 ? matehanList[0].matehan_cd : ""},
+                        { "pMatehanCd2", matehanList.Count > 1 ? matehanList[1].matehan_cd : ""},
+                        { "pMatehanCd3", matehanList.Count > 2 ? matehanList[2].matehan_cd : ""},
+                        { "pMatehanCd4", matehanList.Count > 3 ? matehanList[3].matehan_cd : ""}
+                    };
 
-                    string bodyMsg = "マテハン回収情報が保存されました。";
-                    
-                    Toast.MakeText(this.Activity, bodyMsg, ToastLength.Long).Show();
-                    
-                    FragmentManager.PopBackStack();
+                    MATE060 mate060 = WebService.RequestMate060(param);
+                    if(mate060.poRet == "0")
+                    {
+                        CommonUtils.AlertDialog(view, "", "貸出登録が完了しました。",()=> {
+                            FragmentManager.PopBackStack();
+                        });
+                    }
                 }
             });
         }

@@ -85,10 +85,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adapters\MikenAdapter.cs" />
+    <Compile Include="Adapters\VendorAllAdapter.cs" />
     <Compile Include="Adapters\VendorAdapter.cs" />
     <Compile Include="Adapters\TenpoAdapter.cs" />
     <Compile Include="Adapters\Tsumikomi020Adapter.cs" />
     <Compile Include="Adapters\TodokesakiAdapter.cs" />
+    <Compile Include="Fragment\Kosu\KosuVendorAllSearchFragment.cs" />
+    <Compile Include="Fragment\Matehan\MatehanWorkFragment.cs" />
+    <Compile Include="Fragment\Tsumikomi\TsumikomiPassFragment.cs" />
+    <Compile Include="Resources\Model\SndIDO.cs" />
+    <Compile Include="Resources\Model\WebService\Kosu\KOSU190.cs" />
     <Compile Include="Utils\DialogAsync.cs" />
     <Compile Include="Utils\AlertDialog.cs" />
     <Compile Include="Utils\BaseFragment.cs" />
@@ -613,6 +619,39 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\dialog_alert.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\dialog_custom2.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <TransformFile Include="Resources\drawable\bg_dialog.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_tsumikomi_pass.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\adapter_list_all_vendor.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_search_vendor_all.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_matehan_work.axml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>

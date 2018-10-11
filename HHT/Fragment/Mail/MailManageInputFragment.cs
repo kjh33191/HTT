@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
-using HHT.Resources.Model;
-using Newtonsoft.Json;
 
 namespace HHT
 {
@@ -24,7 +16,7 @@ namespace HHT
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
-        EditText etMailBag;
+        BootstrapEditText etMailBag;
         TextView mailBagSu;
         private bool registFlg;
         private int mail_back;
@@ -48,7 +40,6 @@ namespace HHT
 
             // コンポーネント初期化
             registFlg = prefs.GetBoolean("registFlg", true);
-
             if (registFlg)
             {
                 SetTitle("メールバッグ登録");
@@ -57,17 +48,16 @@ namespace HHT
             {
                 SetTitle("メールバッグ削除");
             }
-
-            Button btnComplete = view.FindViewById<Button>(Resource.Id.btn_mailRegistInput_complete);
+            
+            BootstrapButton btnComplete = view.FindViewById<BootstrapButton>(Resource.Id.btn_mailRegistInput_complete);
             btnComplete.Click += delegate { Complete(); };
 
-            etMailBag = view.FindViewById<EditText>(Resource.Id.et_mailRegistInput_mail);
+            etMailBag = view.FindViewById<BootstrapEditText>(Resource.Id.et_mailRegistInput_mail);
             mailBagSu = view.FindViewById<TextView>(Resource.Id.txt_mailRegistInput_mailbagSu);
             mail_back = 0;
             
             etMailBag.RequestFocus();
             
-
             return view;
         }
 
@@ -88,16 +78,6 @@ namespace HHT
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-
-            if (keycode == Keycode.F1)
-            {
-                FragmentManager.PopBackStack();
-            }
-            else if (keycode == Keycode.Back)
-            {
-
-            }
-
             return true;
         }
 
@@ -114,16 +94,19 @@ namespace HHT
                     // メールバッグ専用バーコード確認
                     if (data[0].ToString() != "M") {
                         CommonUtils.AlertDialog(view, "", ERR1, null);
+                        Vibrate();
                         return;
                     }
-                   
-                    if (registFlg)　
+                    else
                     {
-                        // メールバック登録処理
-                        Dictionary<string, string> param = new Dictionary<string, string>
+                        etMailBag.Text = data;
+                    }
+
+                    // メールバック登録処理
+                    Dictionary<string, string> param = new Dictionary<string, string>
                         {
                             {"pTerminalID", prefs.GetString("terminal_id","") },
-                            {"pProgramID", prefs.GetString("program_id","") },
+                            {"pProgramID", "MBA" },
                             {"pSagyosyaCD", prefs.GetString("sagyousya_cd","") },
                             {"pSoukoCD", prefs.GetString("souko_cd","") },
                             {"pHaisoDate", prefs.GetString("haiso_date","") },
@@ -133,15 +116,10 @@ namespace HHT
                             {"pBinNo", prefs.GetString("bin_no","") },
                         };
 
-                        string pSagyosyaCD = "";
-                        string pSoukoCD = "";
-                        string pHaisoDate = "";
-                        string pBinNo = "";
-                        string pTokuisakiCD = "";
-                        string pTodokesakiCD = "";
-                        string pKanriNo = "";
-
-                        Dictionary<string, string> result = WebService.RequestMAIL010(pSagyosyaCD, pSoukoCD, pHaisoDate, pBinNo, pTokuisakiCD, pTodokesakiCD, pKanriNo);
+                    if (registFlg)　
+                    {
+                        // メールバック登録処理
+                        Dictionary<string, string> result = WebService.RequestMAIL010(param);
                         
                         switch (result["poRet"].ToString())
                         {
@@ -149,77 +127,66 @@ namespace HHT
                                 //	登録解除
                                 mail_back++;
                                 mailBagSu.Text = "(" + mail_back + ")";
+                                Vibrate();
                                 break;
                             case "1":
                                 //	該当コースが既に積込中以上のステータスのためエラー
                                 // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", ERR3, null);
+                                CommonUtils.AlertDialog(view, "", ERR3, ()=> etMailBag.Text ="");
+                                Vibrate();
                                 break;
                             case "2":
                                 //	該当コースが既に出発受付以上のステータスのためエラー
                                 // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", ERR4, null);
+                                CommonUtils.AlertDialog(view, "", ERR4, () => etMailBag.Text = "");
+                                Vibrate();
                                 break;
                             case "3":
                                 //	コース割付マスタに存在しないためエラー
                                 // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", ERR5, null);
+                                CommonUtils.AlertDialog(view, "", ERR5, () => etMailBag.Text = "");
+                                Vibrate();
                                 break;
                             case "9":
                                 //	登録済
                                 // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", ERR2, null);
+                                CommonUtils.AlertDialog(view, "", ERR2, () => etMailBag.Text = "");
+                                Vibrate();
                                 break;
                             default:
                                 break;
-
                         }
                     }
                     else
                     {
                         // メールバック削除処理
-                        Dictionary<string, string> param = new Dictionary<string, string>
-                        {
-                            {"pTerminalID", prefs.GetString("terminal_id","") },
-                            {"pProgramID", prefs.GetString("program_id","") },
-                            {"pSagyosyaCD", prefs.GetString("sagyousya_cd","") },
-                            {"pSoukoCD", prefs.GetString("souko_cd","") },
-                            {"pHaisoDate", prefs.GetString("haiso_date","") },
-                            {"pTokuisakiCD", data.Substring(1,4) },
-                            {"pTodokesakiCD", data.Substring(5,4) },
-                            {"pKanriNo", data },
-                            {"pBinNo", prefs.GetString("bin_no","") },
-                        };
-
-                        //int ret = WebService.requestMail030();
-                        int ret = 0;
-
-                        switch (ret)
+                        Dictionary<string, string> result = WebService.RequestMAIL030(param);
+                        
+                        switch (int.Parse(result["poRet"]))
                         {
                             case 0:
                                 //	登録解除
                                 mail_back++;
                                 mailBagSu.Text = "(" + mail_back + ")";
-                                CommonUtils.AlertDialog(view, "", "登録されているメールバッグを取消しました。", null);
+                                CommonUtils.AlertDialog(view, "", "登録されているメールバッグを取消しました。", () => etMailBag.Text = "");
                                 break;
                             case 1:
                                 // 未登録
-                                // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", "該当のメールバッグは未登録です。", null);
+                                CommonUtils.AlertDialog(view, "", "該当のメールバッグは未登録です。", () => etMailBag.Text = "");
+                                Vibrate();
                                 break;
                             case 2:
                                 //	該当コースが既に出発受付以上のステータスのためエラー
-                                // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", "該当のメールバッグは出発点呼済です。", null);
+                                CommonUtils.AlertDialog(view, "", "該当のメールバッグは出発点呼済です。", () => etMailBag.Text = "");
+                                Vibrate();
                                 break;
                             case 3:
                                 //	コース割付マスタに存在しないためエラー
-                                // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", "マスタに存在しない店舗のメールバッグをスキャンしました。", null);
+                                CommonUtils.AlertDialog(view, "", "マスタに存在しない店舗のメールバッグをスキャンしました。", () => etMailBag.Text = "");
+                                Vibrate();
                                 break;
                             default:
                                 break;
-
                         }
                     }
                 });

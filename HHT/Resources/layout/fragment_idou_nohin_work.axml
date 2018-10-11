@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,23 +9,42 @@
     android:gravity="center_vertical|left">
     <TextView
         android:text="回収ラベル"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView1" />
-    <EditText
-        android:inputType="text"
-        android:layout_width="match_parent"
+  <com.beardedhen.androidbootstrap.BootstrapEditText
+            android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/et_kaisyuLabel"
-        android:text=""
-        android:textAlignment="center" />
-    <Button
+                    android:textAlignment="center"
+    android:id="@+id/et_kaisyuLabel"
+    android:inputType="text"
+    android:layout_marginBottom="10dp"
+    android:layout_gravity="fill_horizontal"
+    app:bootstrapBrand="primary"
+    app:bootstrapSize="xl" />
+
+  <TextView
+     android:text="(0)"
+         android:textSize="25sp"
+         android:textStyle="bold"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_marginTop="30dp"
+     android:id="@+id/kaisyuLabelSu" />
+  
+  <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/wrapping_button"
         android:text="完了"
+        android:id="@+id/btn_confirm"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
-        android:id="@+id/btn_confirm" />
+        android:layout_marginRight="0dp"
+        android:textSize="20dp"
+        android:layout_gravity="center_horizontal"
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl"
+        app:roundedCorners="true" />
 </LinearLayout>

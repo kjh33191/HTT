@@ -29,6 +29,24 @@ namespace HHT.Resources.DataHelper
                 return false;
             }
         }
-        
+
+        public bool DeleteAll()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    connection.DeleteAll<PsFile>();
+                    return true;
+                }
+
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+        }
+
     }
 }

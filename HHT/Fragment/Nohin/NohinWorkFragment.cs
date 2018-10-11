@@ -5,6 +5,7 @@ using Android.Preferences;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
@@ -22,7 +23,7 @@ namespace HHT
         private ISharedPreferencesEditor editor;
 
         private TextView tvCase, tvOricon, tvSonota, tvIdo, tvMail, tvFuteikei, tvHansoku, tvTc, tvTsumidai, tvAll, tvmatehanNm;
-        private Button nohinWorkButton;
+        private BootstrapButton nohinWorkButton, kaizoButton;
         private int ko_su, maxko_su;
 
         MFileHelper mFilehelper;
@@ -39,11 +40,12 @@ namespace HHT
             view = inflater.Inflate(Resource.Layout.fragment_nohin_work, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
+            mFilehelper = new MFileHelper();
 
             InitComponent(); // 初期化
             GetTumisu(); // 積込台数取得
             
-            ko_su = prefs.GetInt("ko_su", 0);
+            ko_su = int.Parse(prefs.GetString("ko_su", "0"));
             
             return view;
         }
@@ -51,7 +53,6 @@ namespace HHT
         private void InitComponent()
         {
             SetTitle("納品検品");
-            SetFooterText("F1:解除");
 
             TextView txtTokuisaki = view.FindViewById<TextView>(Resource.Id.txt_nohinwork_tokuisakiNm);
             txtTokuisaki.Text = prefs.GetString("tokuisaki_nm", "");
@@ -69,35 +70,41 @@ namespace HHT
             tvTsumidai = view.FindViewById<TextView>(Resource.Id.txt_nohinWork_tsumidaisu);
             tvAll = view.FindViewById<TextView>(Resource.Id.txt_nohinWork_all);
             tvmatehanNm = view.FindViewById<TextView>(Resource.Id.matehanNm);
-            nohinWorkButton = view.FindViewById<Button>(Resource.Id.nohinButton);
+            nohinWorkButton = view.FindViewById<BootstrapButton>(Resource.Id.nohinButton);
             nohinWorkButton.Click += delegate {
-                if(nohinWorkButton.Text == "確定")
+                if (tsumikomiDataList.Count == ko_su)
                 {
-                    if (tsumikomiDataList.Count == ko_su)
-                    {
-                        Log.Debug(TAG, "MAIN NOHIN COMPLETE ");
-                        editor.PutBoolean("nohinWorkEndFlag", true);
-                        editor.Apply();
-                        StartFragment(FragmentManager, typeof(NohinCompleteFragment));
-                    }
-                    else
-                    {
-                        nohinWorkButton.Text = "解除";
-                        SetFooterText("F1:解除");
+                    Log.Debug(TAG, "MAIN NOHIN COMPLETE");
+                    editor.PutString("menu_flg", "2");
+                    editor.PutBoolean("nohinWorkEndFlag", true);
+                    editor.Apply();
+                    StartFragment(FragmentManager, typeof(NohinCompleteFragment));
+                }
+                else
+                {
+                    nohinWorkButton.Visibility = ViewStates.Gone;
+                    kaizoButton.Visibility = ViewStates.Visible;
 
-                        tvCase.Text = "0";
-                        tvOricon.Text = "0";
-                        tvFuteikei.Text = "0";
-                        tvTc.Text = "0";
-                        tvIdo.Text = "0";
-                        tvMail.Text = "0";
-                        tvHansoku.Text = "0";
-                        tvSonota.Text = "0";
-                    }
+                    tvCase.Text = "0";
+                    tvOricon.Text = "0";
+                    tvFuteikei.Text = "0";
+                    tvTc.Text = "0";
+                    tvIdo.Text = "0";
+                    tvMail.Text = "0";
+                    tvHansoku.Text = "0";
+                    tvSonota.Text = "0";
                 }
             };
 
-            mFilehelper = new MFileHelper();
+            kaizoButton = view.FindViewById<BootstrapButton>(Resource.Id.kaizoButton);
+            kaizoButton.Click += delegate {
+                editor.PutString("menu_flg", "2");
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(NohinMailBagPasswordFragment));
+            };
+
+            nohinWorkButton.Visibility = ViewStates.Gone;
+            kaizoButton.Visibility = ViewStates.Visible;
 
         }
 
@@ -133,10 +140,10 @@ namespace HHT
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-            if(keycode == Keycode.F1)
+            if (keycode == Keycode.F1)
             {
                 EditText et = new EditText(this.Activity);
-                
+
                 AlertDialog.Builder ad = new AlertDialog.Builder(this.Activity);
                 ad.SetTitle("Password");
                 ad.SetView(et);
@@ -144,9 +151,9 @@ namespace HHT
                  {
                      // password テーブルからパスワード情報を取得する。
 
-                     Toast.MakeText(this.Activity, "Submit Input: "+ et.Text, ToastLength.Short).Show();
+                     Toast.MakeText(this.Activity, "Submit Input: " + et.Text, ToastLength.Short).Show();
 
-                     if(et.Text == "")
+                     if (et.Text == "")
                      {
                          SndNohinWorkHelper sndNohinWorkHelper = new SndNohinWorkHelper();
                          sndNohinWorkHelper.DeleteAll();
@@ -160,13 +167,13 @@ namespace HHT
                          CommonUtils.AlertDialog(view, "エラー", "パスワードが違います。", null);
                          return;
                      }
-                     
+
                  });
                 ad.Show();
             }
-            else if(keycode == Keycode.Enter)
+            else if (keycode == Keycode.Enter)
             {
-                if (nohinWorkButton.Text == "確定")
+                if (nohinWorkButton.Visibility == ViewStates.Visible)
                 {
                     if (tsumikomiDataList.Count == ko_su)
                     {
@@ -177,8 +184,8 @@ namespace HHT
                     }
                     else
                     {
-                        nohinWorkButton.Text = "解除";
-                        SetFooterText("F1:解除");
+                        nohinWorkButton.Visibility = ViewStates.Gone;
+                        kaizoButton.Visibility = ViewStates.Visible;
 
                         tvCase.Text = "0";
                         tvOricon.Text = "0";
@@ -197,7 +204,7 @@ namespace HHT
 
         public override bool OnBackPressed()
         {
-            return true;
+            return false;
         }
 
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
@@ -219,7 +226,6 @@ namespace HHT
                         break;
                     }
                 }
-                
 
                 new Thread(new ThreadStart(delegate {
                     Activity.RunOnUiThread(() =>
@@ -309,9 +315,9 @@ namespace HHT
                             editor.PutBoolean("nohinWorkEndFlag", true);
                             editor.Apply();
 
-                            nohinWorkButton.Text = "確定";
-                            SetFooterText("F1:確定");
-
+                            kaizoButton.Visibility = ViewStates.Gone;
+                            nohinWorkButton.Visibility = ViewStates.Visible;
+                            
                             return;
                         }
                     } 

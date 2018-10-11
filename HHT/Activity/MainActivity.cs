@@ -232,7 +232,7 @@ namespace HHT
             // Decode Settings
 
             // Decode interval
-            settings.Decode.SameBarcodeIntervalTime = 10; // 1,000msec
+            settings.Decode.SameBarcodeIntervalTime = 200; // 1,000msec
 
             // For 1D & 2D Module Settings
             if ((mScannerType == BarcodeScannerInfo_.BarcodeScannerType_.Type1d) ||

@@ -6,6 +6,7 @@ using Android.OS;
 using Android.Preferences;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 
 namespace HHT
@@ -16,7 +17,7 @@ namespace HHT
         ISharedPreferencesEditor editor;
 
         private View view;
-        private EditText etKaisyuDate, etHaisoDate;
+        private BootstrapEditText etKaisyuDate, etHaisoDate;
         
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -38,8 +39,7 @@ namespace HHT
         // コンポーネント初期化
         private void InitComponent()
         {
-            etKaisyuDate = view.FindViewById<EditText>(Resource.Id.et_idouRegistSelect_kaisyuDate);
-            etKaisyuDate.Text = DateTime.Now.ToString("yyyy/MM/dd");
+            etKaisyuDate = view.FindViewById<BootstrapEditText>(Resource.Id.et_idouRegistSelect_kaisyuDate);
             etKaisyuDate.FocusChange += (sender, e) => {
                 if (e.HasFocus)
                 {
@@ -60,23 +60,33 @@ namespace HHT
                 }
             };
 
-            etHaisoDate = view.FindViewById<EditText>(Resource.Id.et_idouRegistSelect_haisoDate);
-            etHaisoDate.Click += (sender, e) => {
-                DateTime today = DateTime.Today;
-                DatePickerDialog dialog = new DatePickerDialog(this.Activity, OnDateSet, today.Year, today.Month, today.Day);
-                dialog.DatePicker.MinDate = today.Millisecond;
-                dialog.Show();
+            etHaisoDate = view.FindViewById<BootstrapEditText>(Resource.Id.et_idouRegistSelect_haisoDate);
+            etHaisoDate.FocusChange += (sender, e) => {
+                if (e.HasFocus)
+                {
+                    etHaisoDate.Text = etHaisoDate.Text.Replace("/", "");
+                }
+                else
+                {
+                    try
+                    {
+                        etHaisoDate.Text = CommonUtils.GetDateYYYYMMDDwithSlash(etKaisyuDate.Text);
+                    }
+                    catch
+                    {
+                        CommonUtils.ShowAlertDialog(view, "日付形式ではありません", "正しい日付を入力してください");
+                        etHaisoDate.Text = "";
+                        etHaisoDate.RequestFocus();
+                    }
+                }
             };
-            etHaisoDate.Text = DateTime.Now.AddDays(1).ToString("yyyy/MM/dd");
-            
-            Button btnConfirm = view.FindViewById<Button>(Resource.Id.btn_idouRegistSelect_confirm);
+
+            BootstrapButton btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_idouRegistSelect_confirm);
             btnConfirm.Click += delegate { Confirm(); };
             
-        }
-
-        void OnDateSet(object sender, DatePickerDialog.DateSetEventArgs e)
-        {
-            etHaisoDate.Text = e.Date.ToLongDateString();
+            etKaisyuDate.Text = DateTime.Now.ToString("yyyy/MM/dd");
+            etHaisoDate.Text = DateTime.Now.AddDays(1).ToString("yyyy/MM/dd");
+            
         }
         
         private void Confirm()
@@ -102,8 +112,6 @@ namespace HHT
                 this.Activity.RunOnUiThread(() =>
                 {
                     string data = barcodeData.Data;
-                 
-                    
                 });
             }
         }

@@ -32,7 +32,7 @@ namespace HHT
         public override Dialog OnCreateDialog(Bundle savedInstanceState)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
-            View view = Activity.LayoutInflater.Inflate(Resource.Layout.fragment_kosu_confirm, null);
+            View view = Activity.LayoutInflater.Inflate(Resource.Layout.dialog_custom2, null);
             //((TextView)view.FindViewById(Resource.Id.dialog_confirm_msg)).setText(mMainMsg);
             //view.findViewById(R.id.dialog_confirm_btn).setOnClickListener(this);
             builder.SetView(view);

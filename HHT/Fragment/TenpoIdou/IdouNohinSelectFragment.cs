@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Android.App;
+﻿using System.Collections.Generic;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
@@ -15,12 +13,12 @@ namespace HHT
 {
     public class IdouNohinSelectFragment : BaseFragment
     {
-        private readonly string TAG = "";
+        private readonly string TAG = "IdouNohinSelectFragment";
         View view;
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
-        EditText etTokuisakiCd, etTodokesakiCd;
+        BootstrapEditText etTokuisakiCd, etTodokesakiCd;
         TextView txtTodokesakiNm;
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -37,21 +35,53 @@ namespace HHT
             // コンポーネント初期化
             InitComponent();
 
+            // 初期フォーカス
+            etTokuisakiCd.RequestFocus();
+
             return view;
         }
 
         // コンポーネント初期化
         private void InitComponent()
         {
-            etTokuisakiCd = view.FindViewById<EditText>(Resource.Id.et_tokuisakiCd);
-            etTodokesakiCd = view.FindViewById<EditText>(Resource.Id.et_todokesakiCd);
+            etTokuisakiCd = view.FindViewById<BootstrapEditText>(Resource.Id.et_tokuisakiCd);
+            etTodokesakiCd = view.FindViewById<BootstrapEditText>(Resource.Id.et_todokesakiCd);
+            etTodokesakiCd.KeyPress += (sender, e) => {
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    CommonUtils.HideKeyboard(Activity);
+                    Confirm();
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            };
             txtTodokesakiNm = view.FindViewById<TextView>(Resource.Id.txt_todokesakiName);
-            Button btnConfirm = view.FindViewById<Button>(Resource.Id.btn_confirm);
+            BootstrapButton btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_confirm);
             btnConfirm.Click += delegate { Confirm(); };
         }
 
         private void Confirm()
         {
+            if(etTokuisakiCd.Text == "")
+            {
+                CommonUtils.AlertDialog(view, "", "得意先コードを入力してください。", null);
+                Vibrate();
+                etTokuisakiCd.RequestFocus();
+                return;
+            }
+
+            if (etTodokesakiCd.Text == "")
+            {
+                CommonUtils.AlertDialog(view, "", "届先コードを入力してください。", null);
+                etTodokesakiCd.RequestFocus();
+                Vibrate();
+                return;
+            }
+
+
             TokuiFileHelper tokuiFileHelper = new TokuiFileHelper();
             TokuiFile result = tokuiFileHelper.SelectByPk(etTokuisakiCd.Text, etTodokesakiCd.Text);
 
@@ -81,9 +111,10 @@ namespace HHT
             else
             {
                 CommonUtils.AlertDialog(view, "", "届先コードがみつかりません。", null);
+                etTokuisakiCd.Text = "";
+                etTodokesakiCd.Text = "";
+                etTokuisakiCd.RequestFocus();
             }
-
-            //StartFragment(FragmentManager, typeof(IdouNohinWorkFragment));
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)

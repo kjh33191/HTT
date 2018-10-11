@@ -17,10 +17,10 @@ namespace HHT
         {
             base.OnResume();
 
-            prefs = PreferenceManager.GetDefaultSharedPreferences(ApplicationContext);
-            editor = prefs.Edit();
-            editor.Clear();
-            editor.Commit();
+            //prefs = PreferenceManager.GetDefaultSharedPreferences(ApplicationContext);
+            //editor = prefs.Edit();
+            //editor.Clear();
+            //editor.Commit();
 
             Task.Run(() =>
             {

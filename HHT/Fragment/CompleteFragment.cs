@@ -30,7 +30,7 @@ namespace HHT
             TextView completeMsg = view.FindViewById<TextView>(Resource.Id.textView10);
             completeMsg.Text = prefs.GetString("completeMsg", "");
 
-            Button confirmButton = view.FindViewById<Button>(Resource.Id.btn_vender_confirm2);
+            Button confirmButton = view.FindViewById<Button>(Resource.Id.completeButton);
             confirmButton.Click += delegate { BackToMainMenu(); };
 
             return view;

@@ -9,25 +9,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical|left"
-        android:id="@+id/lo_tsumikomiManager_msg"
+        android:id="@+id/lo_tsumikomiManager_pwd"
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
         <TextView
-            android:text="管理者に連絡してください。"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:text="パスワード"
             android:textSize="30sp"
             android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:textAlignment="textStart"
             android:layout_marginTop="10dp"
             android:id="@+id/textView10" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:id="@+id/password"
+            android:singleLine="true" />
         <com.beardedhen.androidbootstrap.BootstrapButton
             style="@style/wrapping_button"
             android:text="確定"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/btn_tsumikomiManger_managerConfirm"
+            android:id="@+id/btn_tsumikomiManger_pwdConfirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:layout_marginRight="0dp"
             android:textSize="20dp"

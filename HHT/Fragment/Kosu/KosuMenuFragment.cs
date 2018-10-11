@@ -58,6 +58,16 @@ namespace HHT
 
         private void GoTodokeSelect()
         {
+            editor.PutString("case_su", "0");
+            editor.PutString("oricon_su", "0");
+            editor.PutString("futeikei_su", "0");
+            editor.PutString("ido_su", "0");
+            editor.PutString("hazai_su", "0");
+            editor.PutString("henpin_su", "0");
+            editor.PutString("hansoku_su", "0");
+            editor.PutString("kaisyu_su", "0");
+            editor.PutString("ko_su", "0");
+            editor.PutString("dai_su", "0");
             editor.PutInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.TODOKE);
             editor.Apply();
             StartFragment(FragmentManager, typeof(KosuSelectFragment));
@@ -65,6 +75,16 @@ namespace HHT
 
         private void GoVendorSelect()
         {
+            editor.PutString("case_su", "0");
+            editor.PutString("oricon_su", "0");
+            editor.PutString("futeikei_su", "0");
+            editor.PutString("ido_su", "0");
+            editor.PutString("hazai_su", "0");
+            editor.PutString("henpin_su", "0");
+            editor.PutString("hansoku_su", "0");
+            editor.PutString("kaisyu_su", "0");
+            editor.PutString("ko_su", "0");
+            editor.PutString("dai_su", "0");
             editor.PutInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.VENDOR);
             editor.Apply();
             StartFragment(FragmentManager, typeof(KosuSelectFragment));
@@ -72,6 +92,16 @@ namespace HHT
 
         private void GoBaraSelect()
         {
+            editor.PutString("case_su", "0");
+            editor.PutString("oricon_su", "0");
+            editor.PutString("futeikei_su", "0");
+            editor.PutString("ido_su", "0");
+            editor.PutString("hazai_su", "0");
+            editor.PutString("henpin_su", "0");
+            editor.PutString("hansoku_su", "0");
+            editor.PutString("kaisyu_su", "0");
+            editor.PutString("ko_su", "0");
+            editor.PutString("dai_su", "0");
             editor.PutInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.BARA);
             editor.Apply();
             StartFragment(FragmentManager, typeof(KosuSelectFragment));

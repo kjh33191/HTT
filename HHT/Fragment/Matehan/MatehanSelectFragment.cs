@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
-using HHT.Resources.Model;
-using Newtonsoft.Json;
 
 namespace HHT
 {
@@ -24,7 +17,7 @@ namespace HHT
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
-        EditText etKasidatuDate, etKasidatuTarget, etBinNo;
+        EditText etKasidatuDate, etKasidatuTarget;
         TextView txtConfirmMsg, txtTargetName;
         
         public override void OnCreate(Bundle savedInstanceState)
@@ -50,9 +43,9 @@ namespace HHT
 
             SetTitle("貸出登録");
 
-            Button btnConfirm = view.FindViewById<Button>(Resource.Id.btn_matehan_confirm);
-            etKasidatuDate = view.FindViewById<EditText>(Resource.Id.et_matehan_kasidatuDate);
-            etKasidatuTarget = view.FindViewById<EditText>(Resource.Id.et_matehan_kasidatuTarget);
+            BootstrapButton btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_matehan_confirm);
+            etKasidatuDate = view.FindViewById<BootstrapEditText>(Resource.Id.et_matehan_kasidatuDate);
+            etKasidatuTarget = view.FindViewById<BootstrapEditText>(Resource.Id.et_matehan_kasidatuTarget);
             etKasidatuTarget.FocusChange += (sender, e) => { if (!e.HasFocus && etKasidatuTarget.Text != "") SearchBinNo(); };
             
             txtTargetName = view.FindViewById<TextView>(Resource.Id.tv_matehan_targetName);
@@ -79,7 +72,7 @@ namespace HHT
                 }
             };
 
-            Button btnSearch = view.FindViewById<Button>(Resource.Id.btn_matehan_kasidasiSakiSearch);
+            BootstrapButton btnSearch = view.FindViewById<BootstrapButton>(Resource.Id.btn_matehan_kasidasiSakiSearch);
             btnSearch.Click += delegate { SearchKasidasiSaki(); };
 
             etKasidatuDate.Text = "18/03/20";
@@ -115,31 +108,40 @@ namespace HHT
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
                 {
-                    // get_vendornm(JOB:vendor_cd) == 0 ok
-                    // Return("sagyou4") 貸出先検索
+                    try
+                    {
+                        string vendorNm = WebService.RequestMate010(etKasidatuTarget.Text);
+                        if(vendorNm == "")
+                        {
+                            CommonUtils.AlertDialog(view, "", "貸出先コードが見つかりません", () => {
+                                etKasidatuTarget.Text = "";
+                                etKasidatuTarget.RequestFocus();
+                            });
+                        }
+                        else
+                        {
+                            txtTargetName.Text = vendorNm;
+                            txtConfirmMsg.Visibility = ViewStates.Visible;
 
-                    // get_vendornm(JOB: vendor_cd) == 2 error
-                    //"貸出先コードが見つかりません。
+                            etKasidatuDate.Focusable = false;
+                            etKasidatuTarget.Focusable = false;
+
+                        }
+
+                    }
+                    catch
+                    {
+                        CommonUtils.AlertDialog(view, "", "貸出先コードが見つかりません", () =>{
+                            etKasidatuTarget.Text = "";
+                            etKasidatuTarget.RequestFocus();
+                        });
+                    }
                 }
                 );
                 Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
 
-        }
-
-        private void ShowConfirmMessage()
-        {
-            if (txtConfirmMsg.Visibility != ViewStates.Visible)
-            {
-                txtTargetName.Visibility = ViewStates.Visible;
-                txtConfirmMsg.Visibility = ViewStates.Visible;
-                txtTargetName.Text = "???????";
-
-                etKasidatuDate.Focusable = false;
-                etKasidatuTarget.Focusable = false;
-                etBinNo.Focusable = false;
-            }
         }
 
         private void HideConfirmMessage()
@@ -151,7 +153,6 @@ namespace HHT
 
                 etKasidatuDate.Focusable = true;
                 etKasidatuTarget.Focusable = true;
-                etBinNo.Focusable = true;
             }
         }
 
@@ -164,8 +165,13 @@ namespace HHT
             }
             else
             {
+                editor.PutString("vendor_cd", etKasidatuTarget.Text);
+                editor.PutString("vendor_nm", txtTargetName.Text);
+                editor.PutString("kasidasi_date", "20" + etKasidatuDate.Text.Replace("/", ""));
                 
-                StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
+                editor.Apply();
+
+                StartFragment(FragmentManager, typeof(MatehanWorkFragment));
             }
         }
 
@@ -211,7 +217,7 @@ namespace HHT
                             
                             try
                             {
-                                ShowConfirmMessage();
+                                // ShowConfirmMessage();
                             }
                             catch
                             {

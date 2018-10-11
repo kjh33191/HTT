@@ -93,6 +93,7 @@ namespace HHT.Resources.DataHelper
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
                 {
+                    connection.DeleteAll<MbFile>();
                     connection.InsertAll(mbFiles);
                     return true;
                 }

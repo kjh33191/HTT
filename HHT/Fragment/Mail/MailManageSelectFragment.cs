@@ -5,6 +5,7 @@ using Android.Preferences;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -16,7 +17,7 @@ namespace HHT
         private ISharedPreferencesEditor editor;
 
         private View view;
-        private EditText etHaisoDate, etBin;
+        private BootstrapEditText etHaisoDate, etBin;
         
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -49,12 +50,12 @@ namespace HHT
                 SetTitle("メールバッグ削除");
             }
             
-            etBin = view.FindViewById<EditText>(Resource.Id.et_mailRegistSelect_bin);
+            etBin = view.FindViewById<BootstrapEditText>(Resource.Id.et_mailRegistSelect_bin);
 
-            Button btnConfirm = view.FindViewById<Button>(Resource.Id.btn_mailRegistSelect_confirm);
+            BootstrapButton btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_mailRegistSelect_confirm);
             btnConfirm.Click += delegate { Confirm(); };
 
-            etHaisoDate = view.FindViewById<EditText>(Resource.Id.et_mailRegistSelect_haiso);
+            etHaisoDate = view.FindViewById<BootstrapEditText>(Resource.Id.et_mailRegistSelect_haiso);
             etHaisoDate.FocusChange += (sender, e) => {
                 if (e.HasFocus)
                 {
@@ -104,6 +105,7 @@ namespace HHT
             try
             {
                 int cnt = WebService.RequestMAIL020(souko_cd, haisoDate, etBin.Text);
+                editor.PutString("haiso_date", haisoDate);
                 editor.PutInt("mail_back", cnt);
                 editor.Apply();
                 

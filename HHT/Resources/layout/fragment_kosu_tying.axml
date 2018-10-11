@@ -14,6 +14,7 @@
         android:id="@+id/vendorName"
         android:textSize="23sp"
         android:textStyle="bold"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp" />
     <TextView
         android:text="■　XXXXX店"

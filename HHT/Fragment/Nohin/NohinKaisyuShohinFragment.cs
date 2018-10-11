@@ -4,6 +4,7 @@ using Android.Preferences;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
@@ -20,7 +21,7 @@ namespace HHT
         private List<string> arrKamotu;
 
         private TextView txtIdouSu, txtMailSu, txtHazaiSu, txtSonotaSu, txtHenpinSu, txtSougoSu;
-        private Button btnOsamu;
+        private BootstrapButton btnOsamu;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -44,7 +45,6 @@ namespace HHT
         private void InitComponent()
         {
             SetTitle("商品回収");
-            SetFooterText("");
 
             TextView txtTokusakiNm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuShohin_tokuisakiNm);
             TextView txtTodokesakiNm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuShohin_todokisakiNm);
@@ -60,11 +60,21 @@ namespace HHT
             txtTodokesakiNm.Text = prefs.GetString("todokesaki_nm", "");
             arrKamotu = new List<string>();
 
-            Button button1 = view.FindViewById<Button>(Resource.Id.btn_nohinKaisyuShohin_confirm);
-            button1.Click += delegate { Confirm();};
+            BootstrapButton button1 = view.FindViewById<BootstrapButton>(Resource.Id.btn_nohinKaisyuShohin_confirm);
+            button1.Click += delegate { Confirm(); };
 
-            btnOsamu = view.FindViewById<Button>(Resource.Id.btn_nohinKaisyuShohin_osamu);
-
+            btnOsamu = view.FindViewById<BootstrapButton>(Resource.Id.btn_nohinKaisyuShohin_osamu);
+            btnOsamu.Click += delegate
+            {
+                if (btnOsamu.Text == "修")
+                {
+                    btnOsamu.Text = "入";
+                }
+                else
+                {
+                    btnOsamu.Text = "修";
+                }
+            };
         }
 
         private void Confirm()

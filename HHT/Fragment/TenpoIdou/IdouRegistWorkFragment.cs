@@ -4,7 +4,7 @@ using Android.Content;
 using Android.OS;
 using Android.Preferences;
 using Android.Views;
-using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Common;
 using HHT.Resources.Model;
@@ -17,7 +17,7 @@ namespace HHT
         private ISharedPreferencesEditor editor;
 
         private View view;
-        private EditText etKaisyuLabel, etIdouTenpo, etIdouTokuisaki, etIdouTodokesaki;
+        private BootstrapEditText etKaisyuLabel, etIdouTenpo, etIdouTokuisaki, etIdouTodokesaki;
 
         private string syuka_date;
 
@@ -43,16 +43,18 @@ namespace HHT
         // コンポーネント初期化
         private void InitComponent()
         {
-
-            etKaisyuLabel = view.FindViewById<EditText>(Resource.Id.et_kaisyuLabel);
-            etIdouTenpo = view.FindViewById<EditText>(Resource.Id.et_idouTenpo);
+            etKaisyuLabel = view.FindViewById<BootstrapEditText>(Resource.Id.et_kaisyuLabel);
+            etIdouTenpo = view.FindViewById<BootstrapEditText>(Resource.Id.et_idouTenpo);
             etIdouTenpo.Focusable = false;
 
-            etIdouTokuisaki = view.FindViewById<EditText>(Resource.Id.et_idouTokuisaki);
-            etIdouTodokesaki = view.FindViewById<EditText>(Resource.Id.et_idouTodokesaki);
+            etIdouTokuisaki = view.FindViewById<BootstrapEditText>(Resource.Id.et_idouTokuisaki);
+            etIdouTodokesaki = view.FindViewById<BootstrapEditText>(Resource.Id.et_idouTodokesaki);
 
-            Button btnConfirm = view.FindViewById<Button>(Resource.Id.btn_confirm);
-            btnConfirm.Click += delegate { Confirm(); };
+            BootstrapButton btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_confirm);
+            btnConfirm.Click += delegate {
+                Confirm();
+                return;
+            };
 
             etKaisyuLabel.FocusChange += delegate { if (!etKaisyuLabel.HasFocus) CheckKaisyuLabel(); };
             etKaisyuLabel.RequestFocus();
@@ -61,29 +63,35 @@ namespace HHT
 
         private bool CheckKaisyuLabel()
         {
-            TIDOU001 tidou001 = new TIDOU001(); //WebService.RequestTidou001(etKaisyuLabel.Text, syuka_date);
-            tidou001.tenkan_state = "00";
-            tidou001.tokuisaki_rk = "test";
+            try
+            {
+                TIDOU001 tidou001 = WebService.RequestTidou001(etKaisyuLabel.Text, syuka_date);
 
-            string kaisyu_ten_nm = tidou001.tokuisaki_rk;
-            etIdouTenpo.Text = kaisyu_ten_nm; // 先に設定
+                string kaisyu_ten_nm = tidou001.tokuisaki_rk;
+                etIdouTenpo.Text = kaisyu_ten_nm; // 先に設定
 
-            if (kaisyu_ten_nm == "")
+                if (kaisyu_ten_nm == "")
+                {
+                    CommonUtils.AlertDialog(view, "", "移動ラベルがみつかりません。", null);
+                    return false;
+                }
+                else
+                {
+                    if (tidou001.tenkan_state == "01")
+                    {
+                        CommonUtils.AlertDialog(view, "", "該当の移動ラベルは登録済です。", null);
+                        return false;
+                    }
+
+                    editor.PutString("kaisyu_ten_nm", kaisyu_ten_nm);
+                }
+            }
+            catch
             {
                 CommonUtils.AlertDialog(view, "", "移動ラベルがみつかりません。", null);
                 return false;
             }
-            else
-            {
-                if (tidou001.tenkan_state == "01")
-                {
-                    CommonUtils.AlertDialog(view, "", "該当の移動ラベルは登録済です。", null);
-                    return false;
-                }
-
-                editor.PutString("kaisyu_ten_nm", kaisyu_ten_nm);
-            }
-
+            
             return true;
         }
         
@@ -106,7 +114,7 @@ namespace HHT
 
             string msg = "移動先店舗：" + etIdouTenpo.Text + "\n";
                  　msg += "移動先得意先：" + etIdouTokuisaki.Text + "\n";
-                   msg += "移動先届先：" + etIdouTokuisaki.Text + "\n";
+                   msg += "移動先届先：" + etIdouTodokesaki.Text + "\n";
                　　msg += "" + tidou002.area_nm + "\n\n";
                    msg += "よろしいですか？";
 
@@ -150,9 +158,7 @@ namespace HHT
                             if (tidou010.poRet == "0")
                             {
                                 //	正常登録
-                                Vibrator vibrator = (Vibrator)this.Activity.GetSystemService(Context.VibratorService);// (Context.VIBRATE_SERVICE)  
-                                long millisecond = 1000;  // 1초  
-                                vibrator.Vibrate(millisecond);
+                                Vibrate();
                                 CommonUtils.AlertDialog(view, "", "登録しました。", () => {
                                     FragmentManager.PopBackStack();
                                 });
@@ -160,41 +166,45 @@ namespace HHT
                             else if (tidou010.poRet == "1")
                             {
                                 CommonUtils.AlertDialog(view, "", "登録済みです。", null);
+                                Vibrate();
                             }
                             else if (tidou010.poRet == "2")
                             {
                                 CommonUtils.AlertDialog(view, "", "回収対象の貨物がありません。", null);
+                                Vibrate();
                             }
                             else if (tidou010.poRet == "3")
                             {
                                 CommonUtils.AlertDialog(view, "", "店間移動ベンダーがセンターマスタに設定されていません。", null);
+                                Vibrate();
                             }
                             else if (tidou010.poRet == "4")
                             {
                                 CommonUtils.AlertDialog(view, "", "店間移動ベンダーがベンダーマスタに存在しません。", null);
+                                Vibrate();
                             }
                             else if (tidou010.poRet == "5")
                             {
                                 CommonUtils.AlertDialog(view, "", "店間移動先センターコードがセンターマスタに存在しません。", null);
+                                Vibrate();
                             }
                             else if (tidou010.poRet == "6")
                             {
                                 CommonUtils.AlertDialog(view, "", "店間移動先コースがコース割付マスタに存在しません。", null);
+                                Vibrate();
                             }
                             else if (tidou010.poRet == "7")
                             {
+                                Vibrate();
                                 CommonUtils.AlertDialog(view, "", "店間移動先コースがコースマスタに存在しません。", null);
                             }
                             else
                             {
-                                Vibrator vibrator = (Vibrator)this.Activity.GetSystemService(Context.VibratorService);// (Context.VIBRATE_SERVICE)  
-                                long millisecond = 1000;  // 1초  
-                                vibrator.Vibrate(millisecond);
+                                Vibrate();
                                 CommonUtils.AlertDialog(view, "", "入荷予定データ作成に失敗しました。", null);
                             }
 
                         });
-                        //Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
                     }
                 )).Start();
                 }
@@ -232,6 +242,8 @@ namespace HHT
                         }
                         else
                         {
+                            etIdouTokuisaki.Enabled = true;
+                            etIdouTodokesaki.Enabled = true;
                             etIdouTokuisaki.RequestFocus();
                         }
                     }

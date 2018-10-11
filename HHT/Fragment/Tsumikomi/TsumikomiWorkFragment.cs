@@ -8,6 +8,7 @@ using Android.Preferences;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Common;
 using HHT.Resources.DataHelper;
@@ -24,7 +25,7 @@ namespace HHT
 
         private View view;
         private EditText etKosu, etCarLabel, etCarry, etKargo, etCard, etBara, etSonata;
-        private Button btnIdou;
+        private BootstrapButton btnIdou;
         private string kansen_kbn;
 
         private string souko_cd, kitaku_cd, syuka_date, tokuisaki_cd, todokesaki_cd, bin_no, course;
@@ -58,7 +59,7 @@ namespace HHT
             etBara = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_bara);
             etSonata = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_sonota);
 
-            btnIdou = view.FindViewById<Button>(Resource.Id.et_tsumikomiWork_idou);
+            btnIdou = view.FindViewById<BootstrapButton>(Resource.Id.et_tsumikomiWork_idou);
             btnIdou.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment)); };
             
             souko_cd = prefs.GetString("souko_cd", "");
@@ -116,24 +117,24 @@ namespace HHT
                             etKosu.Text = result.poKosuCnt;
 
                             //	正常登録
-                            Vibrator vibrator = (Vibrator)this.Activity.GetSystemService(Context.VibratorService);// (Context.VIBRATE_SERVICE)  
-                            long millisecond = 1000;  // 1초  
-                            vibrator.Vibrate(millisecond);
-
+                            // Vibrate(); 元ハンヂィにはない
+                            
                             carLabelInputMode = true;
-                            btnIdou.Visibility = ViewStates.Invisible;
+                            btnIdou.Enabled = false;
                             etCarLabel.SetBackgroundColor(Android.Graphics.Color.Yellow);
                             etKosu.SetBackgroundColor(Android.Graphics.Color.White);
                         }
                         catch
                         {
                             CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n再度商品をスキャンして下さい。", null);
+                            Vibrate();
                             return;
                         }
                     }
                     else　// 車両ラベル
                     {
                         // 作業ステータス更新・積込処理
+                        etCarLabel.Text = barcodeData.Data;
                         UpdateSagyoStatus(barcodeData.Data);
                     }
                 });
@@ -162,7 +163,7 @@ namespace HHT
         // 作業ステータス更新・積込処理 TUMIKOMI080,TUMIKOMI311
         private void UpdateSagyoStatus(string saryouData)
         {
-            var progress = ProgressDialog.Show(this.Activity, "Please wait...", "Contacting server. Please wait...", true);
+            var progress = ProgressDialog.Show(this.Activity, "", "作業ステータス更新中。。。", true);
             int resultCode = 1;
 
             new Thread(new ThreadStart(delegate {
@@ -214,9 +215,7 @@ namespace HHT
                                 Activity.RunOnUiThread(() =>
                                 {
                                     //	正常登録
-                                    Vibrator vibrator = (Vibrator)this.Activity.GetSystemService(Context.VibratorService);// (Context.VIBRATE_SERVICE)  
-                                    long millisecond = 1000;  // 1초  
-                                    vibrator.Vibrate(millisecond);
+                                    Vibrate();
 
                                     CommonUtils.AlertDialog(view, "", "積込検品が\n完了しました。", () => {
                                         FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0);
@@ -227,9 +226,9 @@ namespace HHT
                             else
                             {
                                 CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
+                                Vibrate();
                                 return;
                             }
-
                         }
                         else if (resultCode == 1)
                         {
@@ -240,11 +239,10 @@ namespace HHT
                     }
                     catch(Exception e)
                     {
-                        CommonUtils.AlertDialog(view, "エラー", "例外エラーが発生しました。\n" + e.ToString(), null);
+                        CommonUtils.AlertDialog(view, "エラー", "例外エラーが発生しました。\n", null);
+                        Vibrate();
                         return;
                     }
-                    
-                        
                 }
                 );
                 Activity.RunOnUiThread(() => progress.Dismiss());
@@ -310,16 +308,7 @@ namespace HHT
         {
             if (keycode == Keycode.Back)
             {
-                if (carLabelInputMode == false) {
-                    FragmentManager.PopBackStack();
-                }
-                else
-                {
-                     CancelTsumiKomi();
-                    btnIdou.Visibility = ViewStates.Visible;
-                    etKosu.SetBackgroundColor(Android.Graphics.Color.Yellow);
-                    etCarLabel.SetBackgroundColor(Android.Graphics.Color.White);
-                }
+                
             }
             else if (keycode == Keycode.F1)
             {
@@ -340,6 +329,19 @@ namespace HHT
 
         public override bool OnBackPressed()
         {
+            if (carLabelInputMode == false)
+            {
+                return true;
+            }
+            else
+            {
+                CancelTsumiKomi();
+                btnIdou.Enabled = true;
+                etKosu.Text = "0";
+                etKosu.SetBackgroundColor(Android.Graphics.Color.Yellow);
+                etCarLabel.SetBackgroundColor(Android.Graphics.Color.White);
+            }
+
             return false;
         }
 
@@ -380,20 +382,28 @@ namespace HHT
             // CRATE TUMIKOMI FILE
             // MAIN FILE
             List<MFile> mFiles = WebService.RequestTumikomi100(souko_cd, kitaku_cd, syuka_date, bin_no, course, tokuisaki_cd, todokesaki_cd);
-            new MFileHelper().InsertALL(mFiles);
+            MFileHelper mFileHelper = new MFileHelper();
+            mFileHelper.DeleteAll();
+            mFileHelper.InsertALL(mFiles);
 
             // It would be useless..
             //PsFile psFile = WebService.RequestTumikomi180();
             PsFile psFile = new PsFile { pass = "" };
-            new PsFileHelper().Insert(psFile);
+            PsFileHelper psFileHelper = new PsFileHelper();
+            psFileHelper.DeleteAll();
+            psFileHelper.Insert(psFile);
 
             // MAILBACK FILE 
             List<MbFile> mbFiles = WebService.RequestTumikomi140(souko_cd, kitaku_cd, syuka_date, bin_no, course);
-            new MbFileHelper().InsertAll(mbFiles);
+            MbFileHelper mbFileHelper = new MbFileHelper();
+            mbFileHelper.DeleteAll();
+            mbFileHelper.InsertAll(mbFiles);
 
             // SOUKO FILE
             SoFile soFile = WebService.RequestTumikomi160(souko_cd);
-            new SoFileHelper().Insert(soFile);
+            SoFileHelper soFileHelper = new SoFileHelper();
+            soFileHelper.DeleteAll();
+            soFileHelper.Insert(soFile);
 
             // // It would be useless..
             // TUMIKOMI190 -> ftp file ? 
@@ -404,11 +414,15 @@ namespace HHT
             // VENDOR FILE
             string nohin_date = DateTime.Now.ToString("yyyyMMdd");
             List<MateFile> mateFile = WebService.RequestTumikomi260(souko_cd, kitaku_cd, syuka_date, nohin_date, bin_no, course);
-            new MateFileHelper().InsertAll(mateFile);
+            MateFileHelper mateFileHelper = new MateFileHelper();
+            mateFileHelper.DeleteAll();
+            mateFileHelper.InsertAll(mateFile);
 
             // TOKUISAKI FILE
             List<TokuiFile> tokuiFile = WebService.RequestTumikomi270();
-            new TokuiFileHelper().InsertAll(tokuiFile);
+            TokuiFileHelper tokuiFileHelper = new TokuiFileHelper();
+            tokuiFileHelper.DeleteAll();
+            tokuiFileHelper.InsertAll(tokuiFile);
 
             Log.Debug(TAG, "CreateTsumiFiles end");
             
@@ -420,7 +434,7 @@ namespace HHT
             return new Dictionary<string, string>
                         {
                             { "pTerminalID",  "432660068"},
-                            { "pProgramID", "TUM_TEST" },
+                            { "pProgramID", "TUM" },
                             { "pSagyosyaCD", "99999" },
                             { "pSoukoCD",  souko_cd},
                             { "pSyukaDate", syuka_date},

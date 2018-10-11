@@ -11,35 +11,6 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:columnCount="3">
-        <TextView
-            android:text="ベンダー"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/txt_nohinKaisyuMatehan_vendorCode"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="10dp"
-            android:layout_width="120dp" />
-        <com.beardedhen.androidbootstrap.BootstrapEditText
-            android:id="@+id/et_nohinKaisyuMatehan_vendorCode"
-            android:inputType="numberDecimal"
-            android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="10dp"
-            app:bootstrapBrand="primary"
-            app:bootstrapSize="xl" />
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            style="@style/wrapping_button"
-            android:text="検索"
-            android:id="@+id/vendorSearch"
-            android:layout_marginRight="0dp"
-            app:bootstrapBrand="primary"
-            app:bootstrapSize="xl"
-            app:roundedCorners="false" />
-    </GridLayout>
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:columnCount="3">
         <TextView
@@ -58,16 +29,26 @@
             android:textSize="23sp"
             android:textStyle="bold"
             android:visibility="invisible"
+            android:layout_gravity="fill_horizontal"
             android:layout_marginBottom="10dp"
-            android:layout_width="150dp" />
+            android:layout_width="170dp" />
         <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/et_nohinKaisyuMatehan_matehan1"
             android:inputType="numberDecimal"
-            android:layout_gravity="fill_horizontal"
+            android:layout_width="80dp"
             android:visibility="invisible"
+            android:maxLength="4"
             app:bootstrapBrand="primary"
-            app:bootstrapSize="xl"
-            android:layout_columnSpan="2" />
+            app:bootstrapSize="xl" />
+        <TextView
+            android:text="/ 0 "
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/matehanRental1"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:layout_marginBottom="10dp"
+            android:layout_width="100dp" />
         <TextView
             android:text="Matehan2"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -76,15 +57,24 @@
             android:textStyle="bold"
             android:visibility="invisible"
             android:layout_marginBottom="10dp"
-            android:layout_width="150dp" />
+            android:layout_width="170dp" />
         <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/et_nohinKaisyuMatehan_matehan2"
             android:inputType="numberDecimal"
-            android:layout_gravity="fill_horizontal"
+            android:layout_width="80dp"
+            android:maxLength="4"
             android:visibility="invisible"
             app:bootstrapBrand="primary"
-            app:bootstrapSize="xl"
-            android:layout_columnSpan="2" />
+            app:bootstrapSize="xl" />
+        <TextView
+            android:text="/0"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/matehanRental2"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:layout_marginBottom="10dp"
+            android:layout_width="100dp" />
         <TextView
             android:text="Matehan3"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -93,15 +83,24 @@
             android:textSize="25sp"
             android:textStyle="bold"
             android:layout_marginBottom="10dp"
-            android:layout_width="150dp" />
+            android:layout_width="170dp" />
         <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/et_nohinKaisyuMatehan_matehan3"
             android:inputType="numberDecimal"
-            android:layout_gravity="fill_horizontal"
+            android:layout_width="80dp"
+            android:maxLength="4"
             android:visibility="invisible"
             app:bootstrapBrand="primary"
-            app:bootstrapSize="xl"
-            android:layout_columnSpan="2" />
+            app:bootstrapSize="xl" />
+        <TextView
+            android:text="/0"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/matehanRental3"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:layout_marginBottom="10dp"
+            android:layout_width="100dp" />
         <TextView
             android:text="Matehan4"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -110,15 +109,24 @@
             android:textSize="25sp"
             android:textStyle="bold"
             android:layout_marginBottom="10dp"
-            android:layout_width="150dp" />
+            android:layout_width="170dp" />
         <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/et_nohinKaisyuMatehan_matehan4"
             android:inputType="numberDecimal"
-            android:layout_gravity="fill_horizontal"
+            android:layout_width="80dp"
+            android:maxLength="4"
             android:visibility="invisible"
             app:bootstrapBrand="primary"
-            app:bootstrapSize="xl"
-            android:layout_columnSpan="2" />
+            app:bootstrapSize="xl" />
+        <TextView
+            android:text="/0"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/matehanRental4"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:layout_marginBottom="10dp"
+            android:layout_width="100dp" />
     </GridLayout>
     <com.beardedhen.androidbootstrap.BootstrapButton
         style="@style/wrapping_button"

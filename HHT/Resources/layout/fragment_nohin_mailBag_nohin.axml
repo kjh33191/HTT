@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,7 +13,7 @@
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textStyle="bold"
         android:id="@+id/txt_nohinMailBagNohin_tokuisakiNm" />
     <TextView
@@ -23,25 +24,46 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textStyle="bold" />
-    <EditText
-        android:text=""
+    <com.beardedhen.androidbootstrap.BootstrapEditText
+        android:id="@+id/et_nohinMailBagNohin_mailbagNumber"
         android:inputType="numberSigned"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/et_nohinMailBagNohin_mailbagNumber"
-        android:layout_gravity="fill_horizontal" />
-    <Button
-        android:text="解除"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="fill_horizontal"
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl" />
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:id="@+id/btn_nohinMailBagNohin_kaizo" />
-    <Button
-        android:text="無"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:id="@+id/btn_nohinMailBagNohin_mu" />
+        android:layout_marginTop="30dp">
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
+            android:text="解除"
+            android:id="@+id/btn_nohinMailBagNohin_kaizo"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="0dp"
+            android:textSize="20dp"
+            android:layout_weight="1"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="true" />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
+            android:text="無"
+            android:id="@+id/btn_nohinMailBagNohin_mu"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginLeft="6dp"
+            android:layout_weight="1"
+            android:textSize="20dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="true" />
+    </LinearLayout>
 </LinearLayout>

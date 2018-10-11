@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,20 +9,18 @@
     android:gravity="center_vertical|left">
     <TextView
         android:text="TokuisakiName"
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txt_nohinKaisyuMail_tokuisakiNm"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textStyle="bold"
         android:layout_marginBottom="10dp" />
     <TextView
         android:text="TodokesakiName"
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/txt_nohinKaisyuMail_todokisakiNm"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textStyle="bold"
         android:layout_marginBottom="10dp" />
     <GridLayout
@@ -31,11 +30,9 @@
         android:columnCount="2">
         <TextView
             android:text="回収メールバッグ"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginTop="30dp"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textStyle="bold"
-            android:id="@+id/abcd"
             android:layout_columnSpan="2" />
         <EditText
             android:text=""
@@ -59,11 +56,17 @@
             android:textStyle="bold"
             android:id="@+id/txt_kosuSelect_confirmMsg" />
     </LinearLayout>
-    <Button
+  <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/wrapping_button"
         android:text="確定"
+        android:id="@+id/et_nohinKaisyuMail_Confirm"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
-        android:id="@+id/et_nohinKaisyuMail_Confirm" />
+        android:layout_marginRight="0dp"
+        android:textSize="20dp"
+        android:layout_gravity="center_horizontal"
+        app:bootstrapBrand="primary"
+        app:bootstrapSize="xl"
+        app:roundedCorners="true" />
 </LinearLayout>

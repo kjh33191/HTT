@@ -2,7 +2,7 @@
 using Android.OS;
 using Android.Preferences;
 using Android.Views;
-using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -26,7 +26,7 @@ namespace HHT
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 
-            Button confirmButton = view.FindViewById<Button>(Resource.Id.btn_vender_confirm2);
+            BootstrapButton confirmButton = view.FindViewById<BootstrapButton>(Resource.Id.completeButton);
             confirmButton.Click += delegate {
                 BackToMainMenu();
             };

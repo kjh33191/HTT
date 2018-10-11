@@ -57,8 +57,7 @@ namespace HHT
             public readonly static string KOSU220 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu220";
             public readonly static string KOSU230 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu230";
             public readonly static string KOSU240 = WEB_SERVICE_URL + "KosuKenpin/RequestKosu240";
-
-
+            
         };
 
         public class IDOU
@@ -697,6 +696,24 @@ namespace HHT
             }
         }
 
+        /// バラ検品：バーコード 
+        public static List<KOSU190> RequestKosu190()
+        {
+            string resultJson = CommonUtils.Post(KOSU.KOSU190, new Dictionary<string, string>());
+            ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
+
+            if (response.status == "0")
+            {
+                return response.GetDataObject<List<KOSU190>>();
+            }
+            else
+            {
+                Log.Error(TAG, response.message);
+                throw new Exception(response.message);
+            }
+        }
+
+
         public static List<KOSU200> RequestKosu200(string vendorCode)
         {
             string resultJson = CommonUtils.Post(KOSU.KOSU200, new Dictionary<string, string> { { "vendor_cd", vendorCode } });
@@ -1053,14 +1070,27 @@ namespace HHT
         }
 
         // パスワード
-        public static string RequestTumikomi130(Dictionary<string, string> param)
+        public static string RequestTumikomi130(string souko_cd, string hiduke)
         {
+            Dictionary<string, string> param = new Dictionary<string, string>
+            {
+                { "souko_cd", souko_cd},
+                { "hiduke", hiduke}
+            };
+
             string resultJson = CommonUtils.Post(WEB_SERVICE_URL + "TumikomiKenpin/RequestTsumikomi130", param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
             if (response.status == "0")
             {
-                return response.GetDataObject()["pass"];
+                List<Dictionary<string, string>> result = response.GetDataObject<List<Dictionary<string, string>>>();
+                if (result.Count == 0)
+                {
+                    return "";
+                }
+
+                return result[0]["pass"];
+                // return response.GetDataObject()["pass"];
             }
             else
             {
@@ -1471,7 +1501,6 @@ namespace HHT
 
         public static int RequestSend010(Dictionary<string, string> param)
         {
-
             string resultJson = CommonUtils.Post(SEND_DATA.SEND010, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
@@ -1514,8 +1543,9 @@ namespace HHT
         }
 
 
-        public static MATE020 RequestMate020(string nyuka_souko)
+        public static List<KOSU190> RequestMate020(string nyuka_souko)
         {
+            //MATE020は利用しない。KOSU190と同様
             Dictionary<string, string> param = new Dictionary<string, string>
             {
                 {"nyuka_souko", nyuka_souko }
@@ -1526,7 +1556,7 @@ namespace HHT
 
             if (response.status == "0")
             {
-                return response.GetDataObject<MATE020>();
+                return response.GetDataObject<List<KOSU190>>();
             }
             else
             {
@@ -1535,7 +1565,7 @@ namespace HHT
             }
         }
 
-        public static MATE030 RequestMate030(string vendor_cd)
+        public static List<MATE030> RequestMate030(string vendor_cd)
         {
             Dictionary<string, string> param = new Dictionary<string, string>
             {
@@ -1547,7 +1577,7 @@ namespace HHT
 
             if (response.status == "0")
             {
-                return response.GetDataObject<MATE030>();
+                return response.GetDataObject<List<MATE030>>();
             }
             else
             {
@@ -1600,30 +1630,8 @@ namespace HHT
             }
         }
 
-        public static MATE060 RequestMate060()
+        public static MATE060 RequestMate060(Dictionary<string, string> param)
         {
-            // proc_hht_kasidasi
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                /*
-                pTerminalID			
-                pProgramID			
-                pSagyosyaCD			
-                pSoukoCD			
-                pKitakuCD			
-                pNyusyukoDate			
-                pNyusyukoSu1			
-                pNyusyukoSu2			
-                pNyusyukoSu3			
-                pNyusyukoSu4			
-                pMatehanVendor			
-                pMatehanCd1			
-                pMatehanCd2			
-                pMatehanCd3			
-                pMatehanCd4			
-                 */
-            };
-
             string resultJson = CommonUtils.Post(MATEHAN.MATE060, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
@@ -2114,22 +2122,8 @@ namespace HHT
         /// <param name="pTodokesakiCD"></param>
         /// <param name="pKanriNo"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> RequestMAIL010(string pSagyosyaCD, string pSoukoCD, string pHaisoDate, string pBinNo
-            , string pTokuisakiCD, string pTodokesakiCD, string pKanriNo)
+        public static Dictionary<string, string> RequestMAIL010(Dictionary<string, string> param)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                {"pTerminalID", Build.Serial },
-                {"pProgramID", "MBA" },
-                {"pSagyosyaCD", pSagyosyaCD },
-                {"pSoukoCD", pSoukoCD },
-                {"pHaisoDate", pBinNo },
-                {"pBinNo", pTokuisakiCD },
-                {"pTokuisakiCD", pTodokesakiCD },
-                {"pTodokesakiCD", pTodokesakiCD },
-                {"pKanriNo", pKanriNo },
-            };
-
             string resultJson = CommonUtils.Post(MAIL.MAIL010, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
@@ -2185,22 +2179,8 @@ namespace HHT
         /// <param name="pTodokesakiCD"></param>
         /// <param name="pKanriNo"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> RequestMAIL030(string pSagyosyaCD, string pSoukoCD, string pHaisoDate, string pBinNo
-            , string pTokuisakiCD, string pTodokesakiCD, string pKanriNo)
+        public static Dictionary<string, string> RequestMAIL030(Dictionary<string, string> param)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                {"pTerminalID", Build.Serial },
-                {"pProgramID", "MBA" },
-                {"pSagyosyaCD", pSagyosyaCD },
-                {"pSoukoCD", pSoukoCD },
-                {"pHaisoDate", pBinNo },
-                {"pBinNo", pTokuisakiCD },
-                {"pTokuisakiCD", pTodokesakiCD },
-                {"pTodokesakiCD", pTodokesakiCD },
-                {"pKanriNo", pKanriNo },
-            };
-
             string resultJson = CommonUtils.Post(MAIL.MAIL030, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 

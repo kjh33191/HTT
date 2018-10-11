@@ -6,7 +6,7 @@ using Android.Content;
 using Android.OS;
 using Android.Preferences;
 using Android.Views;
-using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
@@ -18,7 +18,7 @@ namespace HHT
         private View view;
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
-        private EditText etTokuisaki, etTodokesaki, etReceipt;
+        private BootstrapEditText etTokuisaki, etTodokesaki, etReceipt;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -34,15 +34,15 @@ namespace HHT
             SetTitle("納品検品");
             SetFooterText("");
 
-            etTokuisaki = view.FindViewById<EditText>(Resource.Id.et_nohinSelect_tokuisaki);
+            etTokuisaki = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinSelect_tokuisaki);
             etTokuisaki.Text = prefs.GetString("def_tokuisaki_cd", "");
-            etTodokesaki = view.FindViewById<EditText>(Resource.Id.et_nohinSelect_todokesaki);
-            etReceipt = view.FindViewById<EditText>(Resource.Id.et_nohinSelect_receipt);
+            etTodokesaki = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinSelect_todokesaki);
+            etReceipt = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinSelect_receipt);
 
             etTodokesaki.Text = "0248";
             etReceipt.Text = "J00000248";
 
-            Button confirm = view.FindViewById<Button>(Resource.Id.btn_nohinSelect_confirm);
+            BootstrapButton confirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_nohinSelect_confirm);
             confirm.FocusChange += delegate { if (confirm.IsFocused) CommonUtils.HideKeyboard(this.Activity); };
             confirm.Click += delegate {
 

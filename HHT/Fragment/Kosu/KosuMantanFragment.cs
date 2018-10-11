@@ -8,6 +8,7 @@ using Android.Content;
 using Android.Preferences;
 using static Android.Widget.AdapterView;
 using Android.Graphics.Drawables;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -15,7 +16,7 @@ namespace HHT
     {
         private View view;
         private List<KOSU200> matehanList;
-        private EditText etMantanVendor;
+        private BootstrapEditText etMantanVendor;
         private TextView txtVenderName;
         private ListView listView;
 
@@ -45,9 +46,14 @@ namespace HHT
 
             txtVenderName = view.FindViewById<TextView>(Resource.Id.vendorName);
             txtVenderName.Text = prefs.GetString("vendor_nm", "");
-            
-            etMantanVendor = view.FindViewById<EditText>(Resource.Id.et_mantan_vendor);
+
+            etMantanVendor = view.FindViewById<BootstrapEditText>(Resource.Id.et_mantan_vendor);
             etMantanVendor.Text = prefs.GetString("vendor_cd", "");
+
+            BootstrapButton vendorSearchButton = view.FindViewById<BootstrapButton>(Resource.Id.vendorSearch);
+            vendorSearchButton.Click += delegate { StartFragment(FragmentManager, typeof(KosuVendorAllSearchFragment)); };
+
+            //vendorSearch
             /*
             etMantanVendor.FocusChange += delegate {
                 if (!etMantanVendor.IsFocused)
@@ -74,13 +80,17 @@ namespace HHT
             };
             
             SetMatehanList();
-
-            listView.RequestFocus(); listView.RequestFocusFromTouch();
-            listView.SetSelection(2);
             
             return view;
         }
-        
+
+        public override void OnResume()
+        {
+            base.OnResume();
+            etMantanVendor.Text = prefs.GetString("vendor_cd", "");
+
+        }
+
         private void SetMatehanList()
         {
             string venderName = WebService.RequestKosu220(etMantanVendor.Text);

@@ -18,7 +18,6 @@ namespace HHT.Resources.DataHelper
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
                 {
-                    connection.DeleteAll<SoFile>();
                     connection.Insert(soFile);
                     return true;
                 }
@@ -39,6 +38,24 @@ namespace HHT.Resources.DataHelper
                 {
                     connection.DeleteAll<SoFile>();
                     connection.InsertAll(soFiles);
+                    return true;
+                }
+
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+        }
+
+        public bool DeleteAll()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    connection.DeleteAll<SoFile>();
                     return true;
                 }
 

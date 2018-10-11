@@ -4,6 +4,7 @@ using Android.Preferences;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Common;
 using HHT.Resources.DataHelper;
@@ -21,7 +22,9 @@ namespace HHT
         private ISharedPreferencesEditor editor;
         private List<string> arrMailBag;
         private int mail_bag;
-        EditText etKaisyuMail;
+        private EditText etKaisyuMail;
+
+        private SndNohinMailKaisyuHelper sndNohinMailKaisyuHelper;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -45,17 +48,31 @@ namespace HHT
             SetFooterText("");
 
             TextView tvTokuisaki = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMail_tokuisakiNm);
-            TextView tvTodokesaki = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMail_todokisakiNm);
-            etKaisyuMail = view.FindViewById<EditText>(Resource.Id.et_nohinKaisyuMail_kaisyuMailbag);
-            Button btnConfirm = view.FindViewById<Button>(Resource.Id.et_nohinKaisyuMail_Confirm);
-
             tvTokuisaki.Text = prefs.GetString("tokuisaki_nm", "");
-            tvTodokesaki.Text = prefs.GetString("todokesaki_nm", "");
-            etKaisyuMail.Text = "0";
-            arrMailBag = new List<string>();
-            mail_bag = 0;
 
+            TextView tvTodokesaki = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMail_todokisakiNm);
+            tvTodokesaki.Text = prefs.GetString("todokesaki_nm", "");
+
+            etKaisyuMail = view.FindViewById<EditText>(Resource.Id.et_nohinKaisyuMail_kaisyuMailbag);
+
+            BootstrapButton btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.et_nohinKaisyuMail_Confirm);
             btnConfirm.Click += delegate { ConfirmMailBagKaisyu(); };
+            
+            sndNohinMailKaisyuHelper = new SndNohinMailKaisyuHelper();
+            List<SndNohinMailKaisyu> temp = sndNohinMailKaisyuHelper.SelectAll();
+            if (temp.Count > 0)
+            {
+                etKaisyuMail.Text = temp.Count.ToString();
+                mail_bag = 0;
+            }
+            else
+            {
+                etKaisyuMail.Text = "0";
+                mail_bag = 0;
+            }
+            
+            arrMailBag = new List<string>();
+            
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -212,7 +229,6 @@ namespace HHT
             };
             
             //DEF_MAIL_KAI
-            SndNohinMailKaisyuHelper sndNohinMailKaisyuHelper = new SndNohinMailKaisyuHelper();
             sndNohinMailKaisyuHelper.Insert(sndNohinMailKaisyu);
 
         }

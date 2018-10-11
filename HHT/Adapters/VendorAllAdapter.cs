@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using Android.Content;
+﻿using System.Collections.Generic;
 using Android.Views;
 using Android.Widget;
-using Com.Beardedhen.Androidbootstrap;
 using HHT.Resources.Model;
 
 namespace HHT
 {
-    class VendorAdapter : BaseAdapter
+    class VendorAllAdapter : BaseAdapter<KOSU190>
     {
-        private List<KOSU095> vendorList;
+        
+        private List<KOSU190> vendorList;
 
-        public VendorAdapter(List<KOSU095> vendorList)
+        public VendorAllAdapter(List<KOSU190> vendorList)
         {
             this.vendorList = vendorList;
         }
@@ -40,17 +38,9 @@ namespace HHT
                 holder = new VendorAdapterViewHolder();
                 var item = vendorList[position];
 
-                view = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.adapter_list_vendor, parent, false);
-                view.FindViewById<TextView>(Resource.Id.nyukaTime).Text = item.ven_yti_time;
+                view = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.adapter_list_all_vendor, parent, false);
+                view.FindViewById<TextView>(Resource.Id.vendorCode).Text = item.vendor_cd;
                 view.FindViewById<TextView>(Resource.Id.vendorName).Text = item.vendor_nm;
-                
-                string sumi = item.kosu_sumi;
-                string kei = item.kosu_kei;
-
-                view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_per).Text = int.Parse(sumi).ToString() + "/" + int.Parse(kei).ToString();
-
-                BootstrapProgressBar pgBar = view.FindViewById<BootstrapProgressBar>(Resource.Id.txt_adp_todoke_progressbar);
-                pgBar.Progress = Convert.ToInt32((double.Parse(sumi) / double.Parse(kei)) * 100);
             }
 
             return view;
@@ -64,11 +54,7 @@ namespace HHT
             }
         }
 
-    }
+        public override KOSU190 this[int position] => vendorList[position];
 
-    class VendorAdapterViewHolder : Java.Lang.Object
-    {
-        //Your adapter views to re-use
-        //public TextView Title { get; set; }
     }
 }

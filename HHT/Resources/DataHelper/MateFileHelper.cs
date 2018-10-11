@@ -49,6 +49,24 @@ namespace HHT.Resources.DataHelper
             }
         }
 
+        public bool DeleteAll()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    connection.DeleteAll<MateFile>();
+                    return true;
+                }
+
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return false;
+            }
+        }
+
 
         public List<MateFile> SelectByVendorCd(string vendorCd)
         {

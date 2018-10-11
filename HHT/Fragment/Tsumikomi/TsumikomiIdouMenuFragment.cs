@@ -26,7 +26,7 @@ namespace HHT
 
             var view = inflater.Inflate(Resource.Layout.fragment_menu_tsumikomi_idou, container, false);
             Button button1 = view.FindViewById<Button>(Resource.Id.btn_tsumikomiMenu_course);
-            button1.Click += delegate { GoTodokeSelect(); };
+            button1.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiManagerFragment)); };
 
             Button button2 = view.FindViewById<Button>(Resource.Id.btn_tsumikomiMenu_tsumikae);
             button2.Click += delegate { GoVendorSelect(); }; 
@@ -38,7 +38,7 @@ namespace HHT
         {
             if (keycode == Keycode.Num1)
             {
-                GoTodokeSelect();
+                StartFragment(FragmentManager, typeof(TsumikomiManagerFragment));
             }
             else if (keycode == Keycode.Num2)
             {

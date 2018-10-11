@@ -14,13 +14,13 @@
         android:id="@+id/btn_tsumikomiMenu_course"
         android:paddingStart="20dp"
         android:textAlignment="textStart"
-        android:textSize="18sp"
+        android:textSize="27dp"
         android:textStyle="bold" />
     <Button
         android:text="2.積替移動"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:textSize="18sp"
+        android:textSize="27sp"
         android:textStyle="bold"
         android:paddingStart="20dp"
         android:textAlignment="textStart"

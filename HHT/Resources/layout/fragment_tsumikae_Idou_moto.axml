@@ -1,10 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_vertical|left"
-    android:paddingLeft="20dp">
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="ケース"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_tsumikae_case"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp" />
+        <TextView
+            android:text="ｵﾘｺﾝ"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_tsumikae_oricon"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="不定形"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_tsumikae_case"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp" />
+        <TextView
+            android:text="TC"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_tsumikae_oricon"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,19 +118,19 @@
                 android:layout_height="match_parent">
                 <TextView
                     android:text="ケース"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"
                     android:background="@drawable/border"
-                    android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/txt_tsumikae_case"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
-                    android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp"
                     android:layout_height="wrap_content" />
@@ -43,19 +141,19 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="不定形"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"
                     android:background="@drawable/border"
-                    android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/txt_tsumikae_futeikei"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
-                    android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp" />
             </TableRow>
@@ -65,19 +163,19 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="店移動"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"
                     android:background="@drawable/border"
-                    android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/txt_tsumikae_idosu"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
-                    android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp" />
             </TableRow>
@@ -87,19 +185,19 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="販促物"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"
                     android:background="@drawable/border"
-                    android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/txt_tsumikae_hansoku"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
-                    android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp" />
             </TableRow>
@@ -109,20 +207,20 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="個数"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"
                     android:background="@drawable/border"
-                    android:textStyle="bold"
                     android:paddingLeft="5dp"
                     android:textColor="#ff1e88e5" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/txt_tsumikae_kosu"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
-                    android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp" />
             </TableRow>
@@ -137,19 +235,19 @@
                 android:layout_height="match_parent">
                 <TextView
                     android:text="ｵﾘｺﾝ"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"
                     android:background="@drawable/border"
-                    android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/txt_tsumikae_oricon"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
-                    android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp"
                     android:layout_height="wrap_content" />
@@ -160,19 +258,19 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="TC"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"
                     android:background="@drawable/border"
-                    android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/txt_tsumikae_tc"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
-                    android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp" />
             </TableRow>
@@ -182,19 +280,19 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="メール"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"
                     android:background="@drawable/border"
-                    android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/txt_tsumikae_mail"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
-                    android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp" />
             </TableRow>
@@ -204,19 +302,19 @@
                 android:layout_marginTop="10dp">
                 <TextView
                     android:text="他"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/textView7"
                     android:layout_width="80dp"
                     android:background="@drawable/border"
-                    android:textStyle="bold"
                     android:paddingLeft="5dp" />
                 <TextView
                     android:text="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:id="@+id/txt_tsumikae_sonota"
                     android:layout_width="50dp"
                     android:textAlignment="textEnd"
-                    android:textStyle="bold"
                     android:background="@drawable/border"
                     android:paddingRight="5dp" />
             </TableRow>
