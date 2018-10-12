@@ -94,6 +94,7 @@
     <Compile Include="Fragment\Matehan\MatehanWorkFragment.cs" />
     <Compile Include="Fragment\Tsumikomi\TsumikomiPassFragment.cs" />
     <Compile Include="Resources\Model\SndIDO.cs" />
+    <Compile Include="Resources\Model\Ido.cs" />
     <Compile Include="Resources\Model\WebService\Kosu\KOSU190.cs" />
     <Compile Include="Utils\DialogAsync.cs" />
     <Compile Include="Utils\AlertDialog.cs" />
@@ -652,6 +653,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\fragment_matehan_work.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_test.axml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>

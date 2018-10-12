@@ -20,6 +20,8 @@ namespace HHT
     {
         private const string TAG = "MainActivity";
 
+        protected PowerManager.WakeLock mWakeLock;
+
         static ProgressDialog progress;
 
         private BarcodeManager_ mBarcodeManager = null;
@@ -47,6 +49,8 @@ namespace HHT
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
+
+            Window.AddFlags(WindowManagerFlags.AllowLockWhileScreenOn);
 
             try
             {

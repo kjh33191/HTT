@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:minWidth="25px"
     android:minHeight="25px"
@@ -12,7 +13,7 @@
     android:layout_height="fill_parent"
     android:gravity="center_vertical|left">
     <TextView
-        android:text="ホストIP"
+        android:text="Calendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView1"
@@ -23,16 +24,5 @@
         android:inputType=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="HostIp"
         android:id="@+id/hostIp" />
-    <Button
-        android:text="確定"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/confirm"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="40dp"
-        android:background="@drawable/bootstrap_button"
-        android:textColor="#ffffffff"
-        android:textSize="20sp" />
 </LinearLayout>

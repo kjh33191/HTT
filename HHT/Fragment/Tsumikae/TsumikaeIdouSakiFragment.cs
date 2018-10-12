@@ -5,8 +5,10 @@ using Android.Preferences;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 using Com.Densowave.Bhtsdk.Barcode;
 using HHT.Resources.Model;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,10 +24,14 @@ namespace HHT
         private int menuFlag, btvQty, btvScnFlg;
         private string souko_cd, kitaku_cd;
         private TextView txtCase, txtOricon, txtIdosu, txtMail, txtSonota , txtFuteikei, txtHansoku, txtTc, txtKosu;
-        private Button btnConfirm;
+        private BootstrapButton btnConfirm;
 
         private List<string> motokamotuList;
         private IDOU033 kamotuInfo;
+
+        private string sakiKamotsuNo;
+        private string sakiMatehanCd;
+        List<Ido> motoInfoList;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -50,7 +56,7 @@ namespace HHT
             txtTc = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_tc);
             txtKosu = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_kosu);
 
-            btnConfirm = view.FindViewById<Button>(Resource.Id.confirmButton);
+            btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.confirmButton);
 
             txtCase.Text = prefs.GetString("sk_case_su", "0");
             txtOricon.Text = prefs.GetString("sk_oricon_su", "0");
@@ -63,10 +69,7 @@ namespace HHT
             txtKosu.Text = prefs.GetString("sk_ko_su", "0");
             
             souko_cd = prefs.GetString("souko_cd", "");
-            //sagyousya_cd = prefs.GetString("sagyousya_cd", "");
             kitaku_cd = prefs.GetString("kitaku_cd", "");
-            //string ht_serial = ((TelephonyManager)Context.GetSystemService(Context.TelephonyService)).DeviceId;
-            string hht_no = "";
 
             menuFlag = prefs.GetInt("menuFlag", 1);
             btvQty = 0;
@@ -74,7 +77,15 @@ namespace HHT
             
             btnConfirm.Text = menuFlag != 3 ? "完了" : "確定";
             btnConfirm.Click += delegate{ if(btvScnFlg > 0) { CompleteIdou(); }};
+
+            Bundle bundle = Arguments;
+            motoInfoList = JsonConvert.DeserializeObject<List<Ido>>(bundle.GetString("motoInfo"));
             
+            if (menuFlag == 1 || menuFlag == 2)
+            {
+                btnConfirm.Enabled = false;
+            }
+
             return view;
         }
 
@@ -101,7 +112,6 @@ namespace HHT
         public override void OnBarcodeDataReceived(BarcodeDataReceivedEvent_ dataReceivedEvent)
         {
             IList<BarcodeDataReceivedEvent_.BarcodeData_> listBarcodeData = dataReceivedEvent.BarcodeData;
-
 
             foreach (BarcodeDataReceivedEvent_.BarcodeData_ barcodeData in listBarcodeData)
             {
@@ -149,6 +159,10 @@ namespace HHT
                             SetMatehan(idou010.bunrui, int.Parse(idou010.cnt));
                         }
 
+                        sakiMatehanCd = idou010List[0].matehan;
+                        sakiKamotsuNo = sakikamotu_no;
+                        //sakikamotu_no
+                        btnConfirm.Enabled = true;
                     }
                     else if (menuFlag == 2)
                     {
@@ -183,6 +197,9 @@ namespace HHT
                             
                             SetMatehan(idou020.bunrui, int.Parse(idou020.cnt));
                         }
+
+                        sakiKamotsuNo = sakikamotu_no;
+                        btnConfirm.Enabled = true;
                     }
 
                     btnConfirm.Visibility = ViewStates.Visible;
@@ -264,12 +281,12 @@ namespace HHT
                     txtMail.Text = addedValue.ToString();
                     break;
                 case "06":
-                    addedValue = (int.Parse(txtMail.Text) + addValue).ToString();
+                    addedValue = (int.Parse(txtSonota.Text) + addValue).ToString();
                     editor.PutString("sk_sonota_su", addedValue);
                     txtSonota.Text = addedValue.ToString();
                     break;
                 case "07":
-                    addedValue = (int.Parse(txtMail.Text) + addValue).ToString();
+                    addedValue = (int.Parse(txtFuteikei.Text) + addValue).ToString();
                     editor.PutString("sk_futeikei_su", addedValue);
                     txtFuteikei.Text = addedValue.ToString();
                     break;
@@ -293,26 +310,28 @@ namespace HHT
         
         private void CompleteIdou()
         {
-            string pTerminalID = "";
-            string pProgramID = "IDO";
-            string pSagyosyaCD = "";
-            string pSoukoCD = "";
-            string pMotoKamotsuNo = "";
-            string pSakiKamotsuNo = "";
-            string pGyomuKbn = "";
-            string pVendorCd = "";
+            List<string> motomateCdList = prefs.GetStringSet("motoMateCdList", new List<string>()).ToList();
+            string tsumi_vendor_cd = prefs.GetString("tsumi_vendor_cd", "");
 
             if (menuFlag == 1)
             {
-                // ido file에서 카모츠번호를 취득하여 반복해서 호출
-                //get_kamotuno();
-                //IDOU050 idou050 = WebService.RequestIdou050(pTerminalID, pProgramID, pSagyosyaCD, pSoukoCD, pMotoKamotsuNo, pSakiKamotsuNo, pGyomuKbn, pVendorCd);
-                
-                foreach(string motokamotu in motokamotuList)
+                foreach (Ido motoInfo in motoInfoList)
                 {
-                    IDOU050 idou050 = new IDOU050();
-                    idou050.poRet = "0";
-                    if(idou050.poRet != "0")
+                    Dictionary<string, string> param = new Dictionary<string, string>
+                    {
+                        {"pTerminalID", "432660068" },
+                        {"pProgramID", "IDO" },
+                        {"pSagyosyaCD", prefs.GetString("pSagyosyaCD", "") },
+                        {"pSoukoCD", souko_cd },
+                        {"pMotoKamotsuNo", motoInfo.kamotsuNo },
+                        {"pSakiKamotsuNo", sakiKamotsuNo },
+                        {"pGyomuKbn", "04" },
+                        {"pVendorCd", tsumi_vendor_cd }
+                    };
+                    
+                    IDOU050 idou050 = WebService.RequestIdou050(param);
+
+                    if (idou050.poRet != "0")
                     {
                         CommonUtils.AlertDialog(view, "", idou050.poMsg, null);
                         return;
@@ -326,20 +345,28 @@ namespace HHT
             }
             else if (menuFlag == 2)
             {
-                //IDOU060 idou060 = WebService.RequestIdou060(pTerminalID, pProgramID, pSagyosyaCD, pSoukoCD, pMotoKamotsuNo, pSakiKamotsuNo, pGyomuKbn, pVendorCd);
-                IDOU060 idou060 = new IDOU060();
-                idou060.poRet = "0";
-                switch (idou060.poRet)
+                Dictionary<string, string> param = new Dictionary<string, string>
                 {
-                    case "0":
-                        CommonUtils.AlertDialog(view, "メッセージ", "移動処理が\n完了しました。", () => {
-                            BackToMainMenu();
-                        });
-                        break;
-                    default:
-                        CommonUtils.AlertDialog(view, "", idou060.poMsg, null);
-                        break;
+                    {"pTerminalID", "432660068" },
+                    {"pProgramID", "IDO" },
+                    {"pSagyosyaCD", prefs.GetString("pSagyosyaCD", "") },
+                    {"pSoukoCD", souko_cd },
+                    {"pMotoMatehan", motoInfoList[0].motoMateCode },
+                    {"pSakiKamotsuNo", sakiKamotsuNo },
+                    {"pGyomuKbn", "04" },
+                    {"pVendorCd", tsumi_vendor_cd }
+                };
+                
+                IDOU060 idou060 = WebService.RequestIdou060(param);
+                if(idou060.poMsg != "")
+                {
+                    CommonUtils.AlertDialog(view, string.Empty, idou060.poMsg , null);
+                    return;
                 }
+
+                CommonUtils.AlertDialog(view, "メッセージ", "移動処理が\n完了しました。", () => {
+                    BackToMainMenu();
+                });
             }
         }
 

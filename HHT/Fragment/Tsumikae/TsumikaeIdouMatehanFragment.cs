@@ -2,7 +2,6 @@
 using Android.OS;
 using Android.Views;
 using Android.Widget;
-using Com.Densowave.Bhtsdk.Barcode;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using HHT.Resources.Model;
 using static Android.Widget.AdapterView;
 using Android.Content;
 using Android.Preferences;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -18,11 +18,13 @@ namespace HHT
         private View view;
         private List<KOSU200> matehanList;
         private EditText etMantanVendor;
+        private TextView txtVenderName;
         private ListView listView;
 
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
 
+        private List<Ido> motoInfoList;
         private int menuFlag;
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -41,49 +43,69 @@ namespace HHT
             editor = prefs.Edit();
             menuFlag = prefs.GetInt("menuFlag", 1);
 
-            etMantanVendor = view.FindViewById<EditText>(Resource.Id.et_mantan_vendor);
-            etMantanVendor.FocusChange += delegate {
-                if (!etMantanVendor.IsFocused)
-                {
-                    // find vendor name
+            motoInfoList = JsonConvert.DeserializeObject<List<Ido>>(Arguments.GetString("motoInfo"));
 
-                    // find vendor matehan list
+            etMantanVendor = view.FindViewById<EditText>(Resource.Id.et_mantan_vendor);
+            etMantanVendor.KeyPress += (sender, e) => {
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    CommonUtils.HideKeyboard(Activity);
+                    SetMatehanList();
+                }
+                else
+                {
+                    e.Handled = false;
                 }
             };
 
-            // ベンダー別マテハンコード取得
-            string vendorCode = prefs.GetString("tsumi_vendor_cd", "");
-            etMantanVendor.Text = vendorCode;
+            txtVenderName = view.FindViewById<TextView>(Resource.Id.vendorName);
+            txtVenderName.Text = prefs.GetString("vendor_nm", "");
 
-            matehanList = WebService.RequestKosu200(vendorCode);
+            BootstrapButton vendorSearchButton = view.FindViewById<BootstrapButton>(Resource.Id.vendorSearch);
+            vendorSearchButton.Click += delegate { StartFragment(FragmentManager, typeof(KosuVendorAllSearchFragment)); };
+
+            // ベンダー別マテハンコード取得
+            string vendorCode = prefs.GetString("vendor_cd", ""); // prefs.GetString("vendor_cd", "");
+            etMantanVendor.Text = vendorCode;
+            
             listView = view.FindViewById<ListView>(Resource.Id.lv_matehanList);
+            listView.ItemClick += (object sender, ItemClickEventArgs e) =>
+            {
+                SelectListViewItem(e.Position);
+            };
+
+            SetMatehanList();
+
+
+            return view;
+        }
+
+        private void SetMatehanList()
+        {
+            string venderName = WebService.RequestKosu220(etMantanVendor.Text);
+            txtVenderName.Text = venderName;
+            // ベンダーコードがみつかりません。
+
+            // ベンダー別マテハンコード取得
+            matehanList = WebService.RequestKosu200(etMantanVendor.Text);
 
             List<string> temp = new List<string>();
             int count = 1;
             foreach (KOSU200 matehan in matehanList)
             {
-                temp.Add(count+ ".  "+ matehan.matehan_nm);
+                temp.Add(count + ".  " + matehan.matehan_nm);
                 count++;
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<string>(Activity, Android.Resource.Layout.SimpleListItem1, temp);
+            ArrayAdapter<String> adapter = new ArrayAdapter<string>(Activity, Resource.Layout.adapter_list_matehan, temp);
             listView.Adapter = adapter;
-
-            listView.ItemClick += (object sender, ItemClickEventArgs e) =>
-            {
-                SelectListViewItem(e.Position);
-            };
-            
-            return view;
         }
 
         public override void OnResume()
         {
             base.OnResume();
-
-            listView.ChoiceMode = ChoiceMode.Single;
-            listView.SetItemChecked(0, true);
-            listView.RequestFocus();
+            etMantanVendor.Text = prefs.GetString("vendor_cd", "");
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -108,18 +130,6 @@ namespace HHT
             return true;
         }
 
-        // マテハンコード取得
-        public string GetMaster()
-        {
-            // File読み取り
-            // マテハンコードの種類は最大でも4件
-            // int resultCode = GetCount();
-            // aryMatehancd, aryMatehannm
-            // GetData(1), GetData(2)
-
-            return null;
-        }
-
         public void SelectListViewItem(int index)
         {
             if (matehanList.Count > index)
@@ -131,91 +141,97 @@ namespace HHT
                     {
                         editor.PutString("mateno", matehanList[index].matehan_cd);
                         editor.Apply();
-                        
+
+                        string sin_matehan = "";
+                        string mateno = matehanList[index].matehan_cd;
+                        string hht_no = "99";
+                        string tokuiCd = prefs.GetString("tmptokui_cd", "");
+                        string todokeCd = prefs.GetString("tmptodoke_cd", "");
+                        string mate_renban = GetMateRandomNo();
+
+                        sin_matehan = mateno + hht_no + tokuiCd + todokeCd + mate_renban;
+
                         if (menuFlag == 3)
                         {
-                            //WebService.RequestIdou070()
-                            IDOU070 idou070 = new IDOU070();
-                            idou070.poRet = "0";
-                            if (idou070.poRet == "0")
+                            Dictionary<string, string> param = new Dictionary<string, string>
                             {
-                                CommonUtils.AlertDialog(view, "メッセージ", "移動処理が\n完了しました。", () => {
-                                    BackToMainMenu();
-                                });
-                            }
-                            else if (idou070.poRet == "5")
+                                {"pTerminalID", "432660068" },
+                                {"pProgramID", "IDO" },
+                                {"pSagyosyaCD", prefs.GetString("pSagyosyaCD", "") },
+                                {"pSoukoCD", prefs.GetString("souko_cd", "") },
+                                {"pKitakuCD", prefs.GetString("kitaku_cd", "") },
+                                {"pMotoMatehan", motoInfoList[0].motoMateCode },
+                                {"pSakiMatehan", sin_matehan },
+                                {"pGyomuKbn", "04" },
+                                {"pVendorCd", prefs.GetString("tsumi_vendor_cd", "") }
+                            };
+                            
+                            IDOU070 idou070 = WebService.RequestIdou070(param);
+
+                            if (idou070.poRet != "0")
                             {
-                                CommonUtils.AlertDialog(View, "エラー", "該当ベンダーはマスタに存在しません。", null);
-                            }
-                            else
-                            {
-                                CommonUtils.AlertDialog(View, "エラー", "マテハン番号取得に失敗しました。", null);
+                                CommonUtils.AlertDialog(view, "", idou070.poMsg, null);
+                                return;
                             }
 
+                            // 積替処理完了
+                            CommonUtils.AlertDialog(view, "    =メッセージ=    ", "移動処理が\n完了しました。", () =>
+                                FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0)
+                            );
                         }
                         else
                         {
-                            // IDOU090
-                            // int_matehan() // マテハン登録
-                            // ido파일을 열어서 행을 카운트
-                            // mate_renban = get_matehan()
-
-                            string mate_renban = "";
-
+                            // 単品マテハン登録
+                            
                             if (mate_renban.Length > 0)
                             {
-                                // getTodokeCd() 매개변수 ido파일안의 첫번째 값 = 카모츠번호, 토쿠이사키 값 배열
+                                foreach(Ido motoInfo in motoInfoList)
+                                {
+                                    Dictionary<string, string> param = new Dictionary<string, string>
+                                    {
+                                        {"pTerminalID", "432660068" },
+                                        {"pProgramID", "IDO" },
+                                        {"pSagyosyaCD", prefs.GetString("pSagyosyaCD", "") },
+                                        {"pSoukoCD", prefs.GetString("souko_cd", "") },
+                                        {"pMotoKamotsuNo", motoInfo.kamotsuNo },
+                                        {"pSakiMatehan", sin_matehan },
+                                        {"pGyomuKbn", "04" },
+                                        {"pVendorCd", prefs.GetString("tsumi_vendor_cd", "") }
+                                    };
 
-                                // ido파일안의 행 수 만큼 반복하면서 proc_tumikomi(btvPram,"06")을 반복 실행(IDOU090)
-                                /*
-                                If stRet.Length > 0 Then
-                                If stRet == 2 Then
-                                    DEVICE:syougou_NG()
-
-                                    Handy: ShowMessageBox("移動先の貨物№が見つかりません。", "confirm")
-
-                                ElseIf stRet == 3 Then
-                                    DEVICE:syougou_NG()
-
-                                    Handy: ShowMessageBox("移動先の届先が違います。", "confirm")
-
-                                ElseIf stRet == 4 Then
-                                    DEVICE:syougou_NG()
-
-                                    Handy: ShowMessageBox("移動元と移動先のマテハンが同じです。", "confirm")
-
-                                ElseIf stRet == 0 Then
-                                    ret = 0
-
-                                    EndIf
-                                EndIf
-
-                            ElseIf ret == 10 Then
-                                    DEVICE:syougou_NG()
-                                    Handy:ShowMessageBox("データの取得に失敗しました。","confirm")
-                                    Return("retry")
-                                ElseIf ret == 11 Then
-                                    DEVICE:syougou_NG()
-                                    Handy:ShowMessageBox("更新できませんでした。\n管理者に連絡してください。","confirm")
-                                    Return("retry")
-                                Else
-                                    DEVICE:read_NG()
-                                    Handy:ShowMessageBox("更新出来ませんでした。\n管理者に連絡してください。","confirm")
-                                    Return("sagyou1")
-                                EndIf
-
-
-                                If ret == 0 Then
-                                TOOL:del_File(nil,"ido",1)
-                                Return("msg1")
-
-                                */
+                                    IDOU090 idou090 = WebService.RequestIdou090(param);
+                                    if(idou090.poMsg != "")
+                                    {
+                                        CommonUtils.AlertDialog(view, "", idou090.poMsg, null);
+                                        return;
+                                    }
+                                }
+                                
+                                // 積替処理完了
+                                CommonUtils.AlertDialog(view, "    =メッセージ=    ", "移動処理が\n完了しました。", ()=>
+                                    FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0)
+                                );
                             }
                         }
                     }
                 }
                 );
             }
+        }
+
+        private string GetMateRandomNo()
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>
+                            {
+                                {"pTerminalID", "432660068" },
+                                {"pProgramID", "IDO" },
+                                {"pSagyosyaCD", prefs.GetString("pSagyosyaCD", "") },
+                                {"pSoukoCD", prefs.GetString("souko_cd", "") },
+                                {"pGyomuKbn", "04" }
+                            };
+
+            IDOU080 iDOU080 = WebService.RequestIdou080(param);
+            return iDOU080.poMsg;
         }
 
         private void BackToMainMenu()
@@ -246,7 +262,6 @@ namespace HHT
 
             FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0);
         }
-
 
     }
 }

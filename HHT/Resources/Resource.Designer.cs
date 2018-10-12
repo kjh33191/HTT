@@ -8543,26 +8543,26 @@ namespace HHT
 			// aapt resource value: 0x7f080925
 			public const int txt_tsumikae_futeikei = 2131233061;
 			
-			// aapt resource value: 0x7f080927
-			public const int txt_tsumikae_hansoku = 2131233063;
+			// aapt resource value: 0x7f080929
+			public const int txt_tsumikae_hansoku = 2131233065;
 			
-			// aapt resource value: 0x7f080926
-			public const int txt_tsumikae_idosu = 2131233062;
+			// aapt resource value: 0x7f080927
+			public const int txt_tsumikae_idosu = 2131233063;
+			
+			// aapt resource value: 0x7f08092b
+			public const int txt_tsumikae_kosu = 2131233067;
 			
 			// aapt resource value: 0x7f080928
-			public const int txt_tsumikae_kosu = 2131233064;
-			
-			// aapt resource value: 0x7f08092a
-			public const int txt_tsumikae_mail = 2131233066;
+			public const int txt_tsumikae_mail = 2131233064;
 			
 			// aapt resource value: 0x7f080924
 			public const int txt_tsumikae_oricon = 2131233060;
 			
-			// aapt resource value: 0x7f08092b
-			public const int txt_tsumikae_sonota = 2131233067;
+			// aapt resource value: 0x7f08092a
+			public const int txt_tsumikae_sonota = 2131233066;
 			
-			// aapt resource value: 0x7f080929
-			public const int txt_tsumikae_tc = 2131233065;
+			// aapt resource value: 0x7f080926
+			public const int txt_tsumikae_tc = 2131233062;
 			
 			// aapt resource value: 0x7f080937
 			public const int txt_tsumikomiWork_tokuisakiNm = 2131233079;
@@ -9986,91 +9986,94 @@ namespace HHT
 			public const int fragment_search_vendor_all = 2130968666;
 			
 			// aapt resource value: 0x7f04005b
-			public const int fragment_tsumikae_idou_matehan = 2130968667;
+			public const int fragment_test = 2130968667;
 			
 			// aapt resource value: 0x7f04005c
-			public const int fragment_tsumikae_Idou_moto = 2130968668;
+			public const int fragment_tsumikae_idou_matehan = 2130968668;
 			
 			// aapt resource value: 0x7f04005d
-			public const int fragment_tsumikae_Idou_saki = 2130968669;
+			public const int fragment_tsumikae_Idou_moto = 2130968669;
 			
 			// aapt resource value: 0x7f04005e
-			public const int fragment_tsumikomi_complete = 2130968670;
+			public const int fragment_tsumikae_Idou_saki = 2130968670;
 			
 			// aapt resource value: 0x7f04005f
-			public const int fragment_tsumikomi_course_update = 2130968671;
+			public const int fragment_tsumikomi_complete = 2130968671;
 			
 			// aapt resource value: 0x7f040060
-			public const int fragment_tsumikomi_manager = 2130968672;
+			public const int fragment_tsumikomi_course_update = 2130968672;
 			
 			// aapt resource value: 0x7f040061
-			public const int fragment_tsumikomi_pass = 2130968673;
+			public const int fragment_tsumikomi_manager = 2130968673;
 			
 			// aapt resource value: 0x7f040062
-			public const int fragment_tsumikomi_search = 2130968674;
+			public const int fragment_tsumikomi_pass = 2130968674;
 			
 			// aapt resource value: 0x7f040063
-			public const int fragment_tsumikomi_select = 2130968675;
+			public const int fragment_tsumikomi_search = 2130968675;
 			
 			// aapt resource value: 0x7f040064
-			public const int fragment_tsumikomi_work = 2130968676;
+			public const int fragment_tsumikomi_select = 2130968676;
 			
 			// aapt resource value: 0x7f040065
-			public const int notification_action = 2130968677;
+			public const int fragment_tsumikomi_work = 2130968677;
 			
 			// aapt resource value: 0x7f040066
-			public const int notification_action_tombstone = 2130968678;
+			public const int notification_action = 2130968678;
 			
 			// aapt resource value: 0x7f040067
-			public const int notification_media_action = 2130968679;
+			public const int notification_action_tombstone = 2130968679;
 			
 			// aapt resource value: 0x7f040068
-			public const int notification_media_cancel_action = 2130968680;
+			public const int notification_media_action = 2130968680;
 			
 			// aapt resource value: 0x7f040069
-			public const int notification_template_big_media = 2130968681;
+			public const int notification_media_cancel_action = 2130968681;
 			
 			// aapt resource value: 0x7f04006a
-			public const int notification_template_big_media_custom = 2130968682;
+			public const int notification_template_big_media = 2130968682;
 			
 			// aapt resource value: 0x7f04006b
-			public const int notification_template_big_media_narrow = 2130968683;
+			public const int notification_template_big_media_custom = 2130968683;
 			
 			// aapt resource value: 0x7f04006c
-			public const int notification_template_big_media_narrow_custom = 2130968684;
+			public const int notification_template_big_media_narrow = 2130968684;
 			
 			// aapt resource value: 0x7f04006d
-			public const int notification_template_custom_big = 2130968685;
+			public const int notification_template_big_media_narrow_custom = 2130968685;
 			
 			// aapt resource value: 0x7f04006e
-			public const int notification_template_icon_group = 2130968686;
+			public const int notification_template_custom_big = 2130968686;
 			
 			// aapt resource value: 0x7f04006f
-			public const int notification_template_lines_media = 2130968687;
+			public const int notification_template_icon_group = 2130968687;
 			
 			// aapt resource value: 0x7f040070
-			public const int notification_template_media = 2130968688;
+			public const int notification_template_lines_media = 2130968688;
 			
 			// aapt resource value: 0x7f040071
-			public const int notification_template_media_custom = 2130968689;
+			public const int notification_template_media = 2130968689;
 			
 			// aapt resource value: 0x7f040072
-			public const int notification_template_part_chronometer = 2130968690;
+			public const int notification_template_media_custom = 2130968690;
 			
 			// aapt resource value: 0x7f040073
-			public const int notification_template_part_time = 2130968691;
+			public const int notification_template_part_chronometer = 2130968691;
 			
 			// aapt resource value: 0x7f040074
-			public const int select_dialog_item_material = 2130968692;
+			public const int notification_template_part_time = 2130968692;
 			
 			// aapt resource value: 0x7f040075
-			public const int select_dialog_multichoice_material = 2130968693;
+			public const int select_dialog_item_material = 2130968693;
 			
 			// aapt resource value: 0x7f040076
-			public const int select_dialog_singlechoice_material = 2130968694;
+			public const int select_dialog_multichoice_material = 2130968694;
 			
 			// aapt resource value: 0x7f040077
-			public const int support_simple_spinner_dropdown_item = 2130968695;
+			public const int select_dialog_singlechoice_material = 2130968695;
+			
+			// aapt resource value: 0x7f040078
+			public const int support_simple_spinner_dropdown_item = 2130968696;
 			
 			static Layout()
 			{

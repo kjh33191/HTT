@@ -10,7 +10,8 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp">
         <TextView
             android:text="ケース"
             android:textSize="22sp"
@@ -58,7 +59,8 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp">
         <TextView
             android:text="不定形"
             android:textSize="22sp"
@@ -73,7 +75,7 @@
             android:text="0"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:id="@+id/txt_tsumikae_case"
+            android:id="@+id/txt_tsumikae_futeikei"
             android:layout_width="50dp"
             android:textAlignment="textEnd"
             android:background="@drawable/border"
@@ -95,7 +97,7 @@
             android:text="0"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:id="@+id/txt_tsumikae_oricon"
+            android:id="@+id/txt_tsumikae_tc"
             android:layout_width="50dp"
             android:textAlignment="textEnd"
             android:background="@drawable/border"
@@ -104,249 +106,187 @@
             android:layout_weight="1" />
     </LinearLayout>
     <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
-        android:orientation="horizontal">
-        <TableLayout
-            android:layout_width="130dp"
-            android:layout_marginBottom="25dp"
+        android:layout_marginBottom="25dp">
+        <TextView
+            android:text="店移動"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <TextView
-                    android:text="ケース"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/textView7"
-                    android:layout_width="80dp"
-                    android:background="@drawable/border"
-                    android:paddingLeft="5dp" />
-                <TextView
-                    android:text="0"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txt_tsumikae_case"
-                    android:layout_width="50dp"
-                    android:textAlignment="textEnd"
-                    android:background="@drawable/border"
-                    android:paddingRight="5dp"
-                    android:layout_height="wrap_content" />
-            </TableRow>
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:text="不定形"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/textView7"
-                    android:layout_width="80dp"
-                    android:background="@drawable/border"
-                    android:paddingLeft="5dp" />
-                <TextView
-                    android:text="0"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txt_tsumikae_futeikei"
-                    android:layout_width="50dp"
-                    android:textAlignment="textEnd"
-                    android:background="@drawable/border"
-                    android:paddingRight="5dp" />
-            </TableRow>
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:text="店移動"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/textView7"
-                    android:layout_width="80dp"
-                    android:background="@drawable/border"
-                    android:paddingLeft="5dp" />
-                <TextView
-                    android:text="0"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txt_tsumikae_idosu"
-                    android:layout_width="50dp"
-                    android:textAlignment="textEnd"
-                    android:background="@drawable/border"
-                    android:paddingRight="5dp" />
-            </TableRow>
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:text="販促物"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/textView7"
-                    android:layout_width="80dp"
-                    android:background="@drawable/border"
-                    android:paddingLeft="5dp" />
-                <TextView
-                    android:text="0"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txt_tsumikae_hansoku"
-                    android:layout_width="50dp"
-                    android:textAlignment="textEnd"
-                    android:background="@drawable/border"
-                    android:paddingRight="5dp" />
-            </TableRow>
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:text="個数"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/textView7"
-                    android:layout_width="80dp"
-                    android:background="@drawable/border"
-                    android:paddingLeft="5dp"
-                    android:textColor="#ff1e88e5" />
-                <TextView
-                    android:text="0"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txt_tsumikae_kosu"
-                    android:layout_width="50dp"
-                    android:textAlignment="textEnd"
-                    android:background="@drawable/border"
-                    android:paddingRight="5dp" />
-            </TableRow>
-        </TableLayout>
-        <TableLayout
-            android:layout_width="130dp"
-            android:layout_marginBottom="25dp"
+            android:background="@drawable/border"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_tsumikae_idosu"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <TextView
-                    android:text="ｵﾘｺﾝ"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/textView7"
-                    android:layout_width="80dp"
-                    android:background="@drawable/border"
-                    android:paddingLeft="5dp" />
-                <TextView
-                    android:text="0"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txt_tsumikae_oricon"
-                    android:layout_width="50dp"
-                    android:textAlignment="textEnd"
-                    android:background="@drawable/border"
-                    android:paddingRight="5dp"
-                    android:layout_height="wrap_content" />
-            </TableRow>
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:text="TC"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/textView7"
-                    android:layout_width="80dp"
-                    android:background="@drawable/border"
-                    android:paddingLeft="5dp" />
-                <TextView
-                    android:text="0"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txt_tsumikae_tc"
-                    android:layout_width="50dp"
-                    android:textAlignment="textEnd"
-                    android:background="@drawable/border"
-                    android:paddingRight="5dp" />
-            </TableRow>
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:text="メール"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/textView7"
-                    android:layout_width="80dp"
-                    android:background="@drawable/border"
-                    android:paddingLeft="5dp" />
-                <TextView
-                    android:text="0"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txt_tsumikae_mail"
-                    android:layout_width="50dp"
-                    android:textAlignment="textEnd"
-                    android:background="@drawable/border"
-                    android:paddingRight="5dp" />
-            </TableRow>
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:text="他"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/textView7"
-                    android:layout_width="80dp"
-                    android:background="@drawable/border"
-                    android:paddingLeft="5dp" />
-                <TextView
-                    android:text="0"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:id="@+id/txt_tsumikae_sonota"
-                    android:layout_width="50dp"
-                    android:textAlignment="textEnd"
-                    android:background="@drawable/border"
-                    android:paddingRight="5dp" />
-            </TableRow>
-        </TableLayout>
+            android:layout_weight="1"
+            android:layout_marginRight="10dp" />
+        <TextView
+            android:text="メール"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_tsumikae_mail"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
     </LinearLayout>
-    <Button
-        android:text="確定"
-        android:id="@+id/confirmButton"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-    <Button
-        android:text="マテ"
-        android:id="@+id/mateButton"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-    <GridLayout
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/gd_tying_canman"
-        android:visibility="gone"
-        android:columnCount="2">
-        <Button
-            android:text="取消"
-            android:id="@+id/btn_todoke_cancel"
+        android:layout_marginBottom="25dp">
+        <TextView
+            android:text="販促物"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_tsumikae_hansoku"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp" />
+        <TextView
+            android:text="他"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_tsumikae_sonota"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp">
+        <TextView
+            android:text="個数"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:textColor="#ff1e88e5"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/txt_tsumikae_kosu"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp" />
+        <TextView
+            android:text=""
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:id="@+id/textView7"
+            android:layout_width="80dp"
+            android:visibility="invisible"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:paddingLeft="5dp"
+            android:layout_weight="1" />
+        <TextView
+            android:text="0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:layout_width="50dp"
+            android:textAlignment="textEnd"
+            android:background="@drawable/border"
+            android:paddingRight="5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gd_tying_canman">
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
+            android:text="確定"
+            android:id="@+id/confirmButton"
             android:layout_width="140dp"
-            android:layout_gravity="center" />
-        <Button
-            android:text="満タン"
-            android:id="@+id/btn_todoke_mantan"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="0dp"
+            android:textSize="20dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="true"
+            android:layout_weight="1" />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/wrapping_button"
+            android:text="マテハン"
+            android:id="@+id/mateButton"
             android:layout_width="140dp"
-            android:layout_gravity="center" />
-    </GridLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="20dp"
+            app:bootstrapBrand="primary"
+            app:bootstrapSize="xl"
+            app:roundedCorners="true"
+            android:layout_weight="1" />
+    </LinearLayout>
 </LinearLayout>

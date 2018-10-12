@@ -7,7 +7,6 @@ using HHT.Resources.Model;
 using Android.Content;
 using Android.Preferences;
 using static Android.Widget.AdapterView;
-using Android.Graphics.Drawables;
 using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
@@ -52,20 +51,7 @@ namespace HHT
 
             BootstrapButton vendorSearchButton = view.FindViewById<BootstrapButton>(Resource.Id.vendorSearch);
             vendorSearchButton.Click += delegate { StartFragment(FragmentManager, typeof(KosuVendorAllSearchFragment)); };
-
-            //vendorSearch
-            /*
-            etMantanVendor.FocusChange += delegate {
-                if (!etMantanVendor.IsFocused)
-                {
-                    SetMatehanList();
-                }
-                else
-                {
-                    listView.Selected = false;
-                }
-            };
-            */
+            
             etMantanVendor.KeyPress += (sender, e) => {
                 if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
                 {
@@ -93,9 +79,14 @@ namespace HHT
 
         private void SetMatehanList()
         {
+            // ベンダー名取得
             string venderName = WebService.RequestKosu220(etMantanVendor.Text);
+            if (venderName == "")
+            {
+                CommonUtils.AlertDialog(view, "", "ベンダーコードがみつかりません", null);
+                return;
+            }
             txtVenderName.Text = venderName;
-            // ベンダーコードがみつかりません。
             
             // ベンダー別マテハンコード取得
             matehanList = WebService.RequestKosu200(etMantanVendor.Text);
@@ -222,7 +213,7 @@ namespace HHT
             
             string pJskCaseSu = prefs.GetString("case_su", "0");
             string pJskOriconSu = prefs.GetString("oricon_su", "0");
-            string pJskFuteikeiSu = prefs.GetString("futeikei_su", "1");
+            string pJskFuteikeiSu = prefs.GetString("futeikei_su", "0");
             string pJskHazaiSu = prefs.GetString("hazai_su", "0");
             string pJskIdoSu = prefs.GetString("ido_su", "0");
             string pJskHenpinSu = prefs.GetString("henpin_su", "0");

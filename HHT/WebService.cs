@@ -1875,18 +1875,8 @@ namespace HHT
         /// <param name="pMotoKamotsuNo"></param>
         /// <param name="pGyomuKbn"></param>
         /// <returns></returns>
-        public static IDOU040 RequestIdou040(string pTerminalID, string pProgramID, string pSagyosyaCD, string pSoukoCD, string pMotoKamotsuNo, string pGyomuKbn)
+        public static IDOU040 RequestIdou040(Dictionary<string, string> param)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                {"pTerminalID", pTerminalID },
-                {"pProgramID", pProgramID },
-                {"pSagyosyaCD", pSagyosyaCD },
-                {"pSoukoCD", pSoukoCD },
-                {"pMotoKamotsuNo", pMotoKamotsuNo },
-                {"pGyomuKbn", pGyomuKbn }
-            };
-
             string resultJson = CommonUtils.Post(IDOU.IDOU040, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
@@ -1914,21 +1904,8 @@ namespace HHT
         /// <param name="pGyomuKbn"></param>
         /// <param name="pVendorCd"></param>
         /// <returns></returns>
-        public static IDOU050 RequestIdou050(string pTerminalID, string pProgramID, string pSagyosyaCD
-            , string pSoukoCD, string pMotoKamotsuNo, string pSakiKamotsuNo, string pGyomuKbn, string pVendorCd)
+        public static IDOU050 RequestIdou050(Dictionary<string, string> param)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                {"pTerminalID", pTerminalID },
-                {"pProgramID", pProgramID },
-                {"pSagyosyaCD", pSagyosyaCD },
-                {"pSoukoCD", pSoukoCD },
-                {"pMotoKamotsuNo", pMotoKamotsuNo },
-                {"pSakiKamotsuNo", pSakiKamotsuNo },
-                {"pGyomuKbn", pGyomuKbn },
-                {"pVendorCd", pVendorCd }
-            };
-
             string resultJson = CommonUtils.Post(IDOU.IDOU050, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
@@ -1956,21 +1933,8 @@ namespace HHT
         /// <param name="pGyomuKbn"></param>
         /// <param name="pVendorCd"></param>
         /// <returns></returns>
-        public static IDOU060 RequestIdou060(string pTerminalID, string pProgramID, string pSagyosyaCD
-    , string pSoukoCD, string pMotoKamotsuNo, string pSakiKamotsuNo, string pGyomuKbn, string pVendorCd)
+        public static IDOU060 RequestIdou060(Dictionary<string, string> param)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                {"pTerminalID", pTerminalID },
-                {"pProgramID", pProgramID },
-                {"pSagyosyaCD", pSagyosyaCD },
-                {"pSoukoCD", pSoukoCD },
-                {"pMotoKamotsuNo", pMotoKamotsuNo },
-                {"pSakiKamotsuNo", pSakiKamotsuNo },
-                {"pGyomuKbn", pGyomuKbn },
-                {"pVendorCd", pVendorCd }
-            };
-
             string resultJson = CommonUtils.Post(IDOU.IDOU060, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
@@ -1998,21 +1962,8 @@ namespace HHT
         /// <param name="pGyomuKbn"></param>
         /// <param name="pVendorCd"></param>
         /// <returns></returns>
-        public static IDOU070 RequestIdou070(string pTerminalID, string pProgramID, string pSagyosyaCD
-            , string pSoukoCD, string pMotoKamotsuNo, string pSakiKamotsuNo, string pGyomuKbn, string pVendorCd)
+        public static IDOU070 RequestIdou070(Dictionary<string, string> param)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                {"pTerminalID", pTerminalID },
-                {"pProgramID", pProgramID },
-                {"pSagyosyaCD", pSagyosyaCD },
-                {"pSoukoCD", pSoukoCD },
-                {"pMotoKamotsuNo", pMotoKamotsuNo },
-                {"pSakiKamotsuNo", pSakiKamotsuNo },
-                {"pGyomuKbn", pGyomuKbn },
-                {"pVendorCd", pVendorCd }
-            };
-
             string resultJson = CommonUtils.Post(IDOU.IDOU070, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
@@ -2040,17 +1991,8 @@ namespace HHT
         /// <param name="pGyomuKbn"></param>
         /// <param name="pVendorCd"></param>
         /// <returns></returns>
-        public static IDOU080 RequestIdou080(string pTerminalID, string pProgramID, string pSagyosyaCD, string pSoukoCD, string pGyomuKbn)
+        public static IDOU080 RequestIdou080(Dictionary<string, string> param)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                {"pTerminalID", pTerminalID },
-                {"pProgramID", pProgramID },
-                {"pSagyosyaCD", pSagyosyaCD },
-                {"pSoukoCD", pSoukoCD },
-                {"pGyomuKbn", pGyomuKbn }
-            };
-
             string resultJson = CommonUtils.Post(IDOU.IDOU080, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
@@ -2078,21 +2020,8 @@ namespace HHT
         /// <param name="pGyomuKbn"></param>
         /// <param name="pVendorCd"></param>
         /// <returns></returns>
-        public static IDOU090 RequestIdou090(string pTerminalID, string pProgramID, string pSagyosyaCD
-            , string pSoukoCD, string pMotoKamotsuNo, string pSakiKamotsuNo, string pGyomuKbn, string pVendorCd)
+        public static IDOU090 RequestIdou090(Dictionary<string, string> param)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>
-            {
-                {"pTerminalID", pTerminalID },
-                {"pProgramID", pProgramID },
-                {"pSagyosyaCD", pSagyosyaCD },
-                {"pSoukoCD", pSoukoCD },
-                {"pMotoKamotsuNo", pMotoKamotsuNo },
-                {"pSakiKamotsuNo", pSakiKamotsuNo },
-                {"pGyomuKbn", pGyomuKbn },
-                {"pVendorCd", pVendorCd }
-            };
-
             string resultJson = CommonUtils.Post(IDOU.IDOU090, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 

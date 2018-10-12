@@ -152,22 +152,6 @@ namespace HHT
             return await Task.FromResult(isReachable);
         }
 
-        public static string GetDeviceID(Context context)
-        {
-            Permission permissionCheck = ContextCompat.CheckSelfPermission(context, Manifest.Permission.ReadPhoneState);
-            if (permissionCheck != Permission.Granted)
-            {
-                ActivityCompat.RequestPermissions((MainActivity)context, new string[] { Manifest.Permission.ReadPhoneState }, 0);
-            }
-            else
-            {
-                //TODO
-            }
-
-
-            return ((TelephonyManager)context.GetSystemService(Context.TelephonyService)).DeviceId;
-        }
-
         public static void AlertDialog(View view, string title, string message, Action callback)
         {
             AlertDialog alertDialog = new AlertDialog.Builder(view.Context).Create();

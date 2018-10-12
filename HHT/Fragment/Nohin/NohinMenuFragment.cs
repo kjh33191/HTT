@@ -19,6 +19,19 @@ namespace HHT
         private ISharedPreferencesEditor editor;
 
         private bool hasMailBagData;
+
+        SndNohinMailHelper mailHelper;
+        SndNohinMailKaisyuHelper mailKaisyuHelper;
+        SndNohinMateHelper mateHelper;
+        SndNohinWorkHelper workHelper;
+        SndNohinSyohinKaisyuHelper syohinKaisyuHelper;
+
+        List<SndNohinMail> mailList;
+        List<SndNohinMailKaisyu> mailKaisyuList;
+        List<SndNohinMate> mateList;
+        List<SndNohinWork> workList;
+        List<SndNohinSyohinKaisyu> syohinKaisyuList;
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -153,124 +166,122 @@ namespace HHT
             {
                 StartFragment(FragmentManager, typeof(MatehanSelectFragment));
             }
-            else if (keycode == Keycode.Back)
-            {
-                SndNohinMailHelper mailHelper = new SndNohinMailHelper();
-                SndNohinMailKaisyuHelper mailKaisyuHelper = new SndNohinMailKaisyuHelper();
-                SndNohinMateHelper mateHelper = new SndNohinMateHelper();
-                SndNohinWorkHelper workHelper = new SndNohinWorkHelper();
-                SndNohinSyohinKaisyuHelper syohinKaisyuHelper = new SndNohinSyohinKaisyuHelper();
-
-                List<SndNohinMail> mailList = mailHelper.SelectAll();
-                List<SndNohinMailKaisyu> mailKaisyuList = mailKaisyuHelper.SelectAll();
-                List<SndNohinMate> mateList = mateHelper.SelectAll();
-                List<SndNohinWork> workList = workHelper.SelectAll();
-                List<SndNohinSyohinKaisyu> syohinKaisyuList = syohinKaisyuHelper.SelectAll();
-
-                int count = mailList.Count + mailKaisyuList.Count + mateList.Count + workList.Count + syohinKaisyuList.Count;
-
-                if (count == 0)
-                {
-                    // 業務メニューに戻ってよろしいですか？ 
-                    CommonUtils.AlertConfirm(view, "", "業務メニューに戻ってよろしいですか？", (flag) => {
-                        if (flag)
-                        {
-                            Log.Debug(TAG, "NOHIN_END");
-                            FragmentManager.PopBackStack();
-                        }
-                    });
-                }
-                else
-                {
-                    new Thread(new ThreadStart(delegate
-                    {
-                        Activity.RunOnUiThread(() =>
-                        {
-                            // 業務メニューに戻ってよろしいですか？ 
-                            CommonUtils.AlertConfirm(view, "", "納品情報を送信して業務メニューに戻ってよろしいですか？", (flag) =>
-                            {
-                                if (flag)
-                                {
-                                    ((MainActivity)this.Activity).ShowProgress("データ送信中");
-
-                                    foreach (SndNohinMail temp in mailList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
-                                    }
-
-                                    Log.Debug(TAG, "メールバックデータ送信完了");
-
-                                    foreach (SndNohinMailKaisyu temp in mailKaisyuList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
-                                    }
-
-                                    Log.Debug(TAG, "メールバック回収データ送信完了");
-
-                                    foreach (SndNohinMate temp in mateList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
-
-                                    }
-
-                                    Log.Debug(TAG, "マテハンデータ送信完了");
-
-                                    foreach (SndNohinWork temp in workList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
-
-                                    }
-
-                                    Log.Debug(TAG, "納品作業データ送信完了");
-
-                                    foreach (SndNohinSyohinKaisyu temp in syohinKaisyuList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
-
-                                    }
-
-                                    Log.Debug(TAG, "商品回収データ送信完了");
-
-                                    Activity.RunOnUiThread(() =>
-                                    {
-                                        // 削除処理
-                                        mailHelper.DeleteAll();
-                                        mailKaisyuHelper.DeleteAll();
-                                        mateHelper.DeleteAll();
-                                        workHelper.DeleteAll();
-                                        syohinKaisyuHelper.DeleteAll();
-
-                                        //new MFileHelper().DeleteAll();
-                                        //new MbFileHelper().DeleteAll();
-
-                                        ((MainActivity)this.Activity).DismissDialog();
-
-                                        CommonUtils.AlertDialog(view, "", "データ送信完了しました。", () =>
-                                        {
-                                            FragmentManager.PopBackStack();
-                                            FragmentManager.PopBackStack();
-                                        });
-                                    });
-                                }
-                            });
-                        }
-                        );
-                    }
-
-            )).Start();
-                }
-            }
 
             return true;
         }
 
+        private bool HasSendData()
+        {
+            SndNohinMailHelper mailHelper = new SndNohinMailHelper();
+            SndNohinMailKaisyuHelper mailKaisyuHelper = new SndNohinMailKaisyuHelper();
+            SndNohinMateHelper mateHelper = new SndNohinMateHelper();
+            SndNohinWorkHelper workHelper = new SndNohinWorkHelper();
+            SndNohinSyohinKaisyuHelper syohinKaisyuHelper = new SndNohinSyohinKaisyuHelper();
+
+            mailList = mailHelper.SelectAll();
+            mailKaisyuList = mailKaisyuHelper.SelectAll();
+            mateList = mateHelper.SelectAll();
+            workList = workHelper.SelectAll();
+            syohinKaisyuList = syohinKaisyuHelper.SelectAll();
+
+            int count = mailList.Count + mailKaisyuList.Count + mateList.Count + workList.Count + syohinKaisyuList.Count;
+
+            return count != 0;
+        }
+
         public override bool OnBackPressed()
         {
+            //bool isReached = await CommonUtils.IsHostReachable(WebService.GetHostIpAddress());
+
+            if (HasSendData())
+            {
+                CommonUtils.AlertConfirm(view, "", "納品情報を送信して業務メニューに戻ってよろしいですか？", (flag) =>
+                {
+                    if (flag)
+                    {
+                        ((MainActivity)this.Activity).ShowProgress("データ送信中");
+
+                        /*
+                        foreach (SndNohinMail temp in mailList)
+                        {
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
+                        }
+
+                        Log.Debug(TAG, "メールバックデータ送信完了");
+
+                        foreach (SndNohinMailKaisyu temp in mailKaisyuList)
+                        {
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
+                        }
+
+                        Log.Debug(TAG, "メールバック回収データ送信完了");
+
+                        foreach (SndNohinMate temp in mateList)
+                        {
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
+                        }
+
+                        Log.Debug(TAG, "マテハンデータ送信完了");
+
+                        foreach (SndNohinWork temp in workList)
+                        {
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
+
+                        }
+
+                        Log.Debug(TAG, "納品作業データ送信完了");
+
+                        foreach (SndNohinSyohinKaisyu temp in syohinKaisyuList)
+                        {
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
+
+                        }
+
+                        Log.Debug(TAG, "商品回収データ送信完了");
+                        */
+
+                        Activity.RunOnUiThread(() =>
+                        {
+                            /*
+                            // 削除処理
+                            mailHelper.DeleteAll();
+                            mailKaisyuHelper.DeleteAll();
+                            mateHelper.DeleteAll();
+                            workHelper.DeleteAll();
+                            syohinKaisyuHelper.DeleteAll();
+
+                            //new MFileHelper().DeleteAll();
+                            //new MbFileHelper().DeleteAll();
+                            //new PsFileHelper().DeleteAll();
+
+                            */
+                            ((MainActivity)this.Activity).DismissDialog();
+
+                            CommonUtils.AlertDialog(view, "", "データ送信完了しました。", () =>
+                            {
+                                FragmentManager.PopBackStack();
+                                FragmentManager.PopBackStack();
+                            });
+                        });
+                    }
+                });
+            }
+            else
+            {
+                CommonUtils.AlertConfirm(view, "", "業務メニューに戻ってよろしいですか？", (flag) => {
+                    if (flag)
+                    {
+                        Log.Debug(TAG, "NOHIN_END");
+                        FragmentManager.PopBackStack();
+                    }
+                });
+            }
+
             return false;
         }
 
