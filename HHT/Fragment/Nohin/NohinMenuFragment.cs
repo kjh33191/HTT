@@ -20,12 +20,6 @@ namespace HHT
 
         private bool hasMailBagData;
 
-        SndNohinMailHelper mailHelper;
-        SndNohinMailKaisyuHelper mailKaisyuHelper;
-        SndNohinMateHelper mateHelper;
-        SndNohinWorkHelper workHelper;
-        SndNohinSyohinKaisyuHelper syohinKaisyuHelper;
-
         List<SndNohinMail> mailList;
         List<SndNohinMailKaisyu> mailKaisyuList;
         List<SndNohinMate> mateList;

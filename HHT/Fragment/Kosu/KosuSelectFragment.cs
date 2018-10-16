@@ -187,7 +187,7 @@ namespace HHT
     
         private void CheckTokuisaki()
         {
-            var progress = ProgressDialog.Show(this.Activity, null, "得意先を確認しています。", true);
+            ((MainActivity)this.Activity).ShowProgress("読み込み中...");
 
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
@@ -332,7 +332,7 @@ namespace HHT
 
         private void Confirm()
         {
-            var progress = ProgressDialog.Show(this.Activity, null, "指定先を確認しています。", true);
+            ((MainActivity)this.Activity).ShowProgress("指定先を確認しています。");
 
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(async () =>
@@ -383,7 +383,7 @@ namespace HHT
                         }
                     }
                 );
-                Activity.RunOnUiThread(() => progress.Dismiss());
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
                }
             )).Start();
         }

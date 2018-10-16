@@ -422,7 +422,6 @@ namespace HHT
             string pTsumiVendorCD = "";
             string pKamotsuNo = kamotsu_no;
             string pBinNo = prefs.GetString("bin_no", "0");
-            string pHHT_No = "11101";
 
             string pMatehan = "";
             string pJskCaseSu = txtCase.Text;

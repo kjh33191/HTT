@@ -45,7 +45,7 @@ namespace HHT
 
         private void SetTodokesakiAsync()
         {
-            var progress = ProgressDialog.Show(this.Activity, null, "届先検索中。。。", true);
+            ((MainActivity)this.Activity).ShowProgress("届先検索中。。。");
 
             List<KOSU060> todokeList = GetTokuisakiMasterInfo();
 
@@ -68,7 +68,7 @@ namespace HHT
 
             new Thread(new ThreadStart(delegate
             {
-                Activity.RunOnUiThread(() => progress.Dismiss());
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
         }

@@ -10101,13 +10101,19 @@ namespace HHT
 			public const int baseline_search_black_48 = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int ic_launcher = 2130903044;
+			public const int beingIcon = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int ic_launcher_foreground = 2130903045;
+			public const int ic_being = 2130903045;
 			
 			// aapt resource value: 0x7f030006
-			public const int ic_launcher_round = 2130903046;
+			public const int ic_launcher = 2130903046;
+			
+			// aapt resource value: 0x7f030007
+			public const int ic_launcher_foreground = 2130903047;
+			
+			// aapt resource value: 0x7f030008
+			public const int ic_launcher_round = 2130903048;
 			
 			static Mipmap()
 			{

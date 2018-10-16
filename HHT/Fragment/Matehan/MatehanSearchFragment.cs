@@ -14,8 +14,8 @@ namespace HHT
     {
         private View view;
         private VendorAllAdapter todokesakiAdapter;
-
         private int kosuMenuflag;
+        string souko_cd;
 
         ISharedPreferences prefs;
         ISharedPreferencesEditor editor;
@@ -28,15 +28,13 @@ namespace HHT
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             view = inflater.Inflate(Resource.Layout.fragment_matehan_search, container, false);
-
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 
             kosuMenuflag = prefs.GetInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.TODOKE); // 画面区分
+            souko_cd = prefs.GetString("souko_cd", "");
 
             SetTitle("届先指定検品");
-            SetFooterText("");
-
             SetTodokesakiAsync();
 
             return view;
@@ -44,11 +42,11 @@ namespace HHT
 
         private void SetTodokesakiAsync()
         {
-            var progress = ProgressDialog.Show(this.Activity, null, "届先検索中。。。", true);
+            ((MainActivity)this.Activity).ShowProgress("届先検索中...");
 
-            List<KOSU190> todokeList = GetTokuisakiMasterInfo();
+            List<KOSU190> todokeList = WebService.RequestMate020(souko_cd);
 
-            if(todokeList.Count > 0)
+            if (todokeList.Count > 0)
             {
                 ListView listView = view.FindViewById<ListView>(Resource.Id.listView1);
                 listView.ItemClick += listView_ItemClick;
@@ -60,30 +58,15 @@ namespace HHT
             {
                 CommonUtils.AlertDialog(view, "確認", "表示データがありません。", () =>
                 {
-                    if(kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
-                    {
-                        // sagyou4
-                        FragmentManager.PopBackStack();
-                    }
-                    else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
-                    {
-                        // sagyou9
-                        // ベンダー検索画面へ
-                    }
+                    FragmentManager.PopBackStack();
                 });
             }
 
             new Thread(new ThreadStart(delegate
             {
-                Activity.RunOnUiThread(() => progress.Dismiss());
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
-        }
-
-        private List<KOSU190> GetTokuisakiMasterInfo()
-        {
-            string nyuka_souko = prefs.GetString("souko_cd", "108");
-            return WebService.RequestMate020(nyuka_souko);
         }
 
         void listView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)

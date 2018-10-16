@@ -1,13 +1,18 @@
 ﻿using System;
 
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Views;
+using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
     public class CustomDialogFragment : DialogFragment
     {
+        public event DialogEventHandler Dismissed;
+
         private static readonly string ARG_DIALOG_MAIN_MSG = "dialog_main_msg";
         private String mMainMsg;
 
@@ -33,10 +38,32 @@ namespace HHT
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
             View view = Activity.LayoutInflater.Inflate(Resource.Layout.dialog_custom2, null);
-            //((TextView)view.FindViewById(Resource.Id.dialog_confirm_msg)).setText(mMainMsg);
-            //view.findViewById(R.id.dialog_confirm_btn).setOnClickListener(this);
+
+            string title = Arguments.GetString("title");
+            string body = Arguments.GetString("body");
+
+            ((TextView)view.FindViewById(Resource.Id.title)).Text = title;
+            ((TextView)view.FindViewById(Resource.Id.message)).Text = body;
+            
+            BootstrapButton button = view.FindViewById<BootstrapButton>(Resource.Id.loginButton);
+            button.Click += delegate {
+                if (null != Dismissed)
+                    Dismissed(this, new DialogEventArgs {
+                        Text = "Test"
+                    });
+                Dismiss();
+            };
+
             builder.SetView(view);
             return builder.Create();
         }
+        
+        public class DialogEventArgs : EventArgs
+        {
+            public string Text { get; set; }
+        }
+
+        public delegate void DialogEventHandler(object sender, DialogEventArgs args);
+
     }
 }

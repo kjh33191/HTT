@@ -65,8 +65,6 @@ namespace HHT.Resources.DataHelper
                 Log.Info("SQLiteEx", ex.Message);
                 return false;
             }
-
-            return false;
         }
 
         public int GetMailbackCount()

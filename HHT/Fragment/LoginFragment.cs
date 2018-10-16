@@ -49,20 +49,24 @@ namespace HHT
             view = inflater.Inflate(Resource.Layout.fragment_login, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
-            
+            HideFooter();
+
             loginHelper = new LoginHelper();
 
             ((MainActivity)this.Activity).SupportActionBar.Title = "ログイン";
-            //SetTitle("ログイン");
-            SetFooterText("");
-            HideFooter();
             
             etSoukoCode = view.FindViewById<BootstrapEditText>(Resource.Id.soukoCode);
-            txtSoukoName = view.FindViewById<TextView>(Resource.Id.tv_login_soukoName);
-            etDriverCode = view.FindViewById<BootstrapEditText>(Resource.Id.tantoCode);
-            btnLogin = view.FindViewById<BootstrapButton>(Resource.Id.loginButton);
+            etSoukoCode.FocusChange += delegate {
+                if (!etSoukoCode.IsFocused)
+                {
+                    SetSoukoName(etSoukoCode.Text);
+                }
+            };
 
-            etDriverCode.KeyPress += (sender, e) =>{
+            txtSoukoName = view.FindViewById<TextView>(Resource.Id.tv_login_soukoName);
+            
+            etDriverCode = view.FindViewById<BootstrapEditText>(Resource.Id.tantoCode);
+            etDriverCode.KeyPress += (sender, e) => {
                 if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
                 {
                     e.Handled = true;
@@ -74,14 +78,8 @@ namespace HHT
                     e.Handled = false;
                 }
             };
-
-            etSoukoCode.FocusChange += delegate {
-                if (!etSoukoCode.IsFocused)
-                {
-                    SetSoukoName(etSoukoCode.Text);
-                }
-            };
-
+            
+            btnLogin = view.FindViewById<BootstrapButton>(Resource.Id.loginButton);
             btnLogin.Click += delegate {Login();};
 
             btnLogin.FocusChange += delegate {
@@ -115,7 +113,7 @@ namespace HHT
                     txtSoukoName.Text = "";
                     etSoukoCode.RequestFocus();
                 });
-
+                
                 Vibrate();
                 Log.Warn(TAG, "SoukoCode is Empty");
                 return;
@@ -126,14 +124,16 @@ namespace HHT
                 string alertTitle = Resources.GetString(Resource.String.error);
                 string alertBody = Resources.GetString(Resource.String.errorMsg002);
 
-                CustomDialogFragment dialog = new CustomDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.PutString("title", alertTitle);
+                bundle.PutString("body", "担当者コードを\n入力して下さい。");
+                
+                CustomDialogFragment dialog = new CustomDialogFragment { Arguments = bundle };
                 dialog.Cancelable = false;
                 dialog.Show(FragmentManager, "");
-
-                CommonUtils.AlertDialog(view, alertTitle, "担当者コードを\n入力して下さい。", () => {
-                    etDriverCode.Text = "";
-                    etDriverCode.RequestFocus();
-                });
+                dialog.Dismissed += (s, e) => { /* do something with e.Text here */
+                    Toast.MakeText(this.Activity, e.Text, ToastLength.Long).Show();
+                };
 
                 Vibrate();
                 Log.Warn(TAG, "DriverCode is Empty");
@@ -236,30 +236,10 @@ namespace HHT
                 Activity.RunOnUiThread(() => {
                     ((MainActivity)this.Activity).DismissDialog();
                     if (!hasError) {
-                        //StartFragment(FragmentManager, typeof(MainMenuFragment));
-                        string bodyMsg = "";
                         string menu_kbn = prefs.GetString("menu_kbn", "");
 
-                        if (menu_kbn == "0")
-                        {
-                            bodyMsg = "構内でログインしました。";
-                        }
-                        else if (menu_kbn == "1")
-                        {
-                            bodyMsg = "ドライバーでログインしました。";
-                        }else if(menu_kbn == "2")
-                        {
-                            bodyMsg = "管理者でログインしました。";
-                        }
-                        else if (menu_kbn == "3")
-                        {
-                            bodyMsg = "ＴＣ２型（花王）でログインしました。";
-                        }
-
-                        Toast.MakeText(this.Activity, bodyMsg, ToastLength.Long).Show();
-                        
                         ToneGenerator toneGen1 = new ToneGenerator(Stream.Notification, 100);
-                        toneGen1.StartTone(Tone.CdmaAlertCallGuard, 1000);
+                        toneGen1.StartTone(Tone.CdmaSoftErrorLite, 1000);
                         
                         StartFragment(FragmentManager, typeof(MainMenuFragment));
                     }
@@ -277,22 +257,33 @@ namespace HHT
                 txtSoukoName.Text = "";
                 return;
             }
-            
-            try
+
+            ((MainActivity)this.Activity).ShowProgress("読み込み中");
+
+            new Thread(new ThreadStart(delegate
             {
-                login010 = WebService.RequestLogin010(soukoCd);
-                txtSoukoName.Text = login010.souko_nm;
-                def_tokuisaki_cd = login010.def_tokuisaki_cd;
-                kitaku_cd = login010.kitaku_cd;
-            }
-            catch
-            {
-                CommonUtils.AlertDialog(view, ERROR, ERR_NOT_FOUND_SOUKO, () => {
-                    etSoukoCode.Text = "";
-                    txtSoukoName.Text = "";
-                    etSoukoCode.RequestFocus();
+                Activity.RunOnUiThread(() =>
+                {
+                    try
+                    {
+                        login010 = WebService.RequestLogin010(soukoCd);
+                        txtSoukoName.Text = login010.souko_nm;
+                        def_tokuisaki_cd = login010.def_tokuisaki_cd;
+                        kitaku_cd = login010.kitaku_cd;
+                    }
+                    catch
+                    {
+                        CommonUtils.AlertDialog(view, ERROR, ERR_NOT_FOUND_SOUKO, () => {
+                            etSoukoCode.Text = "";
+                            txtSoukoName.Text = "";
+                            etSoukoCode.RequestFocus();
+                        });
+                        Vibrate();
+                    }
                 });
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
+            )).Start();
         }
 
         // 以前ログイン情報を設定する。

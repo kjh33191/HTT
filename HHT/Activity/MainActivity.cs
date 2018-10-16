@@ -57,15 +57,13 @@ namespace HHT
                 MainActivity mainActivity = this;
                 BarcodeManager_.Create(this, this);
             }
-            catch (Java.Lang.NullPointerException ex)
+            catch
             {
                 mScannerType = null;
                 mSettings = null;
             }
 
             FragmentManager.BeginTransaction().Replace(Resource.Id.fragmentContainer, new LoginFragment()).Commit();
-            //FragmentManager.BeginTransaction().Replace(Resource.Id.fragmentContainer, new TsumikomiWorkFragment()).Commit();
-
         }
 
         public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
@@ -121,7 +119,7 @@ namespace HHT
             {
                 Log.Error(TAG, "ErrorCode is " + e.ErrorCode, e);
             }
-            catch (Java.Lang.IllegalArgumentException e)
+            catch
             {
                 Toast toast = Toast.MakeText(this, Resource.String.error_message_symbol_settings, ToastLength.Long);
                 toast.Show();

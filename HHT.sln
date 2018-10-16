@@ -4,13 +4,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HHT", "HHT\HHT.csproj", "{F3C131DE-5CBD-43AD-B912-1446D4770D55}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DEA50B4A-4751-4587-B002-C794DFDF5E53} = {DEA50B4A-4751-4587-B002-C794DFDF5E53}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttWebApi", "..\HttWebApi\HttWebApi\HttWebApi.csproj", "{E7F185CC-DA27-4BB2-A5F6-26442A2370B0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Android-Bootstrap", "..\..\..\Users\kim junghan\Downloads\Android-Bootstrap-master\Android-Bootstrap-master\Android-Bootstrap\Android-Bootstrap.csproj", "{DEA50B4A-4751-4587-B002-C794DFDF5E53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,14 +35,6 @@ Global
 		{E7F185CC-DA27-4BB2-A5F6-26442A2370B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E7F185CC-DA27-4BB2-A5F6-26442A2370B0}.Release|x86.ActiveCfg = Release|x86
 		{E7F185CC-DA27-4BB2-A5F6-26442A2370B0}.Release|x86.Build.0 = Release|x86
-		{DEA50B4A-4751-4587-B002-C794DFDF5E53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEA50B4A-4751-4587-B002-C794DFDF5E53}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEA50B4A-4751-4587-B002-C794DFDF5E53}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DEA50B4A-4751-4587-B002-C794DFDF5E53}.Debug|x86.Build.0 = Debug|Any CPU
-		{DEA50B4A-4751-4587-B002-C794DFDF5E53}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEA50B4A-4751-4587-B002-C794DFDF5E53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEA50B4A-4751-4587-B002-C794DFDF5E53}.Release|x86.ActiveCfg = Release|Any CPU
-		{DEA50B4A-4751-4587-B002-C794DFDF5E53}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

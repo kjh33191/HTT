@@ -23,7 +23,7 @@ namespace HHT
             {
                 fragment = (BaseFragment)Activator.CreateInstance(fragmentClass);
             }
-            catch (Exception e)
+            catch
             {
 
             }
@@ -45,7 +45,7 @@ namespace HHT
                 fragment = (BaseFragment)Activator.CreateInstance(fragmentClass);
                 fragment.Arguments = bundle;
             }
-            catch (Exception e)
+            catch
             {
 
             }

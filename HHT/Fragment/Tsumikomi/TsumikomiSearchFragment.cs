@@ -64,9 +64,9 @@ namespace HHT
 
         private void GetTenpoList()
         {
-            var progress = ProgressDialog.Show(this.Activity, null, "届先検索中。。。", true);
+            ((MainActivity)this.Activity).ShowProgress("読み込み中...");
 
-            List<TUMIKOMI020> todokeList = GetTokuisakiMasterInfo();
+            List <TUMIKOMI020> todokeList = GetTokuisakiMasterInfo();
 
             new Thread(new ThreadStart(delegate
             {
@@ -85,7 +85,7 @@ namespace HHT
                     }
 
                 });
-                Activity.RunOnUiThread(() => progress.Dismiss());
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
         }

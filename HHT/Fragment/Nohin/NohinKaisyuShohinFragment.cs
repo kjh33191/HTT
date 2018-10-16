@@ -79,18 +79,6 @@ namespace HHT
 
         private void Confirm()
         {
-            string confirmMsg = @"
-シーエスイー
-水天宮店
-移動[  2] 返品[  2]
-破材[  1] ﾒｰﾙ [  1]
-他　[  1]
-
-総個数(  7)
-
-よろしいですか？
-                                        ";
-
             CommonUtils.AlertConfirm(view, "確認", "よろしいですか？", (flag) =>
             {
                 if (flag)

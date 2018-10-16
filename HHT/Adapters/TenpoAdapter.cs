@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
+﻿using System.Collections.Generic;
 using Android.Views;
 using Android.Widget;
 using HHT.Resources.Model;
@@ -15,15 +7,12 @@ namespace HHT
 {
     class TenpoAdapter : BaseAdapter
     {
-        
-        Context context;
         private List<TUMIKOMI020> tenpoList;
 
         public TenpoAdapter(List<TUMIKOMI020> tenpoList)
         {
             this.tenpoList = tenpoList;
         }
-
 
         public override Java.Lang.Object GetItem(int position)
         {

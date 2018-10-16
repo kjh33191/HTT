@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Content;
-using Android.Preferences;
 using HHT.Resources.DataHelper;
 using System.Threading.Tasks;
 
@@ -10,18 +9,11 @@ namespace HHT
     public class SplashActivity : Activity
     {
         DataBase db;
-        ISharedPreferences prefs;
-        ISharedPreferencesEditor editor;
 
         protected override void OnResume()
         {
             base.OnResume();
-
-            //prefs = PreferenceManager.GetDefaultSharedPreferences(ApplicationContext);
-            //editor = prefs.Edit();
-            //editor.Clear();
-            //editor.Commit();
-
+            
             Task.Run(() =>
             {
                 db = new DataBase();
@@ -32,8 +24,6 @@ namespace HHT
                 {
                     WebService.SetHostIpAddress(hostIp);
                 }
-                
-                //db.ClearAll();
 
                 StartActivity(new Intent(Application.Context, typeof(MainActivity)));
                 

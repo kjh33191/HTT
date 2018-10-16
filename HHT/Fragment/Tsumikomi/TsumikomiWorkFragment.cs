@@ -163,7 +163,8 @@ namespace HHT
         // 作業ステータス更新・積込処理 TUMIKOMI080,TUMIKOMI311
         private void UpdateSagyoStatus(string saryouData)
         {
-            var progress = ProgressDialog.Show(this.Activity, "", "作業ステータス更新中。。。", true);
+            ((MainActivity)this.Activity).ShowProgress("作業ステータス更新中...");
+
             int resultCode = 1;
 
             new Thread(new ThreadStart(delegate {
@@ -237,7 +238,7 @@ namespace HHT
                             carLabelInputMode = false;
                         }
                     }
-                    catch(Exception e)
+                    catch
                     {
                         CommonUtils.AlertDialog(view, "エラー", "例外エラーが発生しました。\n", null);
                         Vibrate();
@@ -245,7 +246,7 @@ namespace HHT
                     }
                 }
                 );
-                Activity.RunOnUiThread(() => progress.Dismiss());
+                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
         }

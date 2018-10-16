@@ -88,8 +88,8 @@ namespace HHT
 
         private void GetTokuisakiMasterInfo()
         {
-            var progress = ProgressDialog.Show(this.Activity, null, "検品情報を確認しています。", true);
-
+            ((MainActivity)this.Activity).ShowProgress("検品情報を確認しています。");
+            
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
                 {
@@ -140,7 +140,7 @@ namespace HHT
                 );
             Activity.RunOnUiThread(() =>
             {
-                progress.Dismiss();
+                ((MainActivity)this.Activity).DismissDialog();
             });
             }
             )).Start();

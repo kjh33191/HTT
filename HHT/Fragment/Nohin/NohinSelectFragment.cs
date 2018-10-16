@@ -132,7 +132,8 @@ namespace HHT
         private void Confirm()
         {
             bool hasError = false;
-            var progress = ProgressDialog.Show(this.Activity, null, "納品情報を確認しています。", true);
+            
+            ((MainActivity)this.Activity).ShowProgress("納品情報を確認しています。");
 
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(() =>
@@ -195,7 +196,9 @@ namespace HHT
                         
                     }
                 );
-                Activity.RunOnUiThread(() => { progress.Dismiss();
+                Activity.RunOnUiThread(() => {
+                    ((MainActivity)this.Activity).DismissDialog();
+
                     if (!hasError)
                     {
                         StartFragment(FragmentManager, typeof(NohinMenuFragment));
