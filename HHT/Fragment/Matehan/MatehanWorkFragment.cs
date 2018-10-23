@@ -202,7 +202,7 @@ namespace HHT
                     // proc_hht_kasidasi
                     Dictionary<string, string> param = new Dictionary<string, string>
                     {
-                        { "pTerminalID", "test"},
+                        { "pTerminalID", prefs.GetString("terminal_id","")},
                         { "pProgramID", "HHT"},
                         { "pSagyosyaCD", prefs.GetString("sagyousya_cd", "")},
                         { "pSoukoCD", prefs.GetString("souko_cd", "")},

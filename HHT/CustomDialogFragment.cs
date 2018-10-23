@@ -1,11 +1,12 @@
 ﻿using System;
-
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Com.Beardedhen.Androidbootstrap;
+using Com.Beardedhen.Androidbootstrap.Api.Defaults;
 
 namespace HHT
 {
@@ -44,8 +45,8 @@ namespace HHT
 
             ((TextView)view.FindViewById(Resource.Id.title)).Text = title;
             ((TextView)view.FindViewById(Resource.Id.message)).Text = body;
-            
-            BootstrapButton button = view.FindViewById<BootstrapButton>(Resource.Id.loginButton);
+
+            BootstrapButton button = view.FindViewById<BootstrapButton>(Resource.Id.okButton);
             button.Click += delegate {
                 if (null != Dismissed)
                     Dismissed(this, new DialogEventArgs {
@@ -53,6 +54,19 @@ namespace HHT
                     });
                 Dismiss();
             };
+
+            BootstrapButton cancelButton = view.FindViewById<BootstrapButton>(Resource.Id.cancelButton);
+            cancelButton.BootstrapBrand = DefaultBootstrapBrand.Regular;
+            cancelButton.Click += delegate {
+                Dismiss();
+            };
+
+            if (title == "エラー")
+            {
+                ((TextView)view.FindViewById(Resource.Id.title)).SetBackgroundColor(Color.Red);
+                button.BootstrapBrand = DefaultBootstrapBrand.Danger;
+                cancelButton.Visibility = ViewStates.Gone;
+            }
 
             builder.SetView(view);
             return builder.Create();

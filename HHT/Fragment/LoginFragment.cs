@@ -32,7 +32,7 @@ namespace HHT
         ISharedPreferencesEditor editor;
 
         LOGIN010 login010;
-        string def_tokuisaki_cd, kitaku_cd;
+        string def_tokuisaki_cd, kitaku_cd, tsuhshin_kbn, souko_kbn;
         
         private readonly string ERROR = "エラー";
         private readonly string ERR_NOT_FOUND_SOUKO = "センター情報が見つかりませんでした。\n再確認してください。";
@@ -59,7 +59,18 @@ namespace HHT
             etSoukoCode.FocusChange += delegate {
                 if (!etSoukoCode.IsFocused)
                 {
-                    SetSoukoName(etSoukoCode.Text);
+                    ((MainActivity)this.Activity).ShowProgress("読み込み中");
+
+                    new Thread(new ThreadStart(delegate
+                    {
+                        Activity.RunOnUiThread(() =>
+                        {
+                            SetSoukoName(etSoukoCode.Text);
+                        });
+                        Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
+                    }
+                    )).Start();
+                    
                 }
             };
 
@@ -108,7 +119,7 @@ namespace HHT
                 string alertTitle = Resources.GetString(Resource.String.error);
                 string alertBody = Resources.GetString(Resource.String.errorMsg002);
 
-                CommonUtils.AlertDialog(view, alertTitle, alertBody, () => {
+                ShowDialog(alertTitle, alertBody, () => {
                     etSoukoCode.Text = "";
                     txtSoukoName.Text = "";
                     etSoukoCode.RequestFocus();
@@ -124,23 +135,14 @@ namespace HHT
                 string alertTitle = Resources.GetString(Resource.String.error);
                 string alertBody = Resources.GetString(Resource.String.errorMsg002);
 
-                Bundle bundle = new Bundle();
-                bundle.PutString("title", alertTitle);
-                bundle.PutString("body", "担当者コードを\n入力して下さい。");
+                ShowDialog(alertTitle, "担当者コードを\n入力して下さい。", ()=> { });
                 
-                CustomDialogFragment dialog = new CustomDialogFragment { Arguments = bundle };
-                dialog.Cancelable = false;
-                dialog.Show(FragmentManager, "");
-                dialog.Dismissed += (s, e) => { /* do something with e.Text here */
-                    Toast.MakeText(this.Activity, e.Text, ToastLength.Long).Show();
-                };
-
                 Vibrate();
                 Log.Warn(TAG, "DriverCode is Empty");
                 return;
             }
 
-            ((MainActivity)this.Activity).ShowProgress("ログイン情報を確認しています。");
+            ((MainActivity)this.Activity).ShowProgress("ログインしています");
 
             new Thread(new ThreadStart(delegate {
                 Activity.RunOnUiThread(async () =>
@@ -159,11 +161,9 @@ namespace HHT
                             LOGIN030 login030 = WebService.RequestLogin030(etDriverCode.Text);
                             editor.PutString("menu_kbn", login030.menu_kbn);
                             editor.PutString("driver_nm", login030.tantohsya_nm);
-
-                            SetSoukoName(etSoukoCode.Text);
-
+                            
                             // 正常の場合、前回ログイン情報を保存する
-                            loginHelper.InsertIntoTableLoginInfo(new Login
+                            loginHelper.Insert(new Login
                             {
                                 souko_cd = etSoukoCode.Text,
                                 souko_nm = txtSoukoName.Text,
@@ -171,13 +171,15 @@ namespace HHT
                                 menu_flg = login030.menu_kbn,
                                 tantohsya_nm = login030.tantohsya_nm,
                                 def_tokuisaki_cd = this.def_tokuisaki_cd,
-                                kitaku_cd = this.kitaku_cd
+                                kitaku_cd = this.kitaku_cd,
+                                souko_kbn = this.souko_kbn,
+                                tsuhshin_kbn = this.tsuhshin_kbn
                             });
 
                         }
                         catch (Exception e)
                         {
-                            CommonUtils.AlertDialog(view, "ERROR", "認証できませんでした。\n入力内容をご確認下さい。", () => {
+                            ShowDialog("エラー", "認証できませんでした。\n入力内容をご確認下さい。", () => {
                                 etDriverCode.Text = "";
                                 etDriverCode.RequestFocus();
                             });
@@ -191,8 +193,7 @@ namespace HHT
                     else
                     {
                         Vibrate();
-                        CommonUtils.AlertDialog(view, "ERROR", "サーバから答えがありません。(Temp)", () => {
-                        });
+                        ShowDialog("エラー", "サーバから答えがありません。", () => { });
                         hasError = true;
                         return;
 
@@ -218,14 +219,20 @@ namespace HHT
 
                         */
                     }
-                    
+
+                    // TEMP 
+                    // ***********************;
+                    editor.PutString("terminal_id", "432660068");
+                    editor.PutString("hht_no", "11101");
+                    // ***********************
+
                     editor.PutString("souko_cd", etSoukoCode.Text);
-                    editor.PutString("souko_nm", login010.souko_nm);
+                    editor.PutString("souko_nm", txtSoukoName.Text);
                     editor.PutString("driver_cd", etDriverCode.Text);
-                    editor.PutString("kitaku_cd", login010.kitaku_cd);
-                    editor.PutString("def_tokuisaki_cd", login010.def_tokuisaki_cd);
-                    editor.PutString("tsuhshin_kbn", login010.tsuhshin_kbn);
-                    editor.PutString("souko_kbn", login010.souko_kbn);
+                    editor.PutString("kitaku_cd", kitaku_cd);
+                    editor.PutString("def_tokuisaki_cd", def_tokuisaki_cd);
+                    editor.PutString("tsuhshin_kbn", tsuhshin_kbn);
+                    editor.PutString("souko_kbn", souko_kbn);
                     
                     editor.Apply();
 
@@ -238,12 +245,18 @@ namespace HHT
                     if (!hasError) {
                         string menu_kbn = prefs.GetString("menu_kbn", "");
 
-                        ToneGenerator toneGen1 = new ToneGenerator(Stream.Notification, 100);
-                        toneGen1.StartTone(Tone.CdmaSoftErrorLite, 1000);
-                        
-                        StartFragment(FragmentManager, typeof(MainMenuFragment));
-                    }
+                        ToneGenerator toneGen1 = new ToneGenerator(Stream.System, 100);
+                        toneGen1.StartTone(Tone.PropBeep, 1000);
 
+                        try
+                        {
+                            StartFragment(FragmentManager, typeof(MainMenuFragment));
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Debug(TAG, e.StackTrace.ToString());
+                        }
+                    }
                 });
             }
             )).Start();
@@ -258,32 +271,26 @@ namespace HHT
                 return;
             }
 
-            ((MainActivity)this.Activity).ShowProgress("読み込み中");
-
-            new Thread(new ThreadStart(delegate
+            try
             {
-                Activity.RunOnUiThread(() =>
-                {
-                    try
-                    {
-                        login010 = WebService.RequestLogin010(soukoCd);
-                        txtSoukoName.Text = login010.souko_nm;
-                        def_tokuisaki_cd = login010.def_tokuisaki_cd;
-                        kitaku_cd = login010.kitaku_cd;
-                    }
-                    catch
-                    {
-                        CommonUtils.AlertDialog(view, ERROR, ERR_NOT_FOUND_SOUKO, () => {
-                            etSoukoCode.Text = "";
-                            txtSoukoName.Text = "";
-                            etSoukoCode.RequestFocus();
-                        });
-                        Vibrate();
-                    }
-                });
-                Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
+                login010 = WebService.RequestLogin010(soukoCd);
+                txtSoukoName.Text = login010.souko_nm;
+                def_tokuisaki_cd = login010.def_tokuisaki_cd;
+                kitaku_cd = login010.kitaku_cd;
+                tsuhshin_kbn = login010.tsuhshin_kbn;
+                souko_kbn = login010.souko_kbn;
             }
-            )).Start();
+            catch (Exception e)
+            {
+                Log.Debug(TAG, e.StackTrace.ToString());
+
+                ShowDialog(ERROR, ERR_NOT_FOUND_SOUKO, () => {
+                    etSoukoCode.Text = "";
+                    txtSoukoName.Text = "";
+                    etSoukoCode.RequestFocus();
+                });
+                Vibrate();
+            }
         }
 
         // 以前ログイン情報を設定する。
@@ -326,6 +333,9 @@ namespace HHT
             {
                 etSoukoCode.Text = lastLoginInfo.souko_cd;
                 txtSoukoName.Text = lastLoginInfo.souko_nm;
+                def_tokuisaki_cd = lastLoginInfo.def_tokuisaki_cd;
+                kitaku_cd = lastLoginInfo.kitaku_cd;
+                
                 etDriverCode.RequestFocus();
             }
         }
@@ -347,13 +357,24 @@ namespace HHT
             }
         }
 
+        private void ShowDialog(string title, string body, Action callback)
+        {
+            Bundle bundle = new Bundle();
+            bundle.PutString("title", title);
+            bundle.PutString("body", body);
+
+            CustomDialogFragment dialog = new CustomDialogFragment { Arguments = bundle };
+            dialog.Cancelable = false;
+            dialog.Show(FragmentManager, "");
+            dialog.Dismissed += (s, e) => {
+                Toast.MakeText(this.Activity, e.Text, ToastLength.Long).Show();
+                callback?.Invoke();
+            };
+        }
+
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-            if (keycode == Keycode.Back)
-            {
-                return false;
-            }
-            else if (keycode == Keycode.F3)
+            if (keycode == Keycode.F3)
             {
                 StartFragment(FragmentManager, typeof(ConfigFragment));
             }

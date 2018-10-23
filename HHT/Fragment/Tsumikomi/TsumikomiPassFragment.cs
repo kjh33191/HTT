@@ -137,7 +137,7 @@ namespace HHT
 
             Dictionary<string, string> param = new Dictionary<string, string>
                         {
-                            { "pTerminalID",  "432660068"},
+                            { "pTerminalID",  prefs.GetString("terminal_id","")},
                             { "pProgramID", "TUM" },
                             { "pSagyosyaCD", "99999" },
                             { "pSoukoCD",  souko_cd},
@@ -146,7 +146,7 @@ namespace HHT
                             { "pCourse", course },
                             { "pTokuisakiCD", tokuisaki_cd },
                             { "pTodokesakiCD", todokesaki_cd },
-                            { "pHHT_No", "11101" }
+                            { "pHHT_No", prefs.GetString("hht_no","") }
                         };
 
             //配車テーブルの該当コースの各数量を実績数で更新する

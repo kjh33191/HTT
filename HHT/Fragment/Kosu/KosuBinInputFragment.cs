@@ -95,12 +95,12 @@ namespace HHT
                 {
                     Thread.Sleep(1000);
 
-                    string souko_cd = prefs.GetString("souko_cd", "108");
-                    string kitaku_cd = prefs.GetString("kitaku_cd", "108");
+                    string souko_cd = prefs.GetString("souko_cd", "");
+                    string kitaku_cd = prefs.GetString("kitaku_cd", "");
                     string syuka_date = "20" + etDeliveryDate.Text.Replace("/", "");
                     string bin_no = etBinNo.Text;
-                    string tokuisaki_cd = prefs.GetString("tokuisaki_cd", "108");
-                    string todokesaki_cd = prefs.GetString("todokesaki_cd", "108");
+                    string tokuisaki_cd = prefs.GetString("tokuisaki_cd", "");
+                    string todokesaki_cd = prefs.GetString("todokesaki_cd", "");
 
                     try
                     {
@@ -128,7 +128,9 @@ namespace HHT
                             
                             editor.Apply();
 
-                            StartFragment(FragmentManager, typeof(KosuConfirmFragment));
+                            //StartFragment(FragmentManager, typeof(KosuConfirmFragment));
+
+                            StartFragment(FragmentManager, typeof(KosuWorkFragment));
                         }
                     }
                     catch

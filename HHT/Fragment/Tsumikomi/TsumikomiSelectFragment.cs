@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Android.App;
 using Android.Content;
@@ -50,7 +51,7 @@ namespace HHT
             course = prefs.GetString("course", "");
             bin_no = prefs.GetString("bin_no", "");
             kansen_kbn = prefs.GetString("kansen_kbn", "");
-
+            
             // ITEM EVENT SETTING 
             etSyukaDate = view.FindViewById<BootstrapEditText>(Resource.Id.et_tsumikomiSelect_syukaDate);
             etSyukaDate.FocusChange += (sender, e) => {
@@ -178,11 +179,34 @@ namespace HHT
 
         private void ShowConfirmMessage()
         {
-            string message = "配送日".PadLeft(5) + " : " + etSyukaDate.Text + "\n";
-            message += "コース".PadLeft(5) + " : " + etCourse.Text + "\n";
-            message += "便No".PadLeft(5) + " : " + bin_no + "\n\n";
+            string message = "配送日 : " + etSyukaDate.Text + "\n";
+            message += "コース : " + etCourse.Text + "\n";
+            message += "便No : " + bin_no + "\n\n";
             message += "よろしいですか？";
 
+            ShowDialog("確認", message, () => {
+                int count = WebService.RequestTumikomi230(souko_cd, kitaku_cd, syuka_date, nohin_date, bin_no, etCourse.Text);
+
+                // TODO
+                if (count > 0)
+                {
+                    // メールバッグ積込画面へ 
+                    // Return("sagyou14")
+                    return;
+                }
+
+                if (kansen_kbn == "1")
+                {
+                    StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
+                }
+                else
+                {
+                    StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
+                }
+
+            });
+
+            /*
             CommonUtils.AlertConfirm(view, "確認", message, (flag)=> {
                 if (flag)
                 {
@@ -206,6 +230,7 @@ namespace HHT
                     }
                 }
             });
+            */
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -274,5 +299,20 @@ namespace HHT
                 });
             }
         }
+
+        private void ShowDialog(string title, string body, Action callback)
+        {
+            Bundle bundle = new Bundle();
+            bundle.PutString("title", title);
+            bundle.PutString("body", body);
+
+            CustomDialogFragment dialog = new CustomDialogFragment { Arguments = bundle };
+            dialog.Cancelable = false;
+            dialog.Show(FragmentManager, "");
+            dialog.Dismissed += (s, e) => {
+                callback?.Invoke();
+            };
+        }
+
     }
 }

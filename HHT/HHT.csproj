@@ -22,6 +22,11 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <AndroidKeyStore>false</AndroidKeyStore>
+    <AndroidSigningKeyStore>C:\Users\kim junghan\AppData\Local\Xamarin\Mono for Android\Keystore\test\test.keystore</AndroidSigningKeyStore>
+    <AndroidSigningStorePass>1120510</AndroidSigningStorePass>
+    <AndroidSigningKeyAlias>1120510</AndroidSigningKeyAlias>
+    <AndroidSigningKeyPass>1120510</AndroidSigningKeyPass>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -31,9 +36,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>true</AndroidUseSharedRuntime>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <AndroidLinkMode>None</AndroidLinkMode>
-    <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     <AotAssemblies>false</AotAssemblies>
     <EnableLLVM>false</EnableLLVM>
     <BundleAssemblies>false</BundleAssemblies>
@@ -145,7 +150,6 @@
     <Compile Include="Fragment\Nohin\NohinMenuFragment.cs" />
     <Compile Include="Fragment\Nohin\NohinMailBagPasswordFragment.cs" />
     <Compile Include="Resources\DataHelper\MateFileHelper.cs" />
-    <Compile Include="Resources\DataHelper\FtpFileHelper.cs" />
     <Compile Include="Resources\DataHelper\SndNohinMailHelper.cs" />
     <Compile Include="Resources\DataHelper\SndNohinMailKaisyuHelper.cs" />
     <Compile Include="Resources\DataHelper\SndNohinSyohinKaisyuHelper.cs" />

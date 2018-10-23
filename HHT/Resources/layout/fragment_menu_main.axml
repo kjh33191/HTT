@@ -20,8 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/konaiLayout"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
             android:layout_marginBottom="27dp">
             <Button
                 android:text="1:入荷検品"
@@ -155,9 +153,9 @@
             android:layout_marginBottom="27dp">
             <Button
                 android:text="1:入荷検品"
+				android:id="@+id/btn_main_manager_nyuka"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:id="@+id/btn_main_manager_nyuka"
                 android:textAlignment="center"
                 android:paddingStart="20dp"
                 android:layout_weight="1"

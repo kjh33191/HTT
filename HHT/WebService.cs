@@ -1177,9 +1177,13 @@ namespace HHT
             }
         }
 
-        public static PsFile RequestTumikomi180()
+        public static PsFile RequestTumikomi180(string souko_cd, string hiduke)
         {
-            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI180, new Dictionary<string, string>());
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            param.Add("souko_cd", souko_cd);
+            param.Add("hiduke", hiduke);
+
+            string resultJson = CommonUtils.Post(TUMIKOMI.TUMIKOMI180, param);
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);
 
             if (response.status == "0")

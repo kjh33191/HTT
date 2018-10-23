@@ -13,5 +13,9 @@ namespace HHT.Resources.Model
         public string menu_flg { get; set; }
 
         public string def_tokuisaki_cd { get; set; }
+
+        public string souko_kbn { get; set; }
+
+        public string tsuhshin_kbn { get; set; }
     }
 }

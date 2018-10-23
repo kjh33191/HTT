@@ -106,6 +106,7 @@ namespace HHT
             {
                 int cnt = WebService.RequestMAIL020(souko_cd, haisoDate, etBin.Text);
                 editor.PutString("haiso_date", haisoDate);
+                editor.PutString("bin_no", etBin.Text);
                 editor.PutInt("mail_back", cnt);
                 editor.Apply();
                 

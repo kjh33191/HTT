@@ -220,7 +220,7 @@ namespace HHT
 
             Dictionary<string, string> param = new Dictionary<string, string>
             {
-                { "pTerminalID",  "432660068"},
+                { "pTerminalID",  prefs.GetString("terminal_id","")},
                 { "pProgramID",  "KOS"},
                 { "pSagyosyaCD",  pSagyosyaCD},
                 { "pSoukoCD",  pSoukoCD},
@@ -231,7 +231,7 @@ namespace HHT
                 { "pTsumiVendorCD",  pTsumiVendorCD},
                 { "pKamotsuNo",  pKamotsuNo},
                 { "pBinNo",  pBinNo},
-                { "pHHT_No",  "11101"},
+                { "pHHT_No",  prefs.GetString("hht_no","")},
                 { "pMatehan",  pMatehan},
                 { "pJskCaseSu",  pJskCaseSu},
                 { "pJskOriconSu",  pJskOriconSu},

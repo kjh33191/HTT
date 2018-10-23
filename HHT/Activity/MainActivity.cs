@@ -598,6 +598,53 @@ namespace HHT
             return ret;
         }
 
+        protected override void OnPause()
+        {
+            base.OnPause();
+
+            // Release scanner resources
+            if (mBarcodeScanner != null)
+            {
+                try
+                {
+                    // Disable Scanner
+                    mBarcodeScanner.Close();
+                    // Remove Listener Event
+                    mBarcodeScanner.RemoveDataListener(this);
+                }
+                catch (BarcodeException_ e)
+                {
+                    Log.Error(TAG, "Error Code = " + e.ErrorCode, e);
+                }
+            }
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (mBarcodeScanner != null)
+            {
+                try
+                {
+                    // Remove Scanner instance
+                    mBarcodeScanner.Destroy();
+                }
+                catch (BarcodeException_ e)
+                {
+                    Log.Error(TAG, "Error Code = " + e.ErrorCode, e);
+                }
+            }
+
+            if (mBarcodeManager != null)
+            {
+                // Remove Scanner Manager
+                mBarcodeManager.Destroy();
+                mBarcodeManager = null;
+            }
+        }
+
+
         public override void OnBackPressed()
         {
             Fragment localFragment = FragmentManager.FindFragmentById(Resource.Id.fragmentContainer);

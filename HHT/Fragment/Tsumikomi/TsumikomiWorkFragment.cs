@@ -33,10 +33,7 @@ namespace HHT
         private string matehan;
         private bool carLabelInputMode = false;
         private static readonly string ERR_UPDATE_001 = "更新出来ませんでした。\n再度商品をスキャンして下さい。";
-
-        // Proc TRG - >060(kansen_kbn == 0), 310 ;  
-        // syaryou TRG - > 080(kansen_kbn == 0); 311 ; => 210, 314  cancel -> 090, 312
-
+        
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -307,22 +304,14 @@ namespace HHT
         
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
         {
-            if (keycode == Keycode.Back)
-            {
-                
-            }
-            else if (keycode == Keycode.F1)
+            if (keycode == Keycode.F1)
             {
                 if(kansen_kbn == "0" && prefs.GetBoolean("scan_flg", false)) StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment));
             }
             else if (keycode == Keycode.F3)
             {
                 // 移動メッセージ画面
-                if (!carLabelInputMode)
-                {
-                    // JOB: menu_flg = 0 Return("sagyou11")
-                    // StartFragment(FragmentManager, typeof()); 
-                }
+                if (!carLabelInputMode) StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment));
             }
 
             return true;
@@ -330,17 +319,17 @@ namespace HHT
 
         public override bool OnBackPressed()
         {
-            if (carLabelInputMode == false)
-            {
-                return true;
-            }
-            else
+            if (carLabelInputMode)
             {
                 CancelTsumiKomi();
                 btnIdou.Enabled = true;
                 etKosu.Text = "0";
                 etKosu.SetBackgroundColor(Android.Graphics.Color.Yellow);
                 etCarLabel.SetBackgroundColor(Android.Graphics.Color.White);
+            }
+            else
+            {
+                return true;
             }
 
             return false;
@@ -387,12 +376,13 @@ namespace HHT
             mFileHelper.DeleteAll();
             mFileHelper.InsertALL(mFiles);
 
-            // It would be useless..
-            //PsFile psFile = WebService.RequestTumikomi180();
-            PsFile psFile = new PsFile { pass = "" };
+            //PsFile psFile = WebService.RequestTumikomi180(souko_cd, syuka_date);
+            /*
             PsFileHelper psFileHelper = new PsFileHelper();
+            PsFile psFile = new PsFile();
             psFileHelper.DeleteAll();
             psFileHelper.Insert(psFile);
+            */
 
             // MAILBACK FILE 
             List<MbFile> mbFiles = WebService.RequestTumikomi140(souko_cd, kitaku_cd, syuka_date, bin_no, course);
@@ -405,13 +395,7 @@ namespace HHT
             SoFileHelper soFileHelper = new SoFileHelper();
             soFileHelper.DeleteAll();
             soFileHelper.Insert(soFile);
-
-            // // It would be useless..
-            // TUMIKOMI190 -> ftp file ? 
-            //FtpFile ftpFile = WebService.RequestTumikomi190();
-            //FtpFile ftpFile = new FtpFile {  };
-            //new FtpFileHelper().Insert(ftpFile);
-
+            
             // VENDOR FILE
             string nohin_date = DateTime.Now.ToString("yyyyMMdd");
             List<MateFile> mateFile = WebService.RequestTumikomi260(souko_cd, kitaku_cd, syuka_date, nohin_date, bin_no, course);
@@ -434,7 +418,7 @@ namespace HHT
         {
             return new Dictionary<string, string>
                         {
-                            { "pTerminalID",  "432660068"},
+                            { "pTerminalID",  prefs.GetString("terminal_id","")},
                             { "pProgramID", "TUM" },
                             { "pSagyosyaCD", "99999" },
                             { "pSoukoCD",  souko_cd},
@@ -445,7 +429,7 @@ namespace HHT
                             { "pTokuisakiCD", tokuisaki_cd },
                             { "pTodokesakiCD", todokesaki_cd },
                             { carLabelInputMode == false ? "pKamotsuNo" : "pSyaryoNo", barcodeData },
-                            { "pHHT_No", "11101" }
+                            { "pHHT_No", prefs.GetString("hht_no","") }
                         };
         }
 

@@ -12,7 +12,7 @@ namespace HHT.Resources.DataHelper
         readonly string folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
         readonly string dbFileName = Application.Context.Resources.GetString(Resource.String.LocalDatabaseFileName);
         
-        public bool InsertIntoTableLoginInfo(Login login)
+        public bool Insert(Login login)
         {
             try
             {

@@ -162,7 +162,7 @@ namespace HHT
                             pNohinTime = DateTime.Now.ToString("HHmm"),
                             pProgramID = "NOH",
                             pSyukaDate = tsumikomiList[0].syuka_date,
-                            pTerminalID = "11101",
+                            pTerminalID = prefs.GetString("terminal_id", ""),
                             pTodokesakiCD = tsumikomiList[0].todokesaki_cd,
                             pTokuisakiCD = tsumikomiList[0].tokuisaki_cd
                         };
