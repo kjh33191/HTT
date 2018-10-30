@@ -155,7 +155,7 @@ namespace HHT
 
                 if(btvVal1 > btvVal2)
                 {
-                    CommonUtils.AlertDialog(view, "", "貸出数量が許容数を超えました。", null);
+                    ShowDialog("エラー", "貸出数量が許容数を超えました。", () => { });
                     return;
                 }
             }
@@ -167,7 +167,7 @@ namespace HHT
 
                 if (btvVal1 > btvVal2)
                 {
-                    CommonUtils.AlertDialog(view, "", "貸出数量が許容数を超えました。", null);
+                    ShowDialog("エラー", "貸出数量が許容数を超えました。", () => { });
                     return;
                 }
             }
@@ -179,7 +179,7 @@ namespace HHT
 
                 if (btvVal1 > btvVal2)
                 {
-                    CommonUtils.AlertDialog(view, "", "貸出数量が許容数を超えました。", null);
+                    ShowDialog("エラー", "貸出数量が許容数を超えました。", () => { });
                     return;
                 }
             }
@@ -191,16 +191,14 @@ namespace HHT
 
                 if (btvVal1 > btvVal2)
                 {
-                    CommonUtils.AlertDialog(view, "", "貸出数量が許容数を超えました。", null);
+                    ShowDialog("エラー", "貸出数量が許容数を超えました。", () => { });
                     return;
                 }
             }
 
-            CommonUtils.AlertConfirm(view, "", "よろしいですか？", (flag) => {
-                if (flag)
-                {
-                    // proc_hht_kasidasi
-                    Dictionary<string, string> param = new Dictionary<string, string>
+            ShowDialog("確認", "よろしいですか？", () => {
+                // proc_hht_kasidasi
+                Dictionary<string, string> param = new Dictionary<string, string>
                     {
                         { "pTerminalID", prefs.GetString("terminal_id","")},
                         { "pProgramID", "HHT"},
@@ -219,13 +217,10 @@ namespace HHT
                         { "pMatehanCd4", matehanList.Count > 3 ? matehanList[3].matehan_cd : ""}
                     };
 
-                    MATE060 mate060 = WebService.RequestMate060(param);
-                    if(mate060.poRet == "0")
-                    {
-                        CommonUtils.AlertDialog(view, "", "貸出登録が完了しました。",()=> {
-                            FragmentManager.PopBackStack();
-                        });
-                    }
+                MATE060 mate060 = WebService.RequestMate060(param);
+                if (mate060.poRet == "0")
+                {
+                    ShowDialog("報告", "貸出登録が完了しました。", ()=> { FragmentManager.PopBackStack(); });
                 }
             });
         }

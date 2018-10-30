@@ -1,6 +1,5 @@
 ﻿using System;
 using Android.App;
-using Android.Content;
 using Android.Graphics;
 using Android.OS;
 using Android.Views;
@@ -43,7 +42,9 @@ namespace HHT
             string title = Arguments.GetString("title");
             string body = Arguments.GetString("body");
 
-            ((TextView)view.FindViewById(Resource.Id.title)).Text = title;
+            TextView _TitleTextView = ((TextView)view.FindViewById(Resource.Id.title));
+
+            _TitleTextView.Text = title;
             ((TextView)view.FindViewById(Resource.Id.message)).Text = body;
 
             BootstrapButton button = view.FindViewById<BootstrapButton>(Resource.Id.okButton);
@@ -61,15 +62,45 @@ namespace HHT
                 Dismiss();
             };
 
+
             if (title == "エラー")
             {
-                ((TextView)view.FindViewById(Resource.Id.title)).SetBackgroundColor(Color.Red);
+                _TitleTextView.SetBackgroundColor(Color.Red);
                 button.BootstrapBrand = DefaultBootstrapBrand.Danger;
+                cancelButton.Visibility = ViewStates.Gone;                
+            }
+            else if(title == "警告")
+            {
+                _TitleTextView.SetBackgroundColor(Color.Yellow);
+                _TitleTextView.SetTextColor(Color.Black);
+                button.BootstrapBrand = DefaultBootstrapBrand.Warning;
+            }
+            else if(title == "報告")
+            {
                 cancelButton.Visibility = ViewStates.Gone;
             }
 
+            //　確認ダイアログではない場合、振動を起こす
+            if(title == "エラー"　|| title == "報告")
+            {
+                Vibrate();
+            }
+
             builder.SetView(view);
-            return builder.Create();
+            Dialog dialog = builder.Create();
+            dialog.KeyPress += (sender, e) =>{
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    button.CallOnClick();
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            };
+            
+            return dialog;
         }
         
         public class DialogEventArgs : EventArgs
@@ -79,5 +110,11 @@ namespace HHT
 
         public delegate void DialogEventHandler(object sender, DialogEventArgs args);
 
+        private void Vibrate()
+        {
+#pragma warning disable CS0618 // 型またはメンバーが古い形式です
+            ((Vibrator)Activity.GetSystemService(Android.Content.Context.VibratorService)).Vibrate(1000);
+#pragma warning restore CS0618 // 型またはメンバーが古い形式です
+        }
     }
 }

@@ -57,7 +57,7 @@ namespace HHT.Resources.DataHelper
                 {
                     string sql = "select * from MbFile where kanri_no =?";
                     List<MbFile> result = connection.Query<MbFile>(sql, keycode);
-                    return result != null;
+                    return result != null && result.Count !=0;
                 }
             }
             catch (SQLiteException ex)

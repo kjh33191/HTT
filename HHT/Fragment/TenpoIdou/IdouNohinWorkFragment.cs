@@ -62,10 +62,8 @@ namespace HHT
 
         private void Confirm()
         {
-            CommonUtils.AlertDialog(view, "", "移動ラベルがみつかりません。", null);
-            Vibrate();
+            ShowDialog("エラー", "移動ラベルがみつかりません。", () => { });
             return;
-            
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -87,8 +85,6 @@ namespace HHT
                 this.Activity.RunOnUiThread(() =>
                 {
                     string data = barcodeData.Data;
-                 
-                    
                 });
             }
         }

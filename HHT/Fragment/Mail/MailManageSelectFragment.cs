@@ -60,6 +60,7 @@ namespace HHT
                 if (e.HasFocus)
                 {
                     etHaisoDate.Text = etHaisoDate.Text.Replace("/", "");
+                    etHaisoDate.SetSelection(etHaisoDate.Text.Length);
                 }
                 else
                 {
@@ -69,9 +70,10 @@ namespace HHT
                     }
                     catch
                     {
-                        CommonUtils.ShowAlertDialog(view, "", "日付を正しく入力してください。");
-                        etHaisoDate.Text = "";
-                        etHaisoDate.RequestFocus();
+                        ShowDialog("エラー", "日付を正しく入力してください。", () => {
+                            etHaisoDate.Text = "";
+                            etHaisoDate.RequestFocus();
+                        });
                     }
                 }
             };
@@ -86,15 +88,17 @@ namespace HHT
             // Input Check
             if(etHaisoDate.Text == "")
             {
-                CommonUtils.ShowAlertDialog(view, "", "日付を入力してください。");
-                etHaisoDate.RequestFocus();
+                ShowDialog("エラー", "日付を入力してください。", () => {
+                    etHaisoDate.RequestFocus();
+                });
                 return;
             }
 
             if (etBin.Text == "")
             {
-                CommonUtils.ShowAlertDialog(view, "", "便を入力してください");
-                etBin.RequestFocus();
+                ShowDialog("エラー", "便を入力してください。", () => {
+                    etBin.RequestFocus();
+                });
                 return;
             }
 
@@ -114,7 +118,7 @@ namespace HHT
             }
             catch
             {
-                CommonUtils.AlertDialog(view, "", "", null);
+                ShowDialog("エラー", "登録済みメールバッグ数取得に失敗しました。", () => {});
                 Log.Error(TAG, "登録済みメールバッグ数取得に失敗しました。");
             }
         }

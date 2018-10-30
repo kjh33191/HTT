@@ -124,8 +124,7 @@ namespace HHT
                     txtSoukoName.Text = "";
                     etSoukoCode.RequestFocus();
                 });
-                
-                Vibrate();
+               
                 Log.Warn(TAG, "SoukoCode is Empty");
                 return;
             }
@@ -137,7 +136,6 @@ namespace HHT
 
                 ShowDialog(alertTitle, "担当者コードを\n入力して下さい。", ()=> { });
                 
-                Vibrate();
                 Log.Warn(TAG, "DriverCode is Empty");
                 return;
             }
@@ -184,7 +182,6 @@ namespace HHT
                                 etDriverCode.RequestFocus();
                             });
 
-                            Vibrate();
                             hasError = true;
                             Log.Error(TAG, "Login Failed ：" + e.StackTrace.ToString());
                             return;
@@ -192,7 +189,6 @@ namespace HHT
                     }
                     else
                     {
-                        Vibrate();
                         ShowDialog("エラー", "サーバから答えがありません。", () => { });
                         hasError = true;
                         return;
@@ -229,6 +225,7 @@ namespace HHT
                     editor.PutString("souko_cd", etSoukoCode.Text);
                     editor.PutString("souko_nm", txtSoukoName.Text);
                     editor.PutString("driver_cd", etDriverCode.Text);
+                    editor.PutString("sagyousya_cd", etDriverCode.Text);
                     editor.PutString("kitaku_cd", kitaku_cd);
                     editor.PutString("def_tokuisaki_cd", def_tokuisaki_cd);
                     editor.PutString("tsuhshin_kbn", tsuhshin_kbn);
@@ -283,13 +280,12 @@ namespace HHT
             catch (Exception e)
             {
                 Log.Debug(TAG, e.StackTrace.ToString());
-
+                
                 ShowDialog(ERROR, ERR_NOT_FOUND_SOUKO, () => {
                     etSoukoCode.Text = "";
                     txtSoukoName.Text = "";
                     etSoukoCode.RequestFocus();
                 });
-                Vibrate();
             }
         }
 
@@ -355,21 +351,6 @@ namespace HHT
             {
                 // ?
             }
-        }
-
-        private void ShowDialog(string title, string body, Action callback)
-        {
-            Bundle bundle = new Bundle();
-            bundle.PutString("title", title);
-            bundle.PutString("body", body);
-
-            CustomDialogFragment dialog = new CustomDialogFragment { Arguments = bundle };
-            dialog.Cancelable = false;
-            dialog.Show(FragmentManager, "");
-            dialog.Dismissed += (s, e) => {
-                Toast.MakeText(this.Activity, e.Text, ToastLength.Long).Show();
-                callback?.Invoke();
-            };
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)

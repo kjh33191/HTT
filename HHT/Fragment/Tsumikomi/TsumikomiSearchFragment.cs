@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
-using HHT.Common;
 using HHT.Resources.Model;
 
 namespace HHT
@@ -81,7 +72,7 @@ namespace HHT
                     }
                     else
                     {
-                        CommonUtils.AlertDialog(view, "", "表示データがありません。", ()=> { FragmentManager.PopBackStack(); });
+                        ShowDialog("エラー", "表示データがありません", () => { FragmentManager.PopBackStack(); });
                     }
 
                 });
@@ -113,7 +104,7 @@ namespace HHT
 
                 if (count == 0)
                 {
-                    CommonUtils.AlertDialog(view, "Error", "定番・増便データはありません。", null);
+                    ShowDialog("エラー", "定番・増便データはありません。", () => { });
                     return;
                 }
                 else if (count == 1)
@@ -135,7 +126,7 @@ namespace HHT
             }
             catch
             {
-                CommonUtils.AlertDialog(view, "Error", "届先指定に失敗しました。", null);
+                ShowDialog("エラー", "届先指定に失敗しました。", () => { });
                 return;
             }
         }

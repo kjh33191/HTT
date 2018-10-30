@@ -38,10 +38,7 @@ namespace HHT
             etTokuisaki.Text = prefs.GetString("def_tokuisaki_cd", "");
             etTodokesaki = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinSelect_todokesaki);
             etReceipt = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinSelect_receipt);
-
-            etTodokesaki.Text = "0248";
-            etReceipt.Text = "J00000248";
-
+            
             BootstrapButton confirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_nohinSelect_confirm);
             confirm.FocusChange += delegate { if (confirm.IsFocused) CommonUtils.HideKeyboard(this.Activity); };
             confirm.Click += delegate {
@@ -50,7 +47,7 @@ namespace HHT
                 string tokui = etTokuisaki.Text;
                 if(tokui == "")
                 {
-                    CommonUtils.AlertDialog(View, "エラー", "得意先コードを入力してください。", () => { etTokuisaki.RequestFocus(); });
+                    ShowDialog("エラー", "得意先コードを入力してください。", () => { etTokuisaki.RequestFocus(); });
                     return;
                 }
 
@@ -58,7 +55,7 @@ namespace HHT
                 string todoke = etTodokesaki.Text;
                 if (todoke == "")
                 {
-                    CommonUtils.AlertDialog(View, "エラー", "届先コードを入力してください。", () => { etTodokesaki.RequestFocus(); });
+                    ShowDialog("エラー", "届先コードを入力してください。", () => { etTodokesaki.RequestFocus(); });
                     return;
                 }
 
@@ -66,20 +63,77 @@ namespace HHT
                 string jyuryo = etReceipt.Text;
                 if (jyuryo == "")
                 {
-                    CommonUtils.AlertDialog(View, "エラー", "受領書をスキャンしてください。", () => { etReceipt.RequestFocus(); });
+                    ShowDialog("エラー", "受領書をスキャンしてください。", () => { etReceipt.RequestFocus(); });
                     return;
                 }
 
-                if (jyuryo[0] != 'J')
+                if (jyuryo[0] != 'J' || jyuryo.Length != 9)
                 {
-                    CommonUtils.AlertDialog(View, "エラー", "受領書ではありません。", () => { etTodokesaki.RequestFocus();});
+                    ShowDialog("エラー", "受領書ではありません。", () => { etReceipt.RequestFocus(); });
+                    return;
+                }
+
+                if (jyuryo.Substring(1, 4) != etTokuisaki.Text || jyuryo.Substring(5, 4) != etTodokesaki.Text)
+                {
+                    ShowDialog("エラー", "納入先店舗が違います。", () => { etReceipt.RequestFocus(); });
                     return;
                 }
 
                 Confirm();
                 
             };
-            
+
+            etReceipt.KeyPress += (sender, e) => {
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    CommonUtils.HideKeyboard(Activity);
+                    // 得意先チェック
+                    string tokui = etTokuisaki.Text;
+                    if (tokui == "")
+                    {
+                        ShowDialog("エラー", "得意先コードを入力してください。", () => { etTokuisaki.RequestFocus(); });
+                        return;
+                    }
+
+                    // 届先チェック
+                    string todoke = etTodokesaki.Text;
+                    if (todoke == "")
+                    {
+                        ShowDialog("エラー", "届先コードを入力してください。", () => { etTodokesaki.RequestFocus(); });
+                        return;
+                    }
+
+                    // 受領書チェック
+                    string jyuryo = etReceipt.Text;
+                    if (jyuryo == "")
+                    {
+                        ShowDialog("エラー", "受領書をスキャンしてください。", () => { etReceipt.RequestFocus(); });
+                        return;
+                    }
+
+                    if (jyuryo[0] != 'J' || jyuryo.Length != 9)
+                    {
+                        ShowDialog("エラー", "受領書ではありません。", () => { etReceipt.RequestFocus(); });
+                        return;
+                    }
+
+                    
+                    if (jyuryo.Substring(1,4) != etTokuisaki.Text || jyuryo.Substring(5, 4) != etTodokesaki.Text)
+                    {
+                        ShowDialog("エラー", "納入先店舗が違います。", () => { etReceipt.RequestFocus(); });
+                        return;
+                    }
+
+                    Confirm();
+
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            };
+
 
             etTodokesaki.RequestFocus();
 
@@ -101,15 +155,13 @@ namespace HHT
                         string barcode_toku_todo = data.Substring(1, 8);
                         if (barcode_toku_todo[0] != 'J')
                         {
-                            CommonUtils.AlertDialog(view, "", "受領書ではありません。", () => {
-                                etTodokesaki.RequestFocus();
-                            });
+                            ShowDialog("エラー", "受領書ではありません。", () => { etTodokesaki.RequestFocus(); });
                             return;
                         }
 
                         if (barcode_toku_todo != etTokuisaki.Text + etTodokesaki.Text)
                         {
-                            CommonUtils.AlertDialog(view, "", "納入先店舗が違います。", null);
+                            ShowDialog("エラー", "納入先店舗が違います。", () => { });
                             return;
                         }
 
@@ -144,9 +196,7 @@ namespace HHT
                         if (tsumikomiList.Count == 0)
                         {
                             hasError = true;
-                            CommonUtils.AlertDialog(View, "エラー", "得意先コードが見つかりません。", () => {
-                                etTodokesaki.RequestFocus();
-                            });
+                            ShowDialog("エラー", "得意先コードが見つかりません。", () => { etTodokesaki.RequestFocus();  });
                             return;
                         }
                         
@@ -192,6 +242,8 @@ namespace HHT
                         editor.PutString("matehan_cd", tsumikomiList[0].matehan);
                         
                         editor.PutString("jyuryo", etReceipt.Text);
+                        editor.PutBoolean("mailBagFlag", false);
+                        
                         editor.Apply();
                         
                     }

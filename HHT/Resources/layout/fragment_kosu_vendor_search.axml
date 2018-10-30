@@ -20,7 +20,7 @@
             android:id="@+id/textView8"
             android:layout_width="100dp" />
         <TextView
-            android:text="ベン"
+            android:text="ベンダー"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#ff0d47a1"

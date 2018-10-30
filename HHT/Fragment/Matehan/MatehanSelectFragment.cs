@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Android.App;
 using Android.Content;
@@ -18,7 +19,6 @@ namespace HHT
         ISharedPreferencesEditor editor;
 
         EditText etKasidatuDate, etKasidatuTarget;
-        TextView txtConfirmMsg, txtTargetName;
         
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -46,28 +46,39 @@ namespace HHT
             BootstrapButton btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.btn_matehan_confirm);
             etKasidatuDate = view.FindViewById<BootstrapEditText>(Resource.Id.et_matehan_kasidatuDate);
             etKasidatuTarget = view.FindViewById<BootstrapEditText>(Resource.Id.et_matehan_kasidatuTarget);
-            etKasidatuTarget.FocusChange += (sender, e) => { if (!e.HasFocus && etKasidatuTarget.Text != "") SearchBinNo(); };
-            
-            txtTargetName = view.FindViewById<TextView>(Resource.Id.tv_matehan_targetName);
-            txtConfirmMsg = view.FindViewById<TextView>(Resource.Id.tv_matehan_confirmMsg);
+            etKasidatuTarget.KeyPress += (sender, e) => {
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
+                    CommonUtils.HideKeyboard(Activity);
 
-            btnConfirm.Click += delegate { Confirm(); };
+                    if(etKasidatuTarget.Text != "") SearchBinNo();
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            };
+
+            btnConfirm.Click += delegate { SearchBinNo(); };
             etKasidatuDate.FocusChange += (sender, e) => {
                 if (e.HasFocus)
                 {
                     etKasidatuDate.Text = etKasidatuDate.Text.Replace("/", "");
+                    etKasidatuDate.SetSelection(etKasidatuDate.Text.Length);
                 }
                 else
                 {
                     try
                     {
-                        etKasidatuDate.Text = CommonUtils.GetDateYYMMDDwithSlash(etKasidatuDate.Text);
+                        etKasidatuDate.Text = CommonUtils.GetDateYYYYMMDDwithSlash(etKasidatuDate.Text);
                     }
                     catch
                     {
-                        CommonUtils.ShowAlertDialog(view, "日付形式ではありません", "正しい日付を入力してください");
-                        etKasidatuDate.Text = "";
-                        etKasidatuDate.RequestFocus();
+                        ShowDialog("エラー", "正しい日付を入力してください", ()=>{
+                            etKasidatuDate.Text = "";
+                            etKasidatuDate.RequestFocus();
+                        });
                     }
                 }
             };
@@ -75,29 +86,24 @@ namespace HHT
             BootstrapButton btnSearch = view.FindViewById<BootstrapButton>(Resource.Id.btn_matehan_kasidasiSakiSearch);
             btnSearch.Click += delegate { SearchKasidasiSaki(); };
 
-            etKasidatuDate.Text = "18/03/20";
+            //etKasidatuDate.Text = "18/03/20";
+            etKasidatuDate.Text = DateTime.Now.ToString("yyyy/MM/dd");
             etKasidatuTarget.RequestFocus();
 
         }
 
         private void SearchKasidasiSaki()
         {
-            /*
-            if (etSyukaDate.Text == "")
+            
+            if (etKasidatuDate.Text == "")
             {
-                CommonUtils.ShowAlertDialog(view, "エラー", "配送日を入力してください。");
-                etSyukaDate.RequestFocus();
+                ShowDialog("エラー", "貸出日を入力してください。", () => { });
+                etKasidatuDate.RequestFocus();
                 return;
             }
-
-            */
-
-
-            //editor.PutString("deliveryDate", etSyukaDate.Text);
-
-            //editor.PutInt("menuKbn", 2); // 届先検索フラグ設定
-            //editor.Apply();
-
+            
+            editor.PutString("kasidasi_date", etKasidatuDate.Text.Replace("/", ""));
+            editor.Apply();
             StartFragment(FragmentManager, typeof(MatehanSearchFragment));
         }
 
@@ -113,25 +119,34 @@ namespace HHT
                         string vendorNm = WebService.RequestMate010(etKasidatuTarget.Text);
                         if(vendorNm == "")
                         {
-                            CommonUtils.AlertDialog(view, "", "貸出先コードが見つかりません", () => {
+                            ShowDialog("報告", "貸出先コードが見つかりません。", () => {
                                 etKasidatuTarget.Text = "";
                                 etKasidatuTarget.RequestFocus();
                             });
                         }
                         else
                         {
-                            txtTargetName.Text = vendorNm;
-                            txtConfirmMsg.Visibility = ViewStates.Visible;
+                            string message = "貸出日：" + etKasidatuDate.Text;
+                            message += "\n" + "貸出先：" + etKasidatuTarget.Text;
+                            message += "\n" + "貸出名：\n" + vendorNm;
+                            message += "\n\n" + "よろしいですか？";
 
-                            etKasidatuDate.Focusable = false;
-                            etKasidatuTarget.Focusable = false;
+                            ShowDialog("確認", message, () => {
+                                editor.PutString("vendor_cd", etKasidatuTarget.Text);
+                                editor.PutString("vendor_nm", vendorNm);
+                                editor.PutString("kasidasi_date", etKasidatuDate.Text.Replace("/", ""));
 
+                                editor.Apply();
+
+                                StartFragment(FragmentManager, typeof(MatehanWorkFragment));
+
+                            });
                         }
 
                     }
                     catch
                     {
-                        CommonUtils.AlertDialog(view, "", "貸出先コードが見つかりません", () =>{
+                        ShowDialog("エラー", "貸出先コードが見つかりません。", () => {
                             etKasidatuTarget.Text = "";
                             etKasidatuTarget.RequestFocus();
                         });
@@ -141,38 +156,6 @@ namespace HHT
                 Activity.RunOnUiThread(() => ((MainActivity)this.Activity).DismissDialog());
             }
             )).Start();
-
-        }
-
-        private void HideConfirmMessage()
-        {
-            if (txtConfirmMsg.Visibility == ViewStates.Visible)
-            {
-                txtTargetName.Visibility = ViewStates.Gone;
-                txtConfirmMsg.Visibility = ViewStates.Gone;
-
-                etKasidatuDate.Focusable = true;
-                etKasidatuTarget.Focusable = true;
-            }
-        }
-
-
-        private void Confirm()
-        {
-            if (txtConfirmMsg.Visibility != ViewStates.Visible)
-            {
-                SearchBinNo();
-            }
-            else
-            {
-                editor.PutString("vendor_cd", etKasidatuTarget.Text);
-                editor.PutString("vendor_nm", txtTargetName.Text);
-                editor.PutString("kasidasi_date", "20" + etKasidatuDate.Text.Replace("/", ""));
-                
-                editor.Apply();
-
-                StartFragment(FragmentManager, typeof(MatehanWorkFragment));
-            }
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -180,16 +163,8 @@ namespace HHT
 
             if (keycode == Keycode.F4)
             {
-                Confirm();
+                SearchBinNo();
                 return false;
-            }
-            else if (keycode == Keycode.Back)
-            {
-                if (txtConfirmMsg.Visibility == ViewStates.Visible)
-                {
-                    HideConfirmMessage();
-                    return false;
-                }
             }
 
             return true;
@@ -210,7 +185,7 @@ namespace HHT
                     {
                         if (data.Length < 12)
                         {
-                            CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", () => { return; });
+                            ShowDialog("エラー", "コースNoがみつかりません。", () => {});
                         }
                         else
                         {
@@ -221,7 +196,7 @@ namespace HHT
                             }
                             catch
                             {
-                                CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", () => { return; });
+                                ShowDialog("エラー", "コースNoがみつかりません。", () => { });
                             }
 
                         }

@@ -135,29 +135,28 @@ namespace HHT
             if (matehanList.Count > index)
             {
                 string msg = matehanList[index].matehan_nm + "でよろしいですか？";
-                CommonUtils.AlertConfirm(view, "確認", msg, (flag) =>
+
+                ShowDialog("警告", msg, () =>
                 {
-                    if (flag)
+                    editor.PutString("mateno", matehanList[index].matehan_cd);
+                    editor.Apply();
+
+                    string sin_matehan = "";
+                    string mateno = matehanList[index].matehan_cd;
+                    string hht_no = "99";
+                    string tokuiCd = prefs.GetString("tmptokui_cd", "");
+                    string todokeCd = prefs.GetString("tmptodoke_cd", "");
+                    string mate_renban = GetMateRandomNo();
+
+                    sin_matehan = mateno + hht_no + tokuiCd + todokeCd + mate_renban;
+
+                    if (menuFlag == 3)
                     {
-                        editor.PutString("mateno", matehanList[index].matehan_cd);
-                        editor.Apply();
-
-                        string sin_matehan = "";
-                        string mateno = matehanList[index].matehan_cd;
-                        string hht_no = "99";
-                        string tokuiCd = prefs.GetString("tmptokui_cd", "");
-                        string todokeCd = prefs.GetString("tmptodoke_cd", "");
-                        string mate_renban = GetMateRandomNo();
-
-                        sin_matehan = mateno + hht_no + tokuiCd + todokeCd + mate_renban;
-
-                        if (menuFlag == 3)
-                        {
-                            Dictionary<string, string> param = new Dictionary<string, string>
+                        Dictionary<string, string> param = new Dictionary<string, string>
                             {
                                 {"pTerminalID", prefs.GetString("terminal_id","") },
                                 {"pProgramID", "IDO" },
-                                {"pSagyosyaCD", prefs.GetString("pSagyosyaCD", "") },
+                                {"pSagyosyaCD", prefs.GetString("sagyousya_cd","") },
                                 {"pSoukoCD", prefs.GetString("souko_cd", "") },
                                 {"pKitakuCD", prefs.GetString("kitaku_cd", "") },
                                 {"pMotoMatehan", motoInfoList[0].motoMateCode },
@@ -165,29 +164,27 @@ namespace HHT
                                 {"pGyomuKbn", "04" },
                                 {"pVendorCd", prefs.GetString("tsumi_vendor_cd", "") }
                             };
-                            
-                            IDOU070 idou070 = WebService.RequestIdou070(param);
 
-                            if (idou070.poRet != "0")
-                            {
-                                CommonUtils.AlertDialog(view, "", idou070.poMsg, null);
-                                return;
-                            }
+                        IDOU070 idou070 = WebService.RequestIdou070(param);
 
-                            // 積替処理完了
-                            CommonUtils.AlertDialog(view, "    =メッセージ=    ", "移動処理が\n完了しました。", () =>
-                                FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0)
-                            );
-                        }
-                        else
+                        if (idou070.poRet != "0")
                         {
-                            // 単品マテハン登録
-                            
-                            if (mate_renban.Length > 0)
+                            ShowDialog("エラー", idou070.poMsg, () => { });
+                            return;
+                        }
+
+                        // 積替処理完了
+                        ShowDialog("報告", "移動処理が\n完了しました。", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
+                    }
+                    else
+                    {
+                        // 単品マテハン登録
+
+                        if (mate_renban.Length > 0)
+                        {
+                            foreach (Ido motoInfo in motoInfoList)
                             {
-                                foreach(Ido motoInfo in motoInfoList)
-                                {
-                                    Dictionary<string, string> param = new Dictionary<string, string>
+                                Dictionary<string, string> param = new Dictionary<string, string>
                                     {
                                         {"pTerminalID", prefs.GetString("terminal_id","") },
                                         {"pProgramID", "IDO" },
@@ -199,23 +196,19 @@ namespace HHT
                                         {"pVendorCd", prefs.GetString("tsumi_vendor_cd", "") }
                                     };
 
-                                    IDOU090 idou090 = WebService.RequestIdou090(param);
-                                    if(idou090.poMsg != "")
-                                    {
-                                        CommonUtils.AlertDialog(view, "", idou090.poMsg, null);
-                                        return;
-                                    }
+                                IDOU090 idou090 = WebService.RequestIdou090(param);
+                                if (idou090.poMsg != "")
+                                {
+                                    ShowDialog("エラー", idou090.poMsg, () => { });
+                                    return;
                                 }
-                                
-                                // 積替処理完了
-                                CommonUtils.AlertDialog(view, "    =メッセージ=    ", "移動処理が\n完了しました。", ()=>
-                                    FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0)
-                                );
                             }
+
+                            // 積替処理完了
+                            ShowDialog("報告", "移動処理が\n完了しました。", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
                         }
                     }
-                }
-                );
+                });
             }
         }
 

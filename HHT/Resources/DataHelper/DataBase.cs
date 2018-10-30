@@ -89,7 +89,7 @@ namespace HHT.Resources.DataHelper
             }
         }
 
-        public string GetHostIpAddress()
+        public Model.Config GetHostIpAddress()
         {
             try
             {
@@ -99,7 +99,7 @@ namespace HHT.Resources.DataHelper
 
                     if (config.Count > 0)
                     {
-                        return config[0].hostIp;
+                        return config[0];
                     }
                     else
                     {
@@ -114,7 +114,7 @@ namespace HHT.Resources.DataHelper
             }
         }
 
-        public bool SetHostIpAddress(string hostIp)
+        public bool SetHostIpAddress(string hostIp, string port)
         {
             try
             {
@@ -123,6 +123,7 @@ namespace HHT.Resources.DataHelper
                     List<Model.Config> configList = connection.Table<Model.Config>().ToList();
                     Model.Config config = new Model.Config();
                     config.hostIp = hostIp;
+                    config.port = port;
 
                     if (configList.Count > 0)
                     {

@@ -12,7 +12,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:id="@+id/txt_adp_todoke_time"
-        android:layout_width="100dp"
+        android:layout_width="80dp"
         android:layout_height="30dp"
         android:layout_marginLeft="10dp" />
     <TextView
@@ -30,34 +30,24 @@
         android:layout_width="40dp"
         android:layout_height="30dp" />
     <com.beardedhen.androidbootstrap.BootstrapProgressBar
-        android:layout_width="200dp"
+        android:layout_width="220dp"
         android:layout_columnSpan="2"
         android:layout_marginRight="10dp"
         android:layout_marginTop="2dp"
+		android:layout_marginBottom="2dp"
         android:layout_marginLeft="10dp"
         android:id="@+id/txt_adp_todoke_progressbar"
         app:animated="true"
         app:bootstrapBrand="primary"
         app:bootstrapProgress="78"
         app:bootstrapshowPercentage="true" />
-<!--
-      <ProgressBar
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt_adp_todoke_progressbar"
-        android:max="90"
-        android:progress="30"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_columnSpan="2"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="10dp" />-->
     <TextView
-        android:text="0/99"
+        android:text="999/999"
+		android:textSize="20sp"
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/txt_adp_todoke_per"
-        android:layout_width="50dp"
+        android:layout_width="80dp"
         android:layout_height="30dp"
         android:layout_marginRight="10dp" />
 </GridLayout>

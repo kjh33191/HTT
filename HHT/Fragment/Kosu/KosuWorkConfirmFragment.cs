@@ -73,10 +73,9 @@ namespace HHT
             {
                 Activity.RunOnUiThread(() =>
                 {
-                    CommonUtils.AlertDialog(view, "", "表示データがありません。",
-                        () => FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(3).Id, 0)
-                    );
-                    Vibrate();
+                    ShowDialog("報告", "表示データがありません。", () => {
+                        FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(3).Id, 0);
+                     });
                 });
             }
 

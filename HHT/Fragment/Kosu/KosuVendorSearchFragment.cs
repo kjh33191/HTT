@@ -59,7 +59,7 @@ namespace HHT
             }
             else
             {
-                CommonUtils.AlertDialog(view, "確認", "表示データがありません。", () =>
+                ShowDialog("報告", "表示データがありません。", () =>
                 {
                     FragmentManager.PopBackStack();
                 });
@@ -93,19 +93,15 @@ namespace HHT
             var message =
                 @"配送日：" + prefs.GetString("syuka_date", "20180320")
             + "\nベンダー：" + item.vendor_cd
+            + "\nベンダー名："
             + "\n" + item.vendor_nm
             + "\n\n" + "よろしいですか？";
 
-
-            CommonUtils.AlertConfirm(view, "", message, (okFlag) =>
-            {
-                if (okFlag)
-                {
-                    editor.PutString("vendor_cd", item.vendor_cd);
-                    editor.PutString("vendor_nm", item.vendor_nm);
-                    editor.Apply();
-                    StartFragment(FragmentManager, typeof(KosuWorkFragment));
-                }
+            ShowDialog("確認", message, () => {
+                editor.PutString("vendor_cd", item.vendor_cd);
+                editor.PutString("vendor_nm", item.vendor_nm);
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(KosuWorkFragment));
             });
         }
     }

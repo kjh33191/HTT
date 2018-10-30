@@ -78,7 +78,9 @@ namespace HHT
                     editor.PutString("menu_flg", "2");
                     editor.PutBoolean("nohinWorkEndFlag", true);
                     editor.Apply();
-                    StartFragment(FragmentManager, typeof(NohinCompleteFragment));
+                    
+                    ShowDialog("報告", "納品検品が\n完了しました。\n\nお疲れ様でした！", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(2).Id, 0); });
+
                 }
                 else
                 {
@@ -164,7 +166,7 @@ namespace HHT
                      }
                      else
                      {
-                         CommonUtils.AlertDialog(view, "エラー", "パスワードが違います。", null);
+                         ShowDialog("エラー", "パスワードが違います。", () => { });
                          return;
                      }
 
@@ -232,22 +234,39 @@ namespace HHT
                     {
                         if (!isExist)
                         {
-                            CommonUtils.AlertDialog(view, "", "該当データがありません。", null);
+                            ShowDialog("エラー", "該当データがありません。", () => { });
                             return;
                         }
                         
                         SndNohinWorkHelper sndNohinWorkHelper = new SndNohinWorkHelper();
                         if (sndNohinWorkHelper.SelectNohinWorkWithKamotu(kamotu_no).Count > 0)
                         {
-                            CommonUtils.AlertDialog(view, "", "登録済みです。", null);
+                            ShowDialog("エラー", "登録済みです。", () => { });
                             return;
                         }
                         
                         string tokuisaki_cd = prefs.GetString("tokuisaki_cd", "");
                         string todokesaki_cd = prefs.GetString("todokesaki_cd", "");
                         string matehanCd = tsumikomi.matehan;
+
                         List<MFile> mfileList = mFilehelper.SelectByMatehanCd(tokuisaki_cd, todokesaki_cd, matehanCd);
 
+                        if(mfileList.Count > 0)
+                        {
+                            foreach(SndNohinWork temp in sndNohinWorkHelper.SelectAll())
+                            {
+                                if (mfileList[0].matehan == temp.wMatehan)
+                                {
+                                    ShowDialog("エラー", "登録済みです。", () => { });
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // err?
+                        }
+                        
                         tvmatehanNm.Text = mfileList[0].category_nm;
                         
                         switch (tsumikomi.bunrui)
@@ -275,7 +294,7 @@ namespace HHT
                         tvAll.Text = ko_su + "/" + tsumikomiDataList.Count;
                         
 
-                        if (ko_su == maxko_su)
+                        if (ko_su == tsumikomiDataList.Count)
                         {
                             // レコード作成用　値取得
                             SndNohinWork sndNohinWork = new SndNohinWork
@@ -283,7 +302,7 @@ namespace HHT
                                 wPackage = "02",
                                 wTerminalID = "432660068", //Handy: serialId
                                 wProgramID = prefs.GetString("program_id", "NOH"), //JOB: program_id
-                                wSagyosyaCD = prefs.GetString("sagyosya", "99999"),
+                                wSagyosyaCD = prefs.GetString("sagyosya", ""),
                                 wSoukoCD = mfileList[0].kenpin_souko,
                                 wHaisoDate = mfileList[0].syuka_date, // noh_syukaDate
                                 wBinNo = mfileList[0].bin_no, //JOB: noh_binNo
@@ -300,7 +319,7 @@ namespace HHT
                                 wMatehan = mfileList[0].matehan, // JOB: noh_matehan
                                 wMatehanSu = matehanCnt.ToString(), // JOB: tumiko_su
                                 wHHT_no = "11101",
-                                wNohinKbn = "",
+                                wNohinKbn = "0",
                                 wKaisyuKbn = "",
                                 wTenkanState = "00",
                                 wSakiTokuisakiCD = "", 

@@ -133,7 +133,7 @@ namespace HHT
                     {
                         if (data[0].ToString() != "M")
                         {
-                            CommonUtils.AlertDialog(view, "", "メールバッグではありません。", null);
+                            ShowDialog("エラー", "メールバッグではありません。", () => { });
                             Log.Debug(TAG, "MAIN BAG KAISYU INPUT_ERR1:" + data);
                             return;
                         }
@@ -167,7 +167,7 @@ namespace HHT
 
                         if (btvKey1 != btvKey2)
                         {
-                            CommonUtils.AlertDialog(view, "", "納入先店舗が違います。", null);
+                            ShowDialog("エラー", "納入先店舗が違います。", () => { });
                             Log.Debug(TAG, "納入先店舗が違います  btvKey1 :" + btvKey1 + "  btvKey2 :" + btvKey2);
                             return;
                         }
@@ -182,7 +182,7 @@ namespace HHT
                         }
                         else
                         {
-                            CommonUtils.AlertDialog(view, "", "既にスキャン済みです。", null);
+                            ShowDialog("報告", "既にスキャン済みです。", () => { });
                             Log.Debug(TAG, "既にスキャン済みです。 data :" + data);
                             return;
                         }

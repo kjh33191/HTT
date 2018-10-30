@@ -152,6 +152,8 @@ namespace HHT
             return await Task.FromResult(isReachable);
         }
 
+
+        /*
         public static void AlertDialog(View view, string title, string message, Action callback)
         {
             AlertDialog alertDialog = new AlertDialog.Builder(view.Context).Create();
@@ -185,6 +187,7 @@ namespace HHT
 
             return true;
         }
+        */
 
         public static string GetDateYYMMDDwithSlash(string dateString)
         {

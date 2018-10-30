@@ -58,6 +58,7 @@ namespace HHT
                 if (e.HasFocus)
                 {
                     etSyukaDate.Text = etSyukaDate.Text.Replace("/", "");
+                    etSyukaDate.SetSelection(etSyukaDate.Text.Length);
                 }
                 else
                 {
@@ -65,13 +66,14 @@ namespace HHT
                     {
                         try
                         {
-                            etSyukaDate.Text = CommonUtils.GetDateYYMMDDwithSlash(etSyukaDate.Text);
+                            etSyukaDate.Text = CommonUtils.GetDateYYYYMMDDwithSlash(etSyukaDate.Text);
                         }
                         catch
                         {
-                            CommonUtils.ShowAlertDialog(view, "", "日付を正しく入力してください");
-                            etSyukaDate.Text = "";
-                            etSyukaDate.RequestFocus();
+                            ShowDialog("エラー", "正しい日付を入力してください。", () => {
+                                etSyukaDate.Text = "";
+                                etSyukaDate.RequestFocus();
+                            });
                         }
                     }
                 }
@@ -98,8 +100,8 @@ namespace HHT
             etCourse.RequestFocus();
             
             // DUMMY DATA
-            etSyukaDate.Text = "18/03/20";
-
+            //etSyukaDate.Text = "18/03/20";
+            etSyukaDate.Text = DateTime.Now.ToString("yyyy/MM/dd");
             return view;
         }
 
@@ -108,17 +110,13 @@ namespace HHT
         {
             if(etSyukaDate.Text == "")
             {
-                CommonUtils.AlertDialog(View, "", "配送日を入力してください。", null);
-                Vibrate();
-                etSyukaDate.RequestFocus();
+                ShowDialog("エラー", "配送日を入力してください。", () => { etSyukaDate.RequestFocus(); });
                 return;
             }
 
             if (etCourse.Text == "")
             {
-                CommonUtils.AlertDialog(View, "", "コースNoを入力してください。", null);
-                Vibrate();
-                etCourse.RequestFocus();
+                ShowDialog("エラー", "コースNoを入力してください。", () => { etCourse.RequestFocus(); });
                 return;
             }
 
@@ -129,31 +127,27 @@ namespace HHT
                 {
                     try
                     {
-                        syuka_date = "20" + etSyukaDate.Text.Replace("/", "");
+                        syuka_date = etSyukaDate.Text.Replace("/", "");
                         TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, etCourse.Text);
 
                         if (result == null)
                         {
-                            CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", null);
-                            Vibrate();
+                            ShowDialog("エラー", "コースNoがみつかりません。", () => { });
                             return;
                         }
                         else if (result.state == "03")
                         {
-                            CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", null);
-                            Vibrate();
+                            ShowDialog("エラー", "該当コースの積込みは完了しています。", () => { });
                             return;
                         }
 
                         bin_no = result.bin_no;
                         kansen_kbn = result.kansen_kbn;
                         
-
                         List<TUMIKOMI020> todokeList = WebService.RequestTumikomi020(souko_cd, kitaku_cd, syuka_date, bin_no, etCourse.Text);
                         if (todokeList.Count == 0)
                         {
-                            CommonUtils.AlertDialog(view, "", "表示データがありません。", null);
-                            Vibrate();
+                            ShowDialog("エラー", "表示データがありません。", () => { });
                             return;
                         }
                         
@@ -168,7 +162,7 @@ namespace HHT
                     }
                     catch
                     {
-                        CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", () => { return; });
+                        ShowDialog("エラー", "コースNoがみつかりません。", () => { });
                     }
                 }
                 );
@@ -203,34 +197,7 @@ namespace HHT
                 {
                     StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
                 }
-
             });
-
-            /*
-            CommonUtils.AlertConfirm(view, "確認", message, (flag)=> {
-                if (flag)
-                {
-                    int count = WebService.RequestTumikomi230(souko_cd,kitaku_cd, syuka_date, nohin_date, bin_no, etCourse.Text);
-
-                    // TODO
-                    if (count > 0)
-                    {
-                        // メールバッグ積込画面へ 
-                        // Return("sagyou14")
-                        return;
-                    }
-                    
-                    if (kansen_kbn == "1")
-                    {
-                        StartFragment(FragmentManager, typeof(TsumikomiWorkFragment));
-                    }
-                    else
-                    {
-                        StartFragment(FragmentManager, typeof(TsumikomiSearchFragment));
-                    }
-                }
-            });
-            */
         }
 
         public override bool OnKeyDown(Keycode keycode, KeyEvent paramKeyEvent)
@@ -258,8 +225,7 @@ namespace HHT
                     {
                         if (data.Length < 12)
                         {
-                            CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", null);
-                            Vibrate();
+                            ShowDialog("エラー", "コースNoがみつかりません。", () => { });
                             return;
                         }
                        
@@ -270,14 +236,13 @@ namespace HHT
 
                         try
                         {
-                            string haiso_date = CommonUtils.GetDateYYMMDDwithSlash(btvHaisohDate);
+                            string haiso_date = CommonUtils.GetDateYYYYMMDDwithSlash(btvHaisohDate);
 
                             TUMIKOMI010 result = WebService.RequestTumikomi010(souko_cd, kitaku_cd, syuka_date, btvCourse);
                             
                             if (result.state == "03")
                             {
-                                CommonUtils.AlertDialog(View, "エラー", "該当コースの積込みは完了しています。", null);
-                                Vibrate();
+                                ShowDialog("エラー", "該当コースの積込みは完了しています。", () => { });
                                 return;
                             }
                             
@@ -291,28 +256,12 @@ namespace HHT
                         }
                         catch
                         {
-                            CommonUtils.AlertDialog(View, "エラー", "コースNoがみつかりません。", null);
-                            Vibrate();
+                            ShowDialog("エラー", "コースNoがみつかりません。", () => { });
                             return;
                         }
                     }
                 });
             }
         }
-
-        private void ShowDialog(string title, string body, Action callback)
-        {
-            Bundle bundle = new Bundle();
-            bundle.PutString("title", title);
-            bundle.PutString("body", body);
-
-            CustomDialogFragment dialog = new CustomDialogFragment { Arguments = bundle };
-            dialog.Cancelable = false;
-            dialog.Show(FragmentManager, "");
-            dialog.Dismissed += (s, e) => {
-                callback?.Invoke();
-            };
-        }
-
     }
 }

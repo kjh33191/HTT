@@ -20,11 +20,25 @@
         android:textStyle="bold"
         android:textSize="20sp" />
     <EditText
-        android:inputType=""
+        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="HostIp"
         android:id="@+id/hostIp" />
+	 <TextView
+        android:text="Port"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView1"
+        android:paddingTop="40dp"
+        android:textStyle="bold"
+        android:textSize="20sp" />
+    <EditText
+        android:inputType="numberSigned"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Port"
+        android:id="@+id/port" />
     <Button
         android:text="確定"
         android:layout_width="match_parent"

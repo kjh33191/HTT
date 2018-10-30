@@ -8,7 +8,6 @@ using Android.Views;
 using Android.Widget;
 using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
-using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -71,24 +70,20 @@ namespace HHT
                 LinearLayout driverLayout = view.FindViewById<LinearLayout>(Resource.Id.driverLayout);
                 driverLayout.Visibility = ViewStates.Visible;
                 
-                BootstrapButton btnNyuka = view.FindViewById<BootstrapButton>(Resource.Id.driverNyuka);
+                Button btnNyuka = view.FindViewById<Button>(Resource.Id.driverNyuka);
                 btnNyuka.Click += delegate { StartFragment(FragmentManager, typeof(NyukaMenuFragment)); };
 
-                BootstrapButton btnTsumikae = view.FindViewById<BootstrapButton>(Resource.Id.driverIdou);
+                Button btnTsumikae = view.FindViewById<Button>(Resource.Id.driverIdou);
                 btnTsumikae.Click += delegate { StartFragment(FragmentManager, typeof(TsumikaeMenuFragment)); };
 
-                BootstrapButton btnTsumikomi = view.FindViewById<BootstrapButton>(Resource.Id.driverTsumikomi);
+                Button btnTsumikomi = view.FindViewById<Button>(Resource.Id.driverTsumikomi);
                 btnTsumikomi.Click += delegate { GotoTusumikomi(); };
 
-                BootstrapButton btnNohin = view.FindViewById<BootstrapButton>(Resource.Id.driverNohin);
+                Button btnNohin = view.FindViewById<Button>(Resource.Id.driverNohin);
                 btnNohin.Click += delegate { StartFragment(FragmentManager, typeof(NohinSelectFragment)); };
 
-                BootstrapButton btnDataSend = view.FindViewById<BootstrapButton>(Resource.Id.driverSend);
+                Button btnDataSend = view.FindViewById<Button>(Resource.Id.driverSend);
                 btnDataSend.Click += delegate {　DataSend();　};
-
-                BootstrapButton btnIdouNohin = view.FindViewById<BootstrapButton>(Resource.Id.driverIdouNohin);
-                btnIdouNohin.Click += delegate { StartFragment(FragmentManager, typeof(IdouNohinSelectFragment)); };
-
 
             }
             else if (menu_kbn == "2")
@@ -153,8 +148,7 @@ namespace HHT
             else if (keycode == Keycode.Num5)
             {
                 // データ送信
-                //DataSend();
-                CommonUtils.AlertDialog(view, "Error", "送信するデータが存在しません。", null);
+                DataSend();
             }
             else if (keycode == Keycode.Num6)
             {
@@ -196,24 +190,19 @@ namespace HHT
 
             if (count > 0)
             {
-                CommonUtils.AlertConfirm(view, "", "未送信データが存在します。\n削除して業務を続行しますか？", (flag) =>
-                {
-                    if (flag)
-                    {
-                        mailHelper.DeleteAll();
-                        mailKaisyuHelper.DeleteAll();
-                        mateHelper.DeleteAll();
-                        workHelper.DeleteAll();
-                        syohinKaisyuHelper.DeleteAll();
+                ShowDialog("警告", "未送信データが存在します。\n削除して業務を続行しますか？", () => {
+                    mailHelper.DeleteAll();
+                    mailKaisyuHelper.DeleteAll();
+                    mateHelper.DeleteAll();
+                    workHelper.DeleteAll();
+                    syohinKaisyuHelper.DeleteAll();
 
-                        editor.PutBoolean("mailBagFlag", false);
-                        editor.PutBoolean("nohinWorkEndFlag", false);
-                        editor.PutBoolean("mailKaisyuEndFlag", false);
-                        editor.Apply();
-                        
-                        StartFragment(FragmentManager, typeof(TsumikomiSelectFragment));
+                    editor.PutBoolean("mailBagFlag", false);
+                    editor.PutBoolean("nohinWorkEndFlag", false);
+                    editor.PutBoolean("mailKaisyuEndFlag", false);
+                    editor.Apply();
 
-                    }
+                    StartFragment(FragmentManager, typeof(TsumikomiSelectFragment));
                 });
             }
             else
@@ -234,93 +223,87 @@ namespace HHT
             
             if (count == 0)
             {
-                CommonUtils.AlertDialog(view, "", "送信するデータが存在しません。", () => {});
-                Vibrate();
+                ShowDialog("エラー", "送信するデータが存在しません。", () => { });
                 return;
             }
             else
             {
-                CommonUtils.AlertConfirm(view, "", "データ送信します\nよろしいですか？", (flag) =>
-                {
-                    if (flag)
+                ShowDialog("警告", "データ送信します\nよろしいですか？", () => {
+                    try
                     {
-                        try
+                        ((MainActivity)this.Activity).ShowProgress("データ送信中");
+
+                        foreach (SndNohinMail temp in mailList)
                         {
-                            ((MainActivity)this.Activity).ShowProgress("データ送信中");
-
-                            foreach (SndNohinMail temp in mailList)
-                            {
-                                Dictionary<string, string> param = SetSendParam(temp);
-                                var result = WebService.RequestSend010(param);
-                            }
-
-                            Log.Debug(TAG, "メールバックデータ送信完了");
-
-                            foreach (SndNohinMailKaisyu temp in mailKaisyuList)
-                            {
-                                Dictionary<string, string> param = SetSendParam(temp);
-                                var result = WebService.RequestSend010(param);
-                            }
-
-                            Log.Debug(TAG, "メールバック回収データ送信完了");
-
-                            foreach (SndNohinMate temp in mateList)
-                            {
-                                Dictionary<string, string> param = SetSendParam(temp);
-                                var result = WebService.RequestSend010(param);
-
-                            }
-
-                            Log.Debug(TAG, "マテハンデータ送信完了");
-
-                            foreach (SndNohinWork temp in workList)
-                            {
-                                Dictionary<string, string> param = SetSendParam(temp);
-                                var result = WebService.RequestSend010(param);
-
-                            }
-
-                            Log.Debug(TAG, "納品作業データ送信完了");
-
-                            foreach (SndNohinSyohinKaisyu temp in syohinKaisyuList)
-                            {
-                                Dictionary<string, string> param = SetSendParam(temp);
-                                var result = WebService.RequestSend010(param);
-
-                            }
-
-                            Log.Debug(TAG, "商品回収データ送信完了");
-
-                            // 削除処理
-                            mailHelper.DeleteAll();
-                            mailKaisyuHelper.DeleteAll();
-                            mateHelper.DeleteAll();
-                            workHelper.DeleteAll();
-                            syohinKaisyuHelper.DeleteAll();
-
-                            //new MFileHelper().DeleteAll();
-                            //new MbFileHelper().DeleteAll();
-
-                            editor.PutBoolean("mailBagFlag", false);
-                            editor.PutBoolean("nohinWorkEndFlag", false);
-                            editor.PutBoolean("mailKaisyuEndFlag", false);
-                            editor.Apply();
-
-                            CommonUtils.AlertDialog(view, "", "データ送信完了しました。", () =>
-                            {
-                                ((MainActivity)this.Activity).DismissDialog();
-                                FragmentManager.PopBackStack();
-                                FragmentManager.PopBackStack();
-                            });
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
                         }
-                        catch
+
+                        Log.Debug(TAG, "メールバックデータ送信完了");
+
+                        foreach (SndNohinMailKaisyu temp in mailKaisyuList)
                         {
-                            CommonUtils.AlertDialog(view, "", "例外エラーが発生しました。", () =>
-                            {
-                                ((MainActivity)this.Activity).DismissDialog();
-                            });
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
                         }
+
+                        Log.Debug(TAG, "メールバック回収データ送信完了");
+
+                        foreach (SndNohinMate temp in mateList)
+                        {
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
+
+                        }
+
+                        Log.Debug(TAG, "マテハンデータ送信完了");
+
+                        foreach (SndNohinWork temp in workList)
+                        {
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
+
+                        }
+
+                        Log.Debug(TAG, "納品作業データ送信完了");
+
+                        foreach (SndNohinSyohinKaisyu temp in syohinKaisyuList)
+                        {
+                            Dictionary<string, string> param = SetSendParam(temp);
+                            var result = WebService.RequestSend010(param);
+
+                        }
+
+                        Log.Debug(TAG, "商品回収データ送信完了");
+
+                        // 削除処理
+                        mailHelper.DeleteAll();
+                        mailKaisyuHelper.DeleteAll();
+                        mateHelper.DeleteAll();
+                        workHelper.DeleteAll();
+                        syohinKaisyuHelper.DeleteAll();
+
+                        new MFileHelper().DeleteAll();
+                        new MbFileHelper().DeleteAll();
+
+                        editor.PutBoolean("mailBagFlag", false);
+                        editor.PutBoolean("nohinWorkEndFlag", false);
+                        editor.PutBoolean("mailKaisyuEndFlag", false);
+                        editor.Apply();
+                        
+                        ShowDialog("報告", "データ送信完了しました。", () => {
+                            ((MainActivity)this.Activity).DismissDialog();
+                            FragmentManager.PopBackStack();
+                            FragmentManager.PopBackStack();
+                        });
                     }
+                    catch
+                    {
+                        ShowDialog("エラー", "例外エラーが発生しました。", () => {
+                            ((MainActivity)this.Activity).DismissDialog();
+                        });
+                    }
+
                 });
             }
 
@@ -355,7 +338,7 @@ namespace HHT
                     {"pKamotsuNo", temp.wKamotuNo },
                     {"pMatehan", temp.wMatehan },
                     {"pMatehan_Su", temp.wMatehanSu },
-                    {"pHHT_No", temp.wHHT_no },
+                    {"pHHT_No", temp.wHHT_no }
                 };
             }
             else if (param.GetType() == typeof(SndNohinMailKaisyu))
@@ -440,6 +423,13 @@ namespace HHT
                     {"pMatehan", temp.wMatehan },
                     {"pMatehan_Su", temp.wMatehanSu },
                     {"pHHT_No", temp.wHHT_no },
+                    {"pNohinKbn", temp.wNohinKbn },
+                    {"pTenkanState", temp.wTenkanState },
+                    {"pKaisyuKbn", temp.wKaisyuKbn },
+                    {"pSakiTokuisakiCD", temp.wSakiTokuisakiCD },
+                    {"pSakiTodokesakiCD", temp.wSakiTodokesakiCD },
+                    {"pNohinDate", temp.wNohinDate },
+                    {"pNohinTime", temp.wNohinTime }
                 };
             }
             else if (param.GetType() == typeof(SndNohinSyohinKaisyu))

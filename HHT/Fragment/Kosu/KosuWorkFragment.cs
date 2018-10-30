@@ -115,7 +115,6 @@ namespace HHT
             btnCancel = view.FindViewById<BootstrapButton>(Resource.Id.btn_todoke_cancel);
             btnCancel.Click += delegate {
                 CancelKamotsuScan(false);
-                hasKamotsuScanned = false;
             };　// 取消
 
             btnComplete = view.FindViewById<BootstrapButton>(Resource.Id.completeButton); // バラ検品の完了ボタン
@@ -153,15 +152,13 @@ namespace HHT
                     }
                     else
                     {
-                        CommonUtils.AlertDialog(view, "", "更新出来ませんでした。\n管理者に連絡してください。", null);
-                        Vibrate();
+                        ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
                     }
                 }
                 catch
                 {
-                    CommonUtils.AlertDialog(view, "エラー", "満タン処理完了に失敗しました。", null);
-                    Log.Error(Tag, "");
-                    Vibrate();
+                    ShowDialog("エラー", "満タン処理完了に失敗しました。", null);
+                    Log.Error(Tag, "満タン処理完了に失敗しました。");
                     return;
                 }
             };
@@ -177,14 +174,16 @@ namespace HHT
             txtHenpin.Text = prefs.GetString("henpin_su", "0");
             txtHansoku.Text = prefs.GetString("hansoku_su", "0");
             txtKaisyu.Text = prefs.GetString("kaisyu_su", "0");
-            txtTotal.Text = prefs.GetString("ko_su", "0");
+            
             txtDaisu.Text = prefs.GetString("dai_su", "0");
-            tempTotal = txtTotal.Text;
+            tempTotal = prefs.GetString("tmp_kosu", "0");
             tempDaisu = txtDaisu.Text;
 
             // 満タンまたは中断画面から戻った場合はボタン表示
             int count = int.Parse(txtCase.Text) + int.Parse(txtOricon.Text) + int.Parse(txtHuteikei.Text) + int.Parse(txtMiseidou.Text)
                 + int.Parse(txtHazai.Text) + int.Parse(txtHenpin.Text) + int.Parse(txtHansoku.Text) + int.Parse(txtKaisyu.Text);
+
+            txtTotal.Text = count.ToString();
 
             if (count == 0)
             {
@@ -219,7 +218,7 @@ namespace HHT
                 if (isMax)
                 {
                     // 最大検品数を超えた場合
-                    var result = await DialogAsync.Show(Activity, "確認", "検品数が" + kosuMax + "を超えています。続けますか？");
+                    var result = await DialogAsync.Show(Activity, "警告", "検品数が" + kosuMax + "を超えています。続けますか？");
                     if (result.Value)
                     {
                         CountItem(listBarcodeData);
@@ -263,7 +262,7 @@ namespace HHT
 
                     if (kosuKenpin.poMsg != "")
                     {
-                        CommonUtils.AlertDialog(view, "", kosuKenpin.poMsg, null);
+                        ShowDialog("エラー", kosuKenpin.poMsg, () => { });
                         return;
                     }
 
@@ -320,8 +319,7 @@ namespace HHT
                 }
                 catch
                 {
-                    CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
-                    Vibrate();
+                    ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", () => { });
                     Log.Error(Tag, "");
                     return;
                 }
@@ -333,7 +331,7 @@ namespace HHT
         {
             if (keycode == Keycode.F1)
             {
-                StartFragment(FragmentManager, typeof(KosuWorkConfirmFragment));
+                if(!hasKamotsuScanned) StartFragment(FragmentManager, typeof(KosuWorkConfirmFragment));
             }
             else if (keycode == Keycode.F2)
             {
@@ -466,49 +464,51 @@ namespace HHT
         {
             string message = backFlag == false ? "スキャンデータを取り消します。\nよろしいですか？" : "スキャンした内容を破棄し、メニューに戻りますか？";
 
-            CommonUtils.AlertConfirm(view, "確認", message, (flag) =>
-            {
-                if (flag)
+            ShowDialog("警告", message, ()=> {
+                string errMsg = RequestCancelKamotuScan(GetProcedureParam(""));
+                if (errMsg != "")
                 {
-                    string errMsg = RequestCancelKamotuScan(GetProcedureParam(""));
-                    if (errMsg != "")
+                    ShowDialog("エラー", errMsg, null);
+                    return;
+                }
+
+                editor.Remove("case_su");
+                editor.Remove("oricon_su");
+                editor.Remove("futeikei_su");
+                editor.Remove("ido_su");
+                editor.Remove("hazai_su");
+                editor.Remove("henpin_su");
+                editor.Remove("hansoku_su");
+                editor.Remove("kaisyu_su");
+                
+                editor.Commit();
+
+                if (backFlag == true)
+                {
+                    editor.Remove("ko_su");
+                    editor.Remove("dai_su");
+
+                    editor.Commit();
+                    this.Activity.FragmentManager.PopBackStack();
+                }
+                else
+                {
+                    if (kosuMenuflag != (int)Const.KOSU_MENU.TODOKE)
                     {
-                        CommonUtils.AlertDialog(view, "エラー", errMsg, null);
-                        Vibrate();
-                        return;
+                        // 店舗名削除
+                        txtMiseName.Text = "";
                     }
 
-                    if (backFlag == true)
-                    {
-                        editor.Remove("case_su");
-                        editor.Remove("oricon_su");
-                        editor.Remove("futeikei_su");
-                        editor.Remove("ido_su");
-                        editor.Remove("hazai_su");
-                        editor.Remove("henpin_su");
-                        editor.Remove("hansoku_su");
-                        editor.Remove("kaisyu_su");
-                        editor.Remove("ko_su");
-                        editor.Remove("dai_su");
-                        editor.Commit();
+                    ScanCntReset();
+                    txtTotal.Text = tempTotal;
+                    txtDaisu.Text = tempDaisu;
+                    txtTenpoLocation.Text = "";
 
-                        this.Activity.FragmentManager.PopBackStack();
-                    }
-                    else
-                    {
-                        if (kosuMenuflag != (int)Const.KOSU_MENU.TODOKE)
-                        {
-                            // 店舗名削除
-                            txtMiseName.Text = "";
-                        }
+                    hasKamotsuScanned = false;
 
-                        ScanCntReset();
-                        txtTotal.Text = tempTotal;
-                        txtDaisu.Text = tempDaisu;
-                        txtTenpoLocation.Text = "";
-                    }
                 }
             });
+
         }
 
         private string RequestCancelKamotuScan(Dictionary<string, string>　param)

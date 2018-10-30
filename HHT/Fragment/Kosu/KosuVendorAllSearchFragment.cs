@@ -56,7 +56,7 @@ namespace HHT
             }
             else
             {
-                CommonUtils.AlertDialog(view, "確認", "表示データがありません。", () =>
+                ShowDialog("報告", "表示データがありません。", () =>
                 {
                     FragmentManager.PopBackStack();
                 });

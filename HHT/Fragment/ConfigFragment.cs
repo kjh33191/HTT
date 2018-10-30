@@ -13,7 +13,7 @@ namespace HHT
         private readonly string TAG = "ConfigFragment";
 
         private View view;
-        private EditText etHostIp;
+        private EditText _HostIpEditText, _PortEditText;
         private Button btnConfirm;
 
         ISharedPreferences prefs;
@@ -33,26 +33,25 @@ namespace HHT
             SetTitle("ログイン");
             SetFooterText("");
 
-            etHostIp = view.FindViewById<EditText>(Resource.Id.hostIp);
-            etHostIp.Text = WebService.GetHostIpAddress();
+            _HostIpEditText = view.FindViewById<EditText>(Resource.Id.hostIp);
+            _HostIpEditText.Text = WebService.GetHostIpAddress();
+
+            _PortEditText = view.FindViewById<EditText>(Resource.Id.port);
+            _PortEditText.Text = WebService.GetPort();
+            
 
             btnConfirm = view.FindViewById<Button>(Resource.Id.confirm);
             btnConfirm.Click += delegate {
-                if (etHostIp.Text == ""){
-                    CommonUtils.AlertDialog(view, "", "ホストIPを入力してください。", null);
+                if (_HostIpEditText.Text == ""){
+                    ShowDialog("報告", "ホストIPを入力してください。", null);
                     return;
                 }
 
-                CommonUtils.AlertConfirm(view, "", "この設定でよろしいでしょうか？", (flag)=>
-                {
-                    if (flag)
-                    {
-                        new DataBase().SetHostIpAddress(etHostIp.Text);
-                        WebService.SetHostIpAddress(etHostIp.Text);
+                ShowDialog("警告", "この設定でよろしいでしょうか？", () => {
+                    new DataBase().SetHostIpAddress(_HostIpEditText.Text, _PortEditText.Text);
+                    WebService.SetHostIpAddress(_HostIpEditText.Text, _PortEditText.Text);
 
-                        FragmentManager.PopBackStack();
-
-                    }
+                    FragmentManager.PopBackStack();
                 });
             };
 

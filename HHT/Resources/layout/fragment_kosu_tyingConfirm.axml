@@ -17,7 +17,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_marginTop="10dp"
-        android:layout_height="190dp">
+        android:layout_height="200dp">
         <TableLayout
             android:layout_width="180dp"
             android:layout_marginTop="10dp"
@@ -183,7 +183,8 @@
             <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+				android:layout_marginBottom="20dp">
                 <TextView
                     android:text="回収"
                     android:textAppearance="?android:attr/textAppearanceLarge"

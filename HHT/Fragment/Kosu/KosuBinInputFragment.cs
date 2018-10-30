@@ -26,13 +26,13 @@ namespace HHT
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            SetTitle("届先指定検品");
-            SetFooterText("");
-            
             view = inflater.Inflate(Resource.Layout.fragment_kosu_bin_input, container, false);
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 
+            SetTitle("届先指定検品");
+            SetFooterText("");
+            
             deliveryDate = prefs.GetString("deliveryDate", "");
             tokuisaki = prefs.GetString("tokuisaki", "");
             todokesaki = prefs.GetString("todokesaki", "");
@@ -65,14 +65,14 @@ namespace HHT
         {
             if (etBinNo.Text == "")
             {
-                CommonUtils.AlertDialog(view, "エラー", "便番号が入力されていません。", null);
+                ShowDialog("エラー", "便番号が入力されていません。", null);
                 Vibrate();
             }
             else
             {
                 if (menuKbn == 2) // 届先検索の場合
                 {
-                    editor.PutString("syuka_date", "20" + etDeliveryDate.Text.Replace("/", ""));
+                    editor.PutString("syuka_date", etDeliveryDate.Text.Replace("/", ""));
                     editor.PutString("bin_no", etBinNo.Text);
 
                     editor.Apply();
@@ -97,7 +97,7 @@ namespace HHT
 
                     string souko_cd = prefs.GetString("souko_cd", "");
                     string kitaku_cd = prefs.GetString("kitaku_cd", "");
-                    string syuka_date = "20" + etDeliveryDate.Text.Replace("/", "");
+                    string syuka_date = etDeliveryDate.Text.Replace("/", "");
                     string bin_no = etBinNo.Text;
                     string tokuisaki_cd = prefs.GetString("tokuisaki_cd", "");
                     string todokesaki_cd = prefs.GetString("todokesaki_cd", "");
@@ -105,16 +105,14 @@ namespace HHT
                     try
                     {
                         int status = WebService.RequestKosu040(souko_cd, kitaku_cd, syuka_date, bin_no, tokuisaki_cd, todokesaki_cd);
-
-
+                        
                         if (status == 99)
                         {
-                            CommonUtils.AlertDialog(view, "エラー", "検品可能なデータがありません。", null);
-                            Vibrate();
+                            ShowDialog("エラー", "検品可能なデータがありません。", null);
                         }
                         else if (status >= 1)
                         {
-                            CommonUtils.AlertDialog(view, "確認", "全ての検品が完了しています。", null);
+                            ShowDialog("報告", "全ての検品が完了しています。", null);
                         }
                         else
                         {
@@ -127,17 +125,14 @@ namespace HHT
                             editor.PutString("bin_no", bin_no);
                             
                             editor.Apply();
-
-                            //StartFragment(FragmentManager, typeof(KosuConfirmFragment));
-
+                            
                             StartFragment(FragmentManager, typeof(KosuWorkFragment));
                         }
                     }
                     catch
                     {
-                        CommonUtils.AlertDialog(view, "エラー", "検品可能なデータがありません。", null);
+                        ShowDialog("エラー", "検品可能なデータがありません。", null);
                     }
-                    
                 }
                 );
             Activity.RunOnUiThread(() =>
@@ -146,9 +141,7 @@ namespace HHT
             });
             }
             )).Start();
-
         }
-
 
         public override void OnResume()
         {

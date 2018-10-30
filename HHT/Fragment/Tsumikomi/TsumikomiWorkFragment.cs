@@ -45,7 +45,6 @@ namespace HHT
             editor = prefs.Edit();
 
             SetTitle("積込検品");
-            SetFooterText("F3：移動");
             
             view.FindViewById<TextView>(Resource.Id.txt_tsumikomiWork_tokuisakiNm).Text = prefs.GetString("tokuisaki_nm", "");
             etKosu = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_kosu);
@@ -101,12 +100,11 @@ namespace HHT
                         Dictionary<string, string> param = GetProcParam(barcodeData.Data);
                         try
                         {
-                            // 432660068, TUM, 99999, 108, 20180320, 1, 355, 0000, 0248, 9800000002480005404995800031, 11101,,
-                            MTumikomiProc result = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "060" : "310", param); // IT HAS ERROR
+                            MTumikomiProc result = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "060" : "310", param);
 
                             if (result.poMsg != "")
                             {
-                                CommonUtils.AlertDialog(view, "エラー", result.poMsg, null);
+                                ShowDialog("エラー", result.poMsg, () => { });
                                 return;
                             }
 
@@ -114,8 +112,6 @@ namespace HHT
                             etKosu.Text = result.poKosuCnt;
 
                             //	正常登録
-                            // Vibrate(); 元ハンヂィにはない
-                            
                             carLabelInputMode = true;
                             btnIdou.Enabled = false;
                             etCarLabel.SetBackgroundColor(Android.Graphics.Color.Yellow);
@@ -123,8 +119,7 @@ namespace HHT
                         }
                         catch
                         {
-                            CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n再度商品をスキャンして下さい。", null);
-                            Vibrate();
+                            ShowDialog("エラー", "更新出来ませんでした。\n再度商品をスキャンして下さい。", () => { });
                             return;
                         }
                     }
@@ -181,51 +176,69 @@ namespace HHT
                                 if (resultCode == 2)
                                 {
                                     var okFlag = await DialogAsync.Show(Activity, "確認", "積込可能な商品があります。\n積込みを完了\nしますか？");
+                                    carLabelInputMode = false;
 
-                                    if (okFlag.Value)
-                                    {
+                                    ShowDialog("確認", "積込可能な商品があります。\n積込みを完了\nしますか？", () => {
+                                        carLabelInputMode = true;
+
                                         Log.Debug(TAG, "CreateTsumiFiles Start");
 
                                         CreateTsumiFiles();
 
                                         Log.Debug(TAG, "CreateTsumiFiles End");
-                                    }
-                                    else
-                                    {
-                                        carLabelInputMode = false;
-                                        return;
-                                    }
+
+                                        //配車テーブルの該当コースの各数量を実績数で更新する
+                                        var updateResult = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "210" : "314", param);
+
+                                        if (updateResult.poRet == "0" || updateResult.poRet == "99")
+                                        {
+                                            //editor.PutBoolean("tenpo_zan_flg", updateResult.poRet == "99" ? true : false);
+                                            //editor.Apply();
+                                            //StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
+                                            Activity.RunOnUiThread(() =>
+                                            {
+                                                //	正常登録
+                                                ShowDialog("報告", "積込検品が\n完了しました。", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
+                                            });
+
+                                        }
+                                        else
+                                        {
+                                            ShowDialog("エラー", "表示データがありません", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
+                                            return;
+                                        }
+                                    });
+                                    
                                 }
                                 else
                                 {
+                                    Log.Debug(TAG, "CreateTsumiFiles Start");
+
                                     CreateTsumiFiles();
+
+                                    Log.Debug(TAG, "CreateTsumiFiles End");
+
+                                    //配車テーブルの該当コースの各数量を実績数で更新する
+                                    var updateResult = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "210" : "314", param);
+
+                                    if (updateResult.poRet == "0" || updateResult.poRet == "99")
+                                    {
+                                        //editor.PutBoolean("tenpo_zan_flg", updateResult.poRet == "99" ? true : false);
+                                        //editor.Apply();
+                                        //StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
+                                        Activity.RunOnUiThread(() =>
+                                        {
+                                            //	正常登録
+                                            ShowDialog("報告", "積込検品が\n完了しました。", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
+                                        });
+
+                                    }
+                                    else
+                                    {
+                                        ShowDialog("エラー", "表示データがありません", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
+                                        return;
+                                    }
                                 }
-                            }
-
-                            //配車テーブルの該当コースの各数量を実績数で更新する
-                            var updateResult = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "210" : "314", param);
-
-                            if (updateResult.poRet == "0" || updateResult.poRet == "99")
-                            {
-                                //editor.PutBoolean("tenpo_zan_flg", updateResult.poRet == "99" ? true : false);
-                                //editor.Apply();
-                                //StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
-                                Activity.RunOnUiThread(() =>
-                                {
-                                    //	正常登録
-                                    Vibrate();
-
-                                    CommonUtils.AlertDialog(view, "", "積込検品が\n完了しました。", () => {
-                                        FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0);
-                                    });
-                                });
-                                
-                            }
-                            else
-                            {
-                                CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
-                                Vibrate();
-                                return;
                             }
                         }
                         else if (resultCode == 1)
@@ -237,8 +250,7 @@ namespace HHT
                     }
                     catch
                     {
-                        CommonUtils.AlertDialog(view, "エラー", "例外エラーが発生しました。\n", null);
-                        Vibrate();
+                        ShowDialog("エラー", "例外エラーが発生しました。", () => { });
                         return;
                     }
                 }
@@ -347,7 +359,7 @@ namespace HHT
 
                     if(result.poMsg != "")
                     {
-                        CommonUtils.AlertDialog(view, "エラー", result.poMsg, null);
+                        ShowDialog("エラー", result.poMsg, () => { });
                         return;
                     }
                   
@@ -357,7 +369,7 @@ namespace HHT
                     }
                     else if (result.poRet == "8")
                     {
-                        CommonUtils.AlertDialog(view, "エラー", ERR_UPDATE_001, null);
+                        ShowDialog("エラー", ERR_UPDATE_001, () => { });
                         return;
                     }
                 }
@@ -420,7 +432,7 @@ namespace HHT
                         {
                             { "pTerminalID",  prefs.GetString("terminal_id","")},
                             { "pProgramID", "TUM" },
-                            { "pSagyosyaCD", "99999" },
+                            { "pSagyosyaCD", prefs.GetString("sagyousya_cd","") },
                             { "pSoukoCD",  souko_cd},
                             { "pSyukaDate", syuka_date},
                             { "pBinNo", bin_no},

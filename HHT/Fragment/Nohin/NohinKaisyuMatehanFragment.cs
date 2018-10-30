@@ -74,7 +74,7 @@ namespace HHT
 
                         if (matehanList.Count == 0)
                         {
-                            CommonUtils.AlertDialog(view, "", "ベンダーコードが存在しません。", () => { vendorCd.Text = motoVendorCd; vendorCd.RequestFocus(); });
+                            ShowDialog("エラー", "ベンダーコードが存在しません。", () => { vendorCd.Text = motoVendorCd; vendorCd.RequestFocus(); });
                             return;
                         }
                         else
@@ -161,18 +161,15 @@ namespace HHT
 
         private void ConfirmMatehanKaisyu()
         {
-            CommonUtils.AlertConfirm(view, "", "よろしいですか？", (flag) => {
-                if (flag)
-                {
-                    
-                    CreateKaisyuData();
+            ShowDialog("確認", "よろしいですか？", () => {
 
-                    string bodyMsg = "マテハン回収情報が保存されました。";
-                    
-                    Toast.MakeText(this.Activity, bodyMsg, ToastLength.Long).Show();
-                    
-                    FragmentManager.PopBackStack();
-                }
+                CreateKaisyuData();
+
+                string bodyMsg = "マテハン回収情報が保存されました。";
+
+                Toast.MakeText(this.Activity, bodyMsg, ToastLength.Long).Show();
+
+                FragmentManager.PopBackStack();
             });
         }
 

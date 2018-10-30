@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Android.Views;
 using Android.Widget;
 using Com.Beardedhen.Androidbootstrap;
+using Com.Beardedhen.Androidbootstrap.Api.Defaults;
 using HHT.Resources.Model;
 
 namespace HHT
@@ -44,10 +45,11 @@ namespace HHT
             string mate = item.Qty.Substring(14, 7);
 
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_per).Text = int.Parse(sumi).ToString() + "/" + int.Parse(kei).ToString();
-            
+
             BootstrapProgressBar pgBar = view.FindViewById<BootstrapProgressBar>(Resource.Id.txt_adp_todoke_progressbar);
             pgBar.Progress = Convert.ToInt32((double.Parse(sumi) / double.Parse(kei)) * 100);
-
+            pgBar.SetBootstrapSize(DefaultBootstrapSize.Xl);
+            
             return view;
         }
 

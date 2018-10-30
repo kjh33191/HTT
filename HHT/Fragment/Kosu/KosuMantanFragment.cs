@@ -83,7 +83,7 @@ namespace HHT
             string venderName = WebService.RequestKosu220(etMantanVendor.Text);
             if (venderName == "")
             {
-                CommonUtils.AlertDialog(view, "", "ベンダーコードがみつかりません", null);
+                ShowDialog("エラー", "ベンダーコードがみつかりません。", null);
                 return;
             }
             txtVenderName.Text = venderName;
@@ -130,71 +130,67 @@ namespace HHT
             if (matehanList.Count > index)
             {
                 string msg = matehanList[index].matehan_nm + "でよろしいですか？";
-                CommonUtils.AlertConfirm(view, "確認", msg, (flag) =>
-                {
-                    if (flag)
+
+                ShowDialog("確認", msg, () => {
+                    try
                     {
-                        try
+                        KOSU070 result = new KOSU070();
+                        if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
                         {
-                            KOSU070 result = new KOSU070();
-                            if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
-                            {
-                                result = WebService.RequestKosu080(GetProcedureParam(matehanList[index].matehan_cd));
-                            }
-                            else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
-                            {
-                                result = WebService.RequestKosu160(GetProcedureParam(matehanList[index].matehan_cd));
-                            }
+                            result = WebService.RequestKosu080(GetProcedureParam(matehanList[index].matehan_cd));
+                        }
+                        else if (kosuMenuflag == (int)Const.KOSU_MENU.VENDOR)
+                        {
+                            result = WebService.RequestKosu160(GetProcedureParam(matehanList[index].matehan_cd));
+                        }
+
+                        string dai_su = prefs.GetString("dai_su", "0");
+                        int dai_su_intValue = int.TryParse(dai_su, out dai_su_intValue) ? dai_su_intValue : 0;
+
+                        if (result.poRet == "0")
+                        {
+                            dai_su_intValue = dai_su_intValue + 1; //台数加算
+
+                            editor.PutString("dai_su", dai_su_intValue.ToString());
                             
-                            string dai_su = prefs.GetString("dai_su", "0");
-                            int dai_su_intValue = int.TryParse(dai_su, out dai_su_intValue) ? dai_su_intValue : 0;
+                            editor.Apply();
 
-                            if (result.poRet == "0")
+                            if (int.Parse(result.poMsg) == 0)
                             {
-                                dai_su_intValue = dai_su_intValue + 1; //台数加算
+                                StartFragment(FragmentManager, typeof(KosuCompleteFragment));
+                            }
+                            else if (int.Parse(result.poMsg) > 0)
+                            {
+                                // 正常に処理されたが、残り作業がある場合、
+                                // 紐づけ画面に遷移する。
 
-                                editor.PutString("dai_su", dai_su_intValue.ToString());
+                                editor.PutString("case_su", "0");
+                                editor.PutString("oricon_su", "0");
+                                editor.PutString("futeikei_su", "0");
+                                editor.PutString("ido_su", "0");
+                                editor.PutString("hazai_su", "0");
+                                editor.PutString("henpin_su", "0");
+                                editor.PutString("hansoku_su", "0");
+                                editor.PutString("kaisyu_su", "0");
+
+                                editor.PutString("tmp_kosu", prefs.GetString("ko_su", "0"));
                                 editor.Apply();
 
-                                if (int.Parse(result.poMsg) == 0)
-                                {
-                                    StartFragment(FragmentManager, typeof(KosuCompleteFragment));
-                                }
-                                else if (int.Parse(result.poMsg) > 0)
-                                {
-                                    // 正常に処理されたが、残り作業がある場合、
-                                    // 紐づけ画面に遷移する。
-                                    
-                                    editor.PutString("case_su", "0");
-                                    editor.PutString("oricon_su", "0");
-                                    editor.PutString("futeikei_su", "0");
-                                    editor.PutString("ido_su", "0");
-                                    editor.PutString("hazai_su", "0");
-                                    editor.PutString("henpin_su", "0");
-                                    editor.PutString("hansoku_su", "0");
-                                    editor.PutString("kaisyu_su", "0");
-                                    editor.Apply();
-
-                                    this.Activity.FragmentManager.PopBackStack();
-                                }
-                            }
-                            else
-                            {
-                                CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
-                                Vibrate();
-                                return;
+                                this.Activity.FragmentManager.PopBackStack();
                             }
                         }
-                        catch
+                        else
                         {
-                            CommonUtils.AlertDialog(view, "エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
-                            Vibrate();
+                            ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
                             return;
                         }
-                        
                     }
-                }
-                );
+                    catch
+                    {
+                        ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                        return;
+                    }
+                });
             }
         }
         

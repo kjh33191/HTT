@@ -121,7 +121,7 @@ namespace HHT
 
                     if (btvScnFlg > 0)
                     {
-                        CommonUtils.AlertDialog(view, "エラー", "既にスキャン済みです。", null);
+                        ShowDialog("エラー", "既にスキャン済みです", () => { });
                         return;
                     }
                     
@@ -137,7 +137,7 @@ namespace HHT
 
                         if (idou010List.Count == 0)
                         {
-                            CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
+                            ShowDialog("報告", "表示データがありません", () => { });
                             return;
                         }
                         
@@ -146,13 +146,13 @@ namespace HHT
                         {
                             if (idou010.matehan.Substring(2) == idou010.matehan)
                             {
-                                CommonUtils.AlertDialog(view, "エラー", "バラへの移動は出来ません。", null);
+                                ShowDialog("エラー", "バラへの移動は出来ません", () => { });
                                 return;
                             }
 
                             if (prefs.GetString("motomate_cd", "") == idou010.matehan)
                             {
-                                CommonUtils.AlertDialog(view, "エラー", "同一のマテハンです。", null);
+                                ShowDialog("エラー", "同一のマテハンです", () => { });
                                 return;
                             }
 
@@ -176,7 +176,7 @@ namespace HHT
 
                         if(idou020List.Count == 0)
                         {
-                            CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
+                            ShowDialog("報告", "表示データがありません", () => { });
                             return;
                         }
 
@@ -185,13 +185,13 @@ namespace HHT
                         {
                             if(idou020.matehan.Substring(0,2) == idou020.bara_matehan)
                             {
-                                CommonUtils.AlertDialog(view, "エラー", "バラへの移動は出来ません。", null);
+                                ShowDialog("エラー", "バラへの移動は出来ません", () => { });
                                 return;
                             }
 
                             if (prefs.GetString("motomate_cd", "") == idou020.matehan)
                             {
-                                CommonUtils.AlertDialog(view, "エラー", "同一のマテハンです。", null);
+                                ShowDialog("エラー", "同一のマテハンです", () => { });
                                 return;
                             }
                             
@@ -215,7 +215,7 @@ namespace HHT
                 motokamotuList = prefs.GetStringSet("kamotuList", new List<string>()).ToList();
                 if (motokamotuList.FindIndex(x => x == kamotsu_no) != -1)
                 {
-                    CommonUtils.AlertDialog(view, "エラー", "同一のマテハンです。", null);
+                    ShowDialog("エラー", "同一のマテハンです。", () => { });
                     return false;
                 }
 
@@ -230,7 +230,7 @@ namespace HHT
                 }
                 else
                 {
-                    CommonUtils.AlertDialog(view, "エラー", "届先が異なります。", null);
+                    ShowDialog("エラー", "届先が異なります。", () => { });
                     return false;
                 }
 
@@ -240,13 +240,14 @@ namespace HHT
                     // 便チェック
                     if (prefs.GetString("bin_no", "0") != kamotuInfo.torikomi_bin)
                     {
-                        CommonUtils.AlertDialog(view, "エラー", "便が異なります。", null);
+                        ShowDialog("エラー", "便が異なります。", () => { });
                         return false;
                     }
                 }
             }
             catch
             {
+                ShowDialog("エラー", "例外エラーが発生しました。", () => { });
                 Log.Debug(TAG, "CheckScanNo　メソッドでエラー発生");
                 return false;
             }
@@ -333,14 +334,12 @@ namespace HHT
 
                     if (idou050.poRet != "0")
                     {
-                        CommonUtils.AlertDialog(view, "", idou050.poMsg, null);
+                        ShowDialog("エラー", idou050.poMsg, () => { });
                         return;
                     }
                 }
 
-                CommonUtils.AlertDialog(view, "メッセージ", "移動処理が\n完了しました。", () => {
-                    BackToMainMenu();
-                });
+                ShowDialog("報告", "移動処理が\n完了しました。", () => { BackToMainMenu(); });
 
             }
             else if (menuFlag == 2)
@@ -360,13 +359,11 @@ namespace HHT
                 IDOU060 idou060 = WebService.RequestIdou060(param);
                 if(idou060.poMsg != "")
                 {
-                    CommonUtils.AlertDialog(view, string.Empty, idou060.poMsg , null);
+                    ShowDialog("エラー", idou060.poMsg, () => { });
                     return;
                 }
 
-                CommonUtils.AlertDialog(view, "メッセージ", "移動処理が\n完了しました。", () => {
-                    BackToMainMenu();
-                });
+                ShowDialog("報告", "移動処理が\n完了しました。", () => { BackToMainMenu(); });
             }
         }
 

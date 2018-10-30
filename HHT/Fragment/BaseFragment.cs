@@ -28,6 +28,8 @@ namespace HHT
 
             }
 
+            CommonUtils.HideKeyboard(Activity);
+
             this.Activity.FragmentManager
                 .BeginTransaction()
                 .Replace(Resource.Id.fragmentContainer, fragment)
@@ -49,6 +51,7 @@ namespace HHT
             {
 
             }
+            CommonUtils.HideKeyboard(Activity);
 
             this.Activity.FragmentManager
                 .BeginTransaction()
@@ -70,6 +73,7 @@ namespace HHT
 
         public virtual bool OnBackPressed()
         {
+            CommonUtils.HideKeyboard(Activity);
             return true;
         }
 
@@ -95,7 +99,25 @@ namespace HHT
 
         public void Vibrate()
         {
+#pragma warning disable CS0618 // 型またはメンバーが古い形式です
             ((Vibrator)Activity.GetSystemService(Android.Content.Context.VibratorService)).Vibrate(1000);
+#pragma warning restore CS0618 // 型またはメンバーが古い形式です
         }
+
+        public void ShowDialog(string title, string body, Action callback)
+        {
+            Bundle bundle = new Bundle();
+            bundle.PutString("title", title);
+            bundle.PutString("body", body);
+
+            CustomDialogFragment dialog = new CustomDialogFragment { Arguments = bundle };
+            dialog.Cancelable = false;
+            dialog.Show(FragmentManager, "");
+            dialog.Dismissed += (s, e) => {
+                //Toast.MakeText(this.Activity, e.Text, ToastLength.Long).Show();
+                callback?.Invoke();
+            };
+        }
+
     }
 }

@@ -54,8 +54,7 @@ namespace HHT
 
             if (etPassword.Text != passwrod)
             {
-                CommonUtils.AlertDialog(view, "", "認証できませんでした。", null);
-                Vibrate();
+                ShowDialog("エラー", "認証できませんでした。", () => { });
                 return;
             }
 
@@ -66,21 +65,19 @@ namespace HHT
                 string message = (menuFlg == "1") ? "増便を行います。\n" : "強制出発を行います。\n";
                 message += "よろしいですか？" + "\n";
 
-                CommonUtils.AlertConfirm(view, "", message, (flag)=> {
-                    if (flag)
+                ShowDialog("確認", message, () => {
+                    if (menuFlg == "1")
                     {
-                        if(menuFlg == "1")
-                        {
-                            // sagyou12
-                        }
-                        else
-                        {
-
-                        }
-                        // menu_flg == 1 sagyou12
-
-                        // menu_flg == 3 
+                        // sagyou12
                     }
+                    else
+                    {
+
+                    }
+                    // menu_flg == 1 sagyou12
+
+                    // menu_flg == 3 
+
                 });
             }
             else if (comp_kbn == "1")
@@ -139,7 +136,7 @@ namespace HHT
                         {
                             { "pTerminalID",  prefs.GetString("terminal_id","")},
                             { "pProgramID", "TUM" },
-                            { "pSagyosyaCD", "99999" },
+                            { "pSagyosyaCD", prefs.GetString("sagyousya_cd","") },
                             { "pSoukoCD",  souko_cd},
                             { "pSyukaDate", syuka_date},
                             { "pBinNo", bin_no},
@@ -160,9 +157,7 @@ namespace HHT
                 Activity.RunOnUiThread(() =>
                 {
                     //	正常登録
-                    Vibrate();
-
-                    CommonUtils.AlertDialog(view, "", "積込検品が\n完了しました。", () => {
+                    ShowDialog("報告", "積込検品が\n完了しました。", () => {
                         FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0);
                     });
                 });
@@ -170,8 +165,7 @@ namespace HHT
             }
             else
             {
-                CommonUtils.AlertDialog(view, "エラー", "表示データがありません。", null);
-                Vibrate();
+                ShowDialog("エラー", "表示データがありません", () => {});
                 return;
             }
         }

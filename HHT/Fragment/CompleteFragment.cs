@@ -3,6 +3,7 @@ using Android.OS;
 using Android.Preferences;
 using Android.Views;
 using Android.Widget;
+using Com.Beardedhen.Androidbootstrap;
 
 namespace HHT
 {
@@ -30,7 +31,7 @@ namespace HHT
             TextView completeMsg = view.FindViewById<TextView>(Resource.Id.textView10);
             completeMsg.Text = prefs.GetString("completeMsg", "");
 
-            Button confirmButton = view.FindViewById<Button>(Resource.Id.completeButton);
+            BootstrapButton confirmButton = view.FindViewById<BootstrapButton>(Resource.Id.completeButton);
             confirmButton.Click += delegate { BackToMainMenu(); };
 
             return view;

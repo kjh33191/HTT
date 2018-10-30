@@ -77,18 +77,11 @@ namespace HHT
 
         private void CompleteMailNohin()
         {
-            CommonUtils.AlertConfirm(view, "", "メールバッグ納品業務を終了しますか？", (flag) => {
-                if (flag)
-                {
-                    Log.Debug(TAG, "F3 return pushed : " + prefs.GetString("tokuisaki_cd", "") + ", " + prefs.GetString("tokuisaki_nm", ""));
-                    editor.PutBoolean("mailBagFlag", true);
-                    editor.Apply();
-                    FragmentManager.PopBackStack();
-                }
-                else
-                {
-
-                }
+            ShowDialog("警告", "メールバッグ納品業務を終了しますか？", () => {
+                Log.Debug(TAG, "F3 return pushed : " + prefs.GetString("tokuisaki_cd", "") + ", " + prefs.GetString("tokuisaki_nm", ""));
+                editor.PutBoolean("mailBagFlag", true);
+                editor.Apply();
+                FragmentManager.PopBackStack();
             });
         }
 
@@ -130,7 +123,7 @@ namespace HHT
                         // 이미 스캔되었는지 확인
                         if (CheckMailBagData(data))
                         {
-                            CommonUtils.AlertDialog(view, "", "既にスキャン済みです。", null);
+                            ShowDialog("報告", "既にスキャン済みです。", () => { });
                             return;
                         }
 
@@ -140,7 +133,7 @@ namespace HHT
                         // 해당 바코드가 토쿠이,토도케 값이 맞는지 확인.
                         if (tokuisakiCd != btvTokuisaki || todokesakiCd != btvTodokesaki)
                         {
-                            CommonUtils.AlertDialog(view, "", "納入先店舗が違います。", null);
+                            ShowDialog("エラー", "納入先店舗が違います。", () => { });
                             return;
                         }
 
@@ -168,7 +161,7 @@ namespace HHT
                     }
                     else
                     {
-                        CommonUtils.AlertDialog(view, "", "該当メールバッグはありません。", null);
+                        ShowDialog("エラー", "該当メールバッグはありません。", () => { });
                         return;
                     }
                     

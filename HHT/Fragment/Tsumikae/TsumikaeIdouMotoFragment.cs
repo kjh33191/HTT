@@ -51,6 +51,11 @@ namespace HHT
             txtTc = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_tc);
             txtKosu = view.FindViewById<TextView>(Resource.Id.txt_tsumikae_kosu);
 
+            // 連続バーコード読み取り時に使う変数初期化
+            editor.PutString("tmptokui_cd", "");
+            editor.PutString("tmptodoke_cd", "");
+            editor.Apply();
+
             // 確定ボタン
             btnConfirm = view.FindViewById<BootstrapButton>(Resource.Id.confirmButton);
             btnConfirm.Click += delegate {
@@ -183,7 +188,7 @@ namespace HHT
                 if (kamotuList.FindIndex(x => x == kamotsu_no) != -1)
                 {
                     Activity.RunOnUiThread(() => {
-                        CommonUtils.AlertDialog(view, "", "同一の商品です。", null);
+                        ShowDialog("報告", "同一の商品です。", () => { });
                     });
                     return;
                 }
@@ -205,176 +210,201 @@ namespace HHT
 
         private void SettingTanpinMotoInfo(string kamotsu_no)
         {
-            // 貨物番号に紐づく情報を取得する
-            IDOU033 idou033 = WebService.RequestIdou033(souko_cd, kitaku_cd, kamotsu_no);
+            try
+            {
+                // 貨物番号に紐づく情報を取得する
+                IDOU033 idou033 = WebService.RequestIdou033(souko_cd, kitaku_cd, kamotsu_no);
 
-            // 得意先、届先が一致するかを確認する
-            if ((idou033.tokuisaki_cd == prefs.GetString("tmptokui_cd", "") 
-                && idou033.todokesaki_cd == prefs.GetString("tmptodoke_cd", ""))
-                || prefs.GetString("tmptokui_cd", "") == "")
-            {
-                // Do nothing
-            }
-            else
-            {
-                CommonUtils.AlertDialog(view, "エラー", "届先が異なります。", null);
-                return;
-            }
-
-            // 便情報が一致するかを確認する
-            if (txtKosu.Text != "0")
-            {
-                // 便チェック
-                if (prefs.GetString("bin_no", "0") != idou033.torikomi_bin)
+                // 得意先、届先が一致するかを確認する
+                if ((idou033.tokuisaki_cd == prefs.GetString("tmptokui_cd", "")
+                    && idou033.todokesaki_cd == prefs.GetString("tmptodoke_cd", ""))
+                    || prefs.GetString("tmptokui_cd", "") == "")
                 {
-                    CommonUtils.AlertDialog(view, "エラー", "便が異なります。", null);
+                    // Do nothing
+                }
+                else
+                {
+                    ShowDialog("エラー", "届先が異なります。", () => { });
                     return;
                 }
-            }
 
-            Dictionary<string, string> param = new Dictionary<string, string>
+                // 便情報が一致するかを確認する
+                if (txtKosu.Text != "0")
+                {
+                    // 便チェック
+                    if (prefs.GetString("bin_no", "0") != idou033.torikomi_bin)
+                    {
+                        ShowDialog("エラー", "便が異なります。", () => { });
+                        return;
+                    }
+                }
+
+                Dictionary<string, string> param = new Dictionary<string, string>
+                {
+                    {"pTerminalID", prefs.GetString("terminal_id","") },
+                    {"pProgramID", "IDO" },
+                    {"pSagyosyaCD", prefs.GetString("sagyousya_cd","") },
+                    {"pSoukoCD", souko_cd },
+                    {"pMotoKamotsuNo", kamotsu_no },
+                    {"pGyomuKbn", "04" }
+                };
+
+                IDOU040 idou040 = WebService.RequestIdou040(param);
+                if (idou040.poRet == "1")
+                {
+                    ShowDialog("エラー", "移動元の貨物Noが見つかりません。", () => { });
+                    return;
+                }
+
+                SetMatehan(idou033.bunrui, 1);
+                motomateCdList.Add(idou033.matehan);
+                kamotuList.Add(kamotsu_no);
+                motoMateInfo.Add(new Ido { kamotsuNo = kamotsu_no, motoMateCode = idou033.matehan });
+
+                editor.PutString("tmptokui_cd", idou033.tokuisaki_cd);
+                editor.PutString("tmptodoke_cd", idou033.todokesaki_cd);
+                editor.PutString("vendor_cd", idou033.default_vendor);
+                editor.PutString("vendor_nm", idou033.vendor_nm);
+                editor.PutString("tsumi_vendor_cd", idou033.default_vendor);
+                editor.PutString("tsumi_vendor_nm", idou033.vendor_nm);
+                editor.PutString("btvBunrui", idou033.bunrui);
+                editor.PutString("motomate_cd", idou033.matehan);
+                editor.PutString("bin_no", idou033.torikomi_bin);
+                editor.PutString("motok_su", txtKosu.Text);
+                editor.PutString("ko_su", txtKosu.Text);
+                editor.PutString("sk_ko_su", txtKosu.Text);
+                editor.PutStringSet("motomateCdList", motomateCdList);
+                editor.PutStringSet("kamotuList", kamotuList);
+                editor.Apply();
+
+                Activity.RunOnUiThread(() => {
+                    btnConfirm.Enabled = true;
+                    btnMate.Enabled = true;
+                });
+            }
+            catch
             {
-                {"pTerminalID", prefs.GetString("terminal_id","") },
-                {"pProgramID", "IDO" },
-                {"pSagyosyaCD", prefs.GetString("pSagyosyaCD", "") },
-                {"pSoukoCD", souko_cd },
-                {"pMotoKamotsuNo", kamotsu_no },
-                {"pGyomuKbn", "04" }
-            };
-            
-            IDOU040 idou040 = WebService.RequestIdou040(param);
-            if (idou040.poRet == "1")
-            {
-                CommonUtils.AlertDialog(view, "Error", "移動元の貨物Noが見つかりません。", null);
+                ShowDialog("エラー", "移動元の貨物Noが見つかりません。", () => { });
                 return;
             }
             
-            SetMatehan(idou033.bunrui, 1);
-            motomateCdList.Add(idou033.matehan);
-            kamotuList.Add(kamotsu_no);
-            motoMateInfo.Add(new Ido { kamotsuNo = kamotsu_no, motoMateCode = idou033.matehan });
-
-            editor.PutString("tmptokui_cd", idou033.tokuisaki_cd);
-            editor.PutString("tmptodoke_cd", idou033.todokesaki_cd);
-            editor.PutString("vendor_cd", idou033.default_vendor);
-            editor.PutString("vendor_nm", idou033.vendor_nm);
-            editor.PutString("tsumi_vendor_cd", idou033.default_vendor);
-            editor.PutString("tsumi_vendor_nm", idou033.vendor_nm);
-            editor.PutString("btvBunrui", idou033.bunrui);
-            editor.PutString("motomate_cd", idou033.matehan);
-            editor.PutString("bin_no", idou033.torikomi_bin);
-            editor.PutString("motok_su", txtKosu.Text);
-            editor.PutString("ko_su", txtKosu.Text);
-            editor.PutString("sk_ko_su", txtKosu.Text);
-            editor.PutStringSet("motomateCdList", motomateCdList);
-            editor.PutStringSet("kamotuList", kamotuList);
-            editor.Apply();
-
-            Activity.RunOnUiThread(() => {
-                btnConfirm.Enabled = true;
-                btnMate.Enabled = true;
-            });
         }
 
         
         private void SettingZenpinMotoInfo(string kamotsu_no)
         {
-            // 貨物番号に紐づく情報を取得する
-            List<IDOU020> idou020List = WebService.RequestIdou020(souko_cd, kitaku_cd, kamotsu_no);
-
-            if (idou020List.Count == 0)
+            try
             {
-                CommonUtils.AlertDialog(view, "", "移動元の貨物Noが見つかりません。", null);
+                // 貨物番号に紐づく情報を取得する
+                List<IDOU020> idou020List = WebService.RequestIdou020(souko_cd, kitaku_cd, kamotsu_no);
+
+                if (idou020List.Count == 0)
+                {
+                    ShowDialog("エラー", "移動元の貨物Noが見つかりません。", () => { });
+                    return;
+                }
+                else
+                {
+                    kamotuList.Add(kamotsu_no);
+                }
+
+                foreach (IDOU020 idou020 in idou020List)
+                {
+                    string btvBunrui = idou020.bunrui;
+                    string btvBunruiNm = idou020.bunrui_nm;
+                    string btvMatehan = idou020.matehan;
+                    int btvMateSu = int.Parse(idou020.cnt);
+                    string btvBaraMatehan = idou020.bara_matehan;
+
+                    SetMatehan(btvBunrui, btvMateSu);
+                    motoMateInfo.Add(new Ido { kamotsuNo = kamotsu_no, motoMateCode = idou020.matehan });
+
+                }
+
+                IDOU033 idou033 = WebService.RequestIdou033(souko_cd, kitaku_cd, kamotsu_no);
+
+                if (idou033.todokesaki_cd == "")
+                {
+                    ShowDialog("エラー", "貨物Noが見つかりません。", () => { });
+                    return;
+                }
+
+                editor.PutString("tmptokui_cd", idou033.tokuisaki_cd);
+                editor.PutString("tmptodoke_cd", idou033.todokesaki_cd);
+                editor.PutString("tsumi_vendor_cd", idou033.default_vendor);
+                editor.PutString("tsumi_vendor_nm", idou033.vendor_nm);
+                editor.PutString("vendor_cd", idou033.default_vendor);
+                editor.PutString("vendor_nm", idou033.vendor_nm);
+                editor.PutString("btvBunrui", idou033.bunrui);
+                editor.PutString("motomate_cd", idou033.matehan);
+                editor.PutString("bin_no", idou033.torikomi_bin);
+
+                editor.PutStringSet("kamotuList", kamotuList);
+                editor.Apply();
+
+                Bundle bundle = new Bundle();
+                bundle.PutString("motoInfo", JsonConvert.SerializeObject(motoMateInfo));
+                StartFragment(FragmentManager, typeof(TsumikaeIdouSakiFragment), bundle);
+            }
+            catch
+            {
+                ShowDialog("エラー", "貨物Noが見つかりません。", () => { });
                 return;
             }
-            else
-            {
-                kamotuList.Add(kamotsu_no);
-            }
-
-            foreach (IDOU020 idou020 in idou020List)
-            {
-                string btvBunrui = idou020.bunrui;
-                string btvBunruiNm = idou020.bunrui_nm;
-                string btvMatehan = idou020.matehan;
-                int btvMateSu = int.Parse(idou020.cnt);
-                string btvBaraMatehan = idou020.bara_matehan;
-
-                SetMatehan(btvBunrui, btvMateSu);
-                motoMateInfo.Add(new Ido { kamotsuNo = kamotsu_no, motoMateCode = idou020.matehan });
-
-            }
-
-            IDOU033 idou033 = WebService.RequestIdou033(souko_cd, kitaku_cd, kamotsu_no);
-
-            if (idou033.todokesaki_cd == "")
-            {
-                CommonUtils.AlertDialog(view, "", "貨物Noが見つかりません。", null);
-                return;
-            }
-
-            editor.PutString("tmptokui_cd", idou033.tokuisaki_cd);
-            editor.PutString("tmptodoke_cd", idou033.todokesaki_cd);
-            editor.PutString("tsumi_vendor_cd", idou033.default_vendor);
-            editor.PutString("tsumi_vendor_nm", idou033.vendor_nm);
-            editor.PutString("vendor_cd", idou033.default_vendor);
-            editor.PutString("vendor_nm", idou033.vendor_nm);
-            editor.PutString("btvBunrui", idou033.bunrui);
-            editor.PutString("motomate_cd", idou033.matehan);
-            editor.PutString("bin_no", idou033.torikomi_bin);
-
-            editor.PutStringSet("kamotuList", kamotuList);
-            editor.Apply();
-
-            Bundle bundle = new Bundle();
-            bundle.PutString("motoInfo", JsonConvert.SerializeObject(motoMateInfo));
-            StartFragment(FragmentManager, typeof(TsumikaeIdouSakiFragment), bundle);
         }
 
 
         private void SettingMateInfo(string kamotsu_no)
         {
-            // 貨物番号に紐づく情報を取得する
-            List<IDOU030> idou030List = WebService.RequestIdou030(souko_cd, kitaku_cd, kamotsu_no);
-
-            if (idou030List.Count == 0)
+            try
             {
-                CommonUtils.AlertDialog(view, "", "移動元の貨物Noが見つかりません。", null);
+                // 貨物番号に紐づく情報を取得する
+                List<IDOU030> idou030List = WebService.RequestIdou030(souko_cd, kitaku_cd, kamotsu_no);
+
+                if (idou030List.Count == 0)
+                {
+                    ShowDialog("エラー", "移動元の貨物Noが見つかりません。", () => { });
+                    return;
+                }
+                else
+                {
+                    kamotuList.Add(kamotsu_no);
+                }
+
+                foreach (IDOU030 idou030 in idou030List)
+                {
+                    SetMatehan(idou030.bunrui, int.Parse(idou030.cnt));
+                    motoMateInfo.Add(new Ido { kamotsuNo = kamotsu_no, motoMateCode = idou030.matehan });
+                }
+
+                IDOU033 idou033 = WebService.RequestIdou033(souko_cd, kitaku_cd, kamotsu_no);
+
+                if (idou033.todokesaki_cd == "")
+                {
+                    ShowDialog("エラー", "貨物Noが見つかりません。", () => { });
+                    return;
+                }
+
+                editor.PutString("tmptokui_cd", idou033.tokuisaki_cd);
+                editor.PutString("tmptodoke_cd", idou033.todokesaki_cd);
+                editor.PutString("tsumi_vendor_cd", idou033.default_vendor);
+                editor.PutString("tsumi_vendor_nm", idou033.vendor_nm);
+                editor.PutString("vendor_cd", idou033.default_vendor);
+                editor.PutString("vendor_nm", idou033.vendor_nm);
+                editor.PutString("btvBunrui", idou033.bunrui);
+                editor.PutString("motomate_cd", idou033.matehan);
+                editor.PutString("bin_no", idou033.torikomi_bin);
+                editor.Apply();
+
+                Activity.RunOnUiThread(() => {
+                    btnConfirm.Enabled = true;
+                });
+            }
+            catch
+            {
+                ShowDialog("エラー", "貨物Noが見つかりません。", () => { });
                 return;
             }
-            else
-            {
-                kamotuList.Add(kamotsu_no);
-            }
-
-            foreach(IDOU030 idou030 in idou030List)
-            {
-                SetMatehan(idou030.bunrui, int.Parse(idou030.cnt));
-                motoMateInfo.Add(new Ido { kamotsuNo = kamotsu_no, motoMateCode = idou030.matehan });
-            }
-            
-            IDOU033 idou033 = WebService.RequestIdou033(souko_cd, kitaku_cd, kamotsu_no);
-
-            if (idou033.todokesaki_cd == "")
-            {
-                CommonUtils.AlertDialog(view, "", "貨物Noが見つかりません。", null);
-                return;
-            }
-
-            editor.PutString("tmptokui_cd", idou033.tokuisaki_cd);
-            editor.PutString("tmptodoke_cd", idou033.todokesaki_cd);
-            editor.PutString("tsumi_vendor_cd", idou033.default_vendor);
-            editor.PutString("tsumi_vendor_nm", idou033.vendor_nm);
-            editor.PutString("vendor_cd", idou033.default_vendor);
-            editor.PutString("vendor_nm", idou033.vendor_nm);
-            editor.PutString("btvBunrui", idou033.bunrui);
-            editor.PutString("motomate_cd", idou033.matehan);
-            editor.PutString("bin_no", idou033.torikomi_bin);
-            editor.Apply();
-
-            Activity.RunOnUiThread(() => {
-                btnConfirm.Enabled = true;
-            });
         }
 
         private void SetMatehan(string bunrui, int addValue)

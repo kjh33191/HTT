@@ -93,8 +93,7 @@ namespace HHT
 
                     // メールバッグ専用バーコード確認
                     if (data[0].ToString() != "M") {
-                        CommonUtils.AlertDialog(view, "", ERR1, null);
-                        Vibrate();
+                        ShowDialog("エラー", ERR1, () => { });
                         return;
                     }
                     else
@@ -131,27 +130,20 @@ namespace HHT
                                 break;
                             case "1":
                                 //	該当コースが既に積込中以上のステータスのためエラー
-                                // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", ERR3, ()=> etMailBag.Text ="");
-                                Vibrate();
+                                ShowDialog("エラー", ERR3, () => etMailBag.Text = "");
                                 break;
                             case "2":
                                 //	該当コースが既に出発受付以上のステータスのためエラー
-                                // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", ERR4, () => etMailBag.Text = "");
-                                Vibrate();
+                                ShowDialog("エラー", ERR4, () => etMailBag.Text = "");
                                 break;
                             case "3":
                                 //	コース割付マスタに存在しないためエラー
-                                // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", ERR5, () => etMailBag.Text = "");
+                                ShowDialog("エラー", ERR5, () => etMailBag.Text = "");
                                 Vibrate();
                                 break;
                             case "9":
                                 //	登録済
-                                // DEVICE:syougou_NG()
-                                CommonUtils.AlertDialog(view, "", ERR2, () => etMailBag.Text = "");
-                                Vibrate();
+                                ShowDialog("エラー", ERR2, () => etMailBag.Text = "");
                                 break;
                             default:
                                 break;
@@ -165,25 +157,18 @@ namespace HHT
                         switch (int.Parse(result["poRet"]))
                         {
                             case 0:
-                                //	登録解除
                                 mail_back++;
                                 mailBagSu.Text = "(" + mail_back + ")";
-                                CommonUtils.AlertDialog(view, "", "登録されているメールバッグを取消しました。", () => etMailBag.Text = "");
+                                ShowDialog("報告", "登録されているメールバッグを取消しました。", () => etMailBag.Text = "");
                                 break;
                             case 1:
-                                // 未登録
-                                CommonUtils.AlertDialog(view, "", "該当のメールバッグは未登録です。", () => etMailBag.Text = "");
-                                Vibrate();
+                                ShowDialog("報告", "該当のメールバッグは未登録です。", () => etMailBag.Text = "");
                                 break;
                             case 2:
-                                //	該当コースが既に出発受付以上のステータスのためエラー
-                                CommonUtils.AlertDialog(view, "", "該当のメールバッグは出発点呼済です。", () => etMailBag.Text = "");
-                                Vibrate();
+                                ShowDialog("報告", "該当のメールバッグは出発点呼済です。", () => etMailBag.Text = "");
                                 break;
                             case 3:
-                                //	コース割付マスタに存在しないためエラー
-                                CommonUtils.AlertDialog(view, "", "マスタに存在しない店舗のメールバッグをスキャンしました。", () => etMailBag.Text = "");
-                                Vibrate();
+                                ShowDialog("報告", "マスタに存在しない店舗のメールバッグをスキャンしました。", () => etMailBag.Text = "");
                                 break;
                             default:
                                 break;

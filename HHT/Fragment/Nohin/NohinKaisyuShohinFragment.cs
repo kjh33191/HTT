@@ -79,25 +79,23 @@ namespace HHT
 
         private void Confirm()
         {
-            CommonUtils.AlertConfirm(view, "確認", "よろしいですか？", (flag) =>
-            {
-                if (flag)
+            ShowDialog("確認", "よろしいですか？", () => {
+
+                Log.Debug(TAG, "COMMIT");
+                //送信ファイル作成
+                //repairFile();
+
+                foreach (string kamotu_no in arrKamotu)
                 {
-                    Log.Debug(TAG, "COMMIT");
-                    //送信ファイル作成
-                    //repairFile();
-
-                    foreach (string kamotu_no in arrKamotu) {
-                        appendFile(kamotu_no);
-                        // ==> DB insert 
-                    }
-
-                    editor.PutString("label_flg", "0");
-                    editor.Apply();
-                    // arrSyo_su = 0 必要？
-
-                    FragmentManager.PopBackStack();
+                    appendFile(kamotu_no);
+                    // ==> DB insert 
                 }
+
+                editor.PutString("label_flg", "0");
+                editor.Apply();
+                // arrSyo_su = 0 必要？
+
+                FragmentManager.PopBackStack();
             });
         }
 
@@ -175,7 +173,7 @@ namespace HHT
                         if (btvTokuisaki != prefs.GetString("tokuisaki_cd", "")
                             || btvTodokesaki != prefs.GetString("todokesaki_cd", ""))
                         {
-                            CommonUtils.AlertDialog(view, "", "納入先店舗が違います。", null);
+                            ShowDialog("エラー", "納入先店舗が違います。", null);
                             return;
                         }
 
@@ -184,12 +182,12 @@ namespace HHT
                         {
                             if (label_flg == "0")
                             {
-                                CommonUtils.AlertDialog(view, "", "登録済みです。", null);
+                                ShowDialog("報告", "登録済みです。", null);
                                 return;
                             }
                             else
                             {
-                                CommonUtils.AlertDialog(view, "", "未登録です。", null);
+                                ShowDialog("報告", "未登録です。", null);
                                 return;
                             }
                         }

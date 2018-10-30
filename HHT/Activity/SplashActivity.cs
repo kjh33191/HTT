@@ -18,17 +18,19 @@ namespace HHT
             {
                 db = new DataBase();
                 db.CreateDataBase();
-                string hostIp = db.GetHostIpAddress();
-
-                if(hostIp != null && hostIp != "")
+                Resources.Model.Config config = db.GetHostIpAddress();
+                
+                if (config != null)
                 {
-                    WebService.SetHostIpAddress(hostIp);
+                    string hostIp = config.hostIp;
+                    string port = config.port;
+
+                    WebService.SetHostIpAddress(hostIp, port);
                 }
 
                 StartActivity(new Intent(Application.Context, typeof(MainActivity)));
                 
             });
         }
-
     }
 }

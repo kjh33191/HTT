@@ -30,6 +30,8 @@ namespace HHT
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 
+            SetTitle("移動先店舗登録");
+
             // コンポーネント初期化
             InitComponent();
 
@@ -44,6 +46,7 @@ namespace HHT
                 if (e.HasFocus)
                 {
                     etKaisyuDate.Text = etKaisyuDate.Text.Replace("/", "");
+                    etKaisyuDate.SetSelection(etKaisyuDate.Text.Length);
                 }
                 else
                 {
@@ -53,9 +56,10 @@ namespace HHT
                     }
                     catch
                     {
-                        CommonUtils.ShowAlertDialog(view, "日付形式ではありません", "正しい日付を入力してください");
-                        etKaisyuDate.Text = "";
-                        etKaisyuDate.RequestFocus();
+                        ShowDialog("エラー", "正しい日付を入力してください。", () => {
+                            etKaisyuDate.Text = "";
+                            etKaisyuDate.RequestFocus();
+                        });
                     }
                 }
             };
@@ -65,6 +69,7 @@ namespace HHT
                 if (e.HasFocus)
                 {
                     etHaisoDate.Text = etHaisoDate.Text.Replace("/", "");
+                    etHaisoDate.SetSelection(etHaisoDate.Text.Length);
                 }
                 else
                 {
@@ -74,9 +79,10 @@ namespace HHT
                     }
                     catch
                     {
-                        CommonUtils.ShowAlertDialog(view, "日付形式ではありません", "正しい日付を入力してください");
-                        etHaisoDate.Text = "";
-                        etHaisoDate.RequestFocus();
+                        ShowDialog("エラー", "正しい日付を入力してください。", () => {
+                            etHaisoDate.Text = "";
+                            etHaisoDate.RequestFocus();
+                        });
                     }
                 }
             };

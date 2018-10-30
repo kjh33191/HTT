@@ -110,7 +110,7 @@
     <Compile Include="Resources\Model\WebService\Kosu\KOSU190.cs" />
     <Compile Include="Utils\DialogAsync.cs" />
     <Compile Include="Utils\AlertDialog.cs" />
-    <Compile Include="Utils\BaseFragment.cs" />
+    <Compile Include="Fragment\BaseFragment.cs" />
     <Compile Include="Utils\BootComplete.cs" />
     <Compile Include="Utils\CommonUtils.cs" />
     <Compile Include="Fragment\CompleteFragment.cs" />

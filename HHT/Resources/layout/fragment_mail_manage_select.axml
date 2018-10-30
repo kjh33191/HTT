@@ -26,7 +26,6 @@
             android:inputType="date"
             android:hint="yyyyMMdd"
             android:layout_gravity="fill_horizontal"
-            android:textAlignment="center"
             app:bootstrapBrand="primary"
             app:bootstrapSize="xl" />
     </LinearLayout>
@@ -47,7 +46,6 @@
             android:id="@+id/et_mailRegistSelect_bin"
             android:inputType="numberDecimal"
             android:layout_gravity="fill_horizontal"
-            android:textAlignment="center"
             app:bootstrapBrand="primary"
             app:bootstrapSize="xl" />
     </LinearLayout>

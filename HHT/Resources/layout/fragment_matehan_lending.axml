@@ -50,32 +50,13 @@
             app:bootstrapSize="xl"
             app:roundedCorners="false" />
     </GridLayout>
-    <TextView
-        android:text=""
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="textStart"
-        android:layout_marginTop="20dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:id="@+id/tv_matehan_targetName" />
-    <TextView
-        android:text="よろしいですか？"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:layout_marginTop="20dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        android:id="@+id/tv_matehan_confirmMsg" />
     <com.beardedhen.androidbootstrap.BootstrapButton
         style="@style/wrapping_button"
         android:text="確定"
         android:id="@+id/btn_matehan_confirm"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="40dp"
         android:layout_marginRight="0dp"
         android:textSize="20dp"
         android:layout_gravity="center_horizontal"

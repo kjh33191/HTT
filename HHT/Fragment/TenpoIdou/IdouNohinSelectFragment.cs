@@ -32,6 +32,8 @@ namespace HHT
             prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
             editor = prefs.Edit();
 
+            SetTitle("移動先店舗納品");
+
             // コンポーネント初期化
             InitComponent();
 
@@ -67,21 +69,16 @@ namespace HHT
         {
             if(etTokuisakiCd.Text == "")
             {
-                CommonUtils.AlertDialog(view, "", "得意先コードを入力してください。", null);
-                Vibrate();
-                etTokuisakiCd.RequestFocus();
+                ShowDialog("エラー", "得意先コードを入力してください。", () => { etTokuisakiCd.RequestFocus(); });
                 return;
             }
 
             if (etTodokesakiCd.Text == "")
             {
-                CommonUtils.AlertDialog(view, "", "届先コードを入力してください。", null);
-                etTodokesakiCd.RequestFocus();
-                Vibrate();
+                ShowDialog("エラー", "届先コードを入力してください。", () => { etTodokesakiCd.RequestFocus(); });
                 return;
             }
-
-
+            
             TokuiFileHelper tokuiFileHelper = new TokuiFileHelper();
             TokuiFile result = tokuiFileHelper.SelectByPk(etTokuisakiCd.Text, etTodokesakiCd.Text);
 
@@ -100,20 +97,18 @@ namespace HHT
                 confirmMsg = confirmMsg.Replace("@temp2", result.todokesaki_cd);
                 confirmMsg = confirmMsg.Replace("@temp3", result.tokuisaki_nm);
 
-                CommonUtils.AlertConfirm(view, "確認", confirmMsg, (flag) =>
-                {
-                    if (flag)
-                    {
-                        StartFragment(FragmentManager, typeof(IdouNohinWorkFragment));
-                    }
+                ShowDialog("確認", confirmMsg, () => {
+                    StartFragment(FragmentManager, typeof(IdouNohinWorkFragment));
                 });
+     
             }
             else
             {
-                CommonUtils.AlertDialog(view, "", "届先コードがみつかりません。", null);
-                etTokuisakiCd.Text = "";
-                etTodokesakiCd.Text = "";
-                etTokuisakiCd.RequestFocus();
+                ShowDialog("確認", "届先コードがみつかりません。", () => {
+                    etTokuisakiCd.Text = "";
+                    etTodokesakiCd.Text = "";
+                    etTokuisakiCd.RequestFocus();
+                });
             }
         }
 

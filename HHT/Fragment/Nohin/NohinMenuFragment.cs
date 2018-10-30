@@ -53,7 +53,7 @@ namespace HHT
 
                 if (prefs.GetBoolean("mailBagFlag", false))
                 {
-                    CommonUtils.AlertDialog(view, "確認", "メールバッグ納品処理は終了しています。", null);
+                    ShowDialog("報告", "メールバッグ納品処理は終了しています。", () => { });
                 }
                 else
                 {
@@ -69,13 +69,13 @@ namespace HHT
                 {
                     Log.Debug(TAG, "メールバッグ納品処理が終了していません。");
                     errorFlag = true;
-                    CommonUtils.AlertDialog(view, "確認", "メールバッグ納品処理が終了していません。", () => { return; });
+                    ShowDialog("報告", "メールバッグ納品処理が終了していません。", () => { });
                 }
                 else if (prefs.GetBoolean("nohinWorkEndFlag", false))
                 {
                     Log.Debug(TAG, "納品処理は終了しています。");
                     errorFlag = true;
-                    CommonUtils.AlertDialog(view, "確認", "納品処理は終了しています。", () => { return; });
+                    ShowDialog("報告", "納品処理は終了しています。", () => { });
                 }
                 
                 if (errorFlag == false)
@@ -189,90 +189,83 @@ namespace HHT
 
             if (HasSendData())
             {
-                CommonUtils.AlertConfirm(view, "", "納品情報を送信して業務メニューに戻ってよろしいですか？", (flag) =>
-                {
-                    if (flag)
+                ShowDialog("警告", "納品情報を送信して業務メニューに戻ってよろしいですか。", () => {
+                    ((MainActivity)this.Activity).ShowProgress("データ送信中");
+
+                    /*
+                    foreach (SndNohinMail temp in mailList)
                     {
-                        ((MainActivity)this.Activity).ShowProgress("データ送信中");
-
-                        /*
-                        foreach (SndNohinMail temp in mailList)
-                        {
-                            Dictionary<string, string> param = SetSendParam(temp);
-                            var result = WebService.RequestSend010(param);
-                        }
-
-                        Log.Debug(TAG, "メールバックデータ送信完了");
-
-                        foreach (SndNohinMailKaisyu temp in mailKaisyuList)
-                        {
-                            Dictionary<string, string> param = SetSendParam(temp);
-                            var result = WebService.RequestSend010(param);
-                        }
-
-                        Log.Debug(TAG, "メールバック回収データ送信完了");
-
-                        foreach (SndNohinMate temp in mateList)
-                        {
-                            Dictionary<string, string> param = SetSendParam(temp);
-                            var result = WebService.RequestSend010(param);
-                        }
-
-                        Log.Debug(TAG, "マテハンデータ送信完了");
-
-                        foreach (SndNohinWork temp in workList)
-                        {
-                            Dictionary<string, string> param = SetSendParam(temp);
-                            var result = WebService.RequestSend010(param);
-
-                        }
-
-                        Log.Debug(TAG, "納品作業データ送信完了");
-
-                        foreach (SndNohinSyohinKaisyu temp in syohinKaisyuList)
-                        {
-                            Dictionary<string, string> param = SetSendParam(temp);
-                            var result = WebService.RequestSend010(param);
-
-                        }
-
-                        Log.Debug(TAG, "商品回収データ送信完了");
-                        */
-
-                        Activity.RunOnUiThread(() =>
-                        {
-                            /*
-                            // 削除処理
-                            mailHelper.DeleteAll();
-                            mailKaisyuHelper.DeleteAll();
-                            mateHelper.DeleteAll();
-                            workHelper.DeleteAll();
-                            syohinKaisyuHelper.DeleteAll();
-
-                            //new MFileHelper().DeleteAll();
-                            //new MbFileHelper().DeleteAll();
-                            //new PsFileHelper().DeleteAll();
-
-                            */
-                            ((MainActivity)this.Activity).DismissDialog();
-
-                            CommonUtils.AlertDialog(view, "", "データ送信完了しました。", () =>
-                            {
-                                FragmentManager.PopBackStack();
-                                FragmentManager.PopBackStack();
-                            });
-                        });
+                        Dictionary<string, string> param = SetSendParam(temp);
+                        var result = WebService.RequestSend010(param);
                     }
+
+                    Log.Debug(TAG, "メールバックデータ送信完了");
+
+                    foreach (SndNohinMailKaisyu temp in mailKaisyuList)
+                    {
+                        Dictionary<string, string> param = SetSendParam(temp);
+                        var result = WebService.RequestSend010(param);
+                    }
+
+                    Log.Debug(TAG, "メールバック回収データ送信完了");
+
+                    foreach (SndNohinMate temp in mateList)
+                    {
+                        Dictionary<string, string> param = SetSendParam(temp);
+                        var result = WebService.RequestSend010(param);
+                    }
+
+                    Log.Debug(TAG, "マテハンデータ送信完了");
+
+                    foreach (SndNohinWork temp in workList)
+                    {
+                        Dictionary<string, string> param = SetSendParam(temp);
+                        var result = WebService.RequestSend010(param);
+
+                    }
+
+                    Log.Debug(TAG, "納品作業データ送信完了");
+
+                    foreach (SndNohinSyohinKaisyu temp in syohinKaisyuList)
+                    {
+                        Dictionary<string, string> param = SetSendParam(temp);
+                        var result = WebService.RequestSend010(param);
+
+                    }
+
+                    Log.Debug(TAG, "商品回収データ送信完了");
+                    */
+
+                    Activity.RunOnUiThread(() =>
+                    {
+                        /*
+                        // 削除処理
+                        mailHelper.DeleteAll();
+                        mailKaisyuHelper.DeleteAll();
+                        mateHelper.DeleteAll();
+                        workHelper.DeleteAll();
+                        syohinKaisyuHelper.DeleteAll();
+
+                        //new MFileHelper().DeleteAll();
+                        //new MbFileHelper().DeleteAll();
+                        //new PsFileHelper().DeleteAll();
+
+                        */
+                        ((MainActivity)this.Activity).DismissDialog();
+
+                        ShowDialog("報告", "データ送信完了しました。", () => {
+                            FragmentManager.PopBackStack();
+                            FragmentManager.PopBackStack();
+                        });
+                    });
                 });
             }
             else
             {
-                CommonUtils.AlertConfirm(view, "", "業務メニューに戻ってよろしいですか？", (flag) => {
-                    if (flag)
-                    {
-                        Log.Debug(TAG, "NOHIN_END");
-                        FragmentManager.PopBackStack();
-                    }
+                ShowDialog("確認", "業務メニューに戻ってよろしいですか。", () => {
+                    Log.Debug(TAG, "NOHIN_END");
+                    FragmentManager.PopBackStack();
+                    FragmentManager.PopBackStack();
                 });
             }
 
@@ -302,57 +295,53 @@ namespace HHT
                     Activity.RunOnUiThread(() =>
                     {
                         // 業務メニューに戻ってよろしいですか？ 
-                        CommonUtils.AlertConfirm(view, "", "納品情報を送信して業務メニューに戻ってよろしいですか？", (flag) =>
+                        ShowDialog("警告", "納品情報を送信して業務メニューに戻ってよろしいですか？", () => {
+                            ((MainActivity)this.Activity).ShowProgress("データ送信中");
+
+                            foreach (SndNohinMail temp in mailList)
                             {
-                                if (flag)
-                                {
-                                    ((MainActivity)this.Activity).ShowProgress("データ送信中");
-                                    
-                                    foreach (SndNohinMail temp in mailList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
-                                    }
+                                Dictionary<string, string> param = SetSendParam(temp);
+                                var result = WebService.RequestSend010(param);
+                            }
 
-                                    Log.Debug(TAG, "メールバックデータ送信完了");
+                            Log.Debug(TAG, "メールバックデータ送信完了");
 
-                                    foreach (SndNohinMailKaisyu temp in mailKaisyuList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
-                                    }
+                            foreach (SndNohinMailKaisyu temp in mailKaisyuList)
+                            {
+                                Dictionary<string, string> param = SetSendParam(temp);
+                                var result = WebService.RequestSend010(param);
+                            }
 
-                                    Log.Debug(TAG, "メールバック回収データ送信完了");
+                            Log.Debug(TAG, "メールバック回収データ送信完了");
 
-                                    foreach (SndNohinMate temp in mateList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
+                            foreach (SndNohinMate temp in mateList)
+                            {
+                                Dictionary<string, string> param = SetSendParam(temp);
+                                var result = WebService.RequestSend010(param);
 
-                                    }
+                            }
 
-                                    Log.Debug(TAG, "マテハンデータ送信完了");
+                            Log.Debug(TAG, "マテハンデータ送信完了");
 
-                                    foreach (SndNohinWork temp in workList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
+                            foreach (SndNohinWork temp in workList)
+                            {
+                                Dictionary<string, string> param = SetSendParam(temp);
+                                var result = WebService.RequestSend010(param);
 
-                                    }
+                            }
 
-                                    Log.Debug(TAG, "納品作業データ送信完了");
+                            Log.Debug(TAG, "納品作業データ送信完了");
 
-                                    foreach (SndNohinSyohinKaisyu temp in syohinKaisyuList)
-                                    {
-                                        Dictionary<string, string> param = SetSendParam(temp);
-                                        var result = WebService.RequestSend010(param);
+                            foreach (SndNohinSyohinKaisyu temp in syohinKaisyuList)
+                            {
+                                Dictionary<string, string> param = SetSendParam(temp);
+                                var result = WebService.RequestSend010(param);
 
-                                    }
+                            }
 
-                                    Log.Debug(TAG, "商品回収データ送信完了");
+                            Log.Debug(TAG, "商品回収データ送信完了");
 
-                                }
-                            });
+                        });
                     }
                     );
                     Activity.RunOnUiThread(() =>
@@ -370,15 +359,12 @@ namespace HHT
                     });
                     Activity.RunOnUiThread(() =>
                     {
-                        CommonUtils.AlertDialog(view, "", "データ送信完了しました。", () =>
-                        {
+                        ShowDialog("報告", "データ送信完了しました。", () => {
                             ((MainActivity)this.Activity).DismissDialog();
                             FragmentManager.PopBackStack();
                         });
-                        
                     });
                 }
-
             )).Start();
             }
         }

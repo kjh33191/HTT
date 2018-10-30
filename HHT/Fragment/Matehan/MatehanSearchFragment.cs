@@ -34,7 +34,7 @@ namespace HHT
             kosuMenuflag = prefs.GetInt(Const.KOSU_MENU_FLAG, (int)Const.KOSU_MENU.TODOKE); // 画面区分
             souko_cd = prefs.GetString("souko_cd", "");
 
-            SetTitle("届先指定検品");
+            SetTitle("貸出先検索");
             SetTodokesakiAsync();
 
             return view;
@@ -42,7 +42,7 @@ namespace HHT
 
         private void SetTodokesakiAsync()
         {
-            ((MainActivity)this.Activity).ShowProgress("届先検索中...");
+            ((MainActivity)this.Activity).ShowProgress("読み込み中");
 
             List<KOSU190> todokeList = WebService.RequestMate020(souko_cd);
 
@@ -56,8 +56,7 @@ namespace HHT
             }
             else
             {
-                CommonUtils.AlertDialog(view, "確認", "表示データがありません。", () =>
-                {
+                ShowDialog("報告", "表示データがありません。", () => {
                     FragmentManager.PopBackStack();
                 });
             }
