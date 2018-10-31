@@ -228,7 +228,7 @@ namespace HHT
                                         //StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
                                         Activity.RunOnUiThread(() =>
                                         {
-                                            //	正常登録
+                                            //	正常登録22
                                             ShowDialog("報告", "積込検品が\n完了しました。", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
                                         });
                                     }
