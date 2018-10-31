@@ -231,7 +231,6 @@ namespace HHT
                                             //	正常登録
                                             ShowDialog("報告", "積込検品が\n完了しました。", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
                                         });
-
                                     }
                                     else
                                     {
