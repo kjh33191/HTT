@@ -43,7 +43,7 @@ namespace HHT
             btnConfirm = view.FindViewById<Button>(Resource.Id.confirm);
             btnConfirm.Click += delegate {
                 if (_HostIpEditText.Text == ""){
-                    ShowDialog("報告", "ホストIPを入力してください。", null);
+                    ShowDialog("報告", "ホストIPを入力してください。", () => { });
                     return;
                 }
 

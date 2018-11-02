@@ -1,145 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp">
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:columnCount="2">
-        <TextView
-            android:text="TestTenpo"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="20dp"
-            android:id="@+id/txt_tsumikomiWork_tokuisakiNm"
-            android:layout_columnSpan="2" />
-        <TextView
-            android:text="個数"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginRight="10dp"
-            android:textSize="23sp"
-            android:textStyle="bold"
-            android:id="@+id/textView2" />
-        <EditText
-            android:text="0"
-            android:inputType="numberSigned"
-            android:layout_width="80dp"
-            android:id="@+id/et_tsumikomiWork_kosu"
-            android:focusable="false" />
-        <TextView
-            android:text="車両ラベル"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginRight="10dp"
-            android:textSize="23sp"
-            android:textStyle="bold"
-            android:id="@+id/textView2" />
-        <EditText
-            android:text=""
-            android:inputType="numberSigned"
-            android:layout_width="120dp"
-            android:id="@+id/et_tsumikomiWork_carLabel"
-            android:layout_gravity="fill_horizontal"
-            android:focusable="false" />
-        <TextView
-            android:text="キャリー"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginRight="10dp"
-            android:textSize="23sp"
-            android:textStyle="bold"
-            android:id="@+id/textView2"
-            android:layout_marginBottom="-10dp" />
-        <EditText
-            android:text="0"
-            android:inputType="numberSigned"
-            android:layout_width="80dp"
-            android:layout_marginBottom="-10dp"
-            android:id="@+id/et_tsumikomiWork_carry"
-            android:focusable="false" />
-        <TextView
-            android:text="カゴ車"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginRight="10dp"
-            android:textSize="23sp"
-            android:textStyle="bold"
-            android:id="@+id/textView2"
-            android:layout_marginBottom="-10dp" />
-        <EditText
-            android:text="0"
-            android:inputType="numberSigned"
-            android:layout_width="80dp"
-            android:layout_marginBottom="-10dp"
-            android:id="@+id/et_tsumikomiWork_kargoCar"
-            android:focusable="false" />
-        <TextView
-            android:text="カード"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="-10dp"
-            android:textSize="23sp"
-            android:textStyle="bold"
-            android:id="@+id/textView2" />
-        <EditText
-            android:text="0"
-            android:inputType="numberSigned"
-            android:layout_width="80dp"
-            android:layout_marginBottom="-10dp"
-            android:id="@+id/et_tsumikomiWork_card"
-            android:focusable="false" />
-        <TextView
-            android:text="ばら"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="-10dp"
-            android:textSize="23sp"
-            android:textStyle="bold"
-            android:id="@+id/textView2" />
-        <EditText
-            android:text="0"
-            android:inputType="numberSigned"
-            android:layout_width="80dp"
-            android:layout_marginBottom="-10dp"
-            android:id="@+id/et_tsumikomiWork_bara"
-            android:focusable="false" />
-        <TextView
-            android:text="その他"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginRight="10dp"
-            android:textSize="23sp"
-            android:textStyle="bold"
-            android:id="@+id/textView2" />
-        <EditText
-            android:text="0"
-            android:inputType="numberSigned"
-            android:layout_width="80dp"
-            android:id="@+id/et_tsumikomiWork_sonota"
-            android:focusable="false" />
-    </GridLayout>
-<!--
-    <Button
-        android:text="移動"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/et_tsumikomiWork_idou" />
-        -->
-    <com.beardedhen.androidbootstrap.BootstrapButton
-        style="@style/wrapping_button"
-        android:text="移動"
-        android:id="@+id/et_tsumikomiWork_idou"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="0dp"
-        android:textSize="20dp"
-        app:bootstrapBrand="primary"
-        app:bootstrapSize="xl"
-        app:roundedCorners="true" />
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingLeft="20dp"
+	android:paddingRight="20dp">
+	<GridLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
+		android:columnCount="2">
+		<TextView
+			android:text="TestTenpo"
+			android:textSize="25sp"
+			android:textStyle="bold"
+			android:layout_marginTop="10dp"
+			android:layout_marginRight="10dp"
+			android:layout_marginBottom="20dp"
+			android:id="@+id/txt_tsumikomiWork_tokuisakiNm"
+			android:layout_columnSpan="2" />
+		<TextView
+			android:text="個数"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_marginRight="10dp"
+			android:textSize="23sp"
+			android:textStyle="bold"
+			android:id="@+id/textView2" />
+		<EditText
+			android:text="0"
+			android:inputType="numberSigned"
+			android:layout_width="80dp"
+			android:id="@+id/et_tsumikomiWork_kosu"
+			android:focusable="false" />
+		<TextView
+			android:text="車両ラベル"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_marginRight="10dp"
+			android:textSize="23sp"
+			android:textStyle="bold"
+			android:id="@+id/textView2" />
+		<EditText
+			android:text=""
+			android:inputType="numberSigned"
+			android:layout_width="120dp"
+			android:id="@+id/et_tsumikomiWork_carLabel"
+			android:layout_gravity="fill_horizontal"
+			android:focusable="false" />
+		<TextView
+			android:text="キャリー"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_marginRight="10dp"
+			android:textSize="23sp"
+			android:textStyle="bold"
+			android:id="@+id/textView2"
+			android:layout_marginBottom="-10dp" />
+		<EditText
+			android:text="0"
+			android:inputType="numberSigned"
+			android:layout_width="80dp"
+			android:layout_marginBottom="-10dp"
+			android:id="@+id/et_tsumikomiWork_carry"
+			android:focusable="false" />
+		<TextView
+			android:text="カゴ車"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_marginRight="10dp"
+			android:textSize="23sp"
+			android:textStyle="bold"
+			android:id="@+id/textView2"
+			android:layout_marginBottom="-10dp" />
+		<EditText
+			android:text="0"
+			android:inputType="numberSigned"
+			android:layout_width="80dp"
+			android:layout_marginBottom="-10dp"
+			android:id="@+id/et_tsumikomiWork_kargoCar"
+			android:focusable="false" />
+		<TextView
+			android:text="カード"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_marginRight="10dp"
+			android:layout_marginBottom="-10dp"
+			android:textSize="23sp"
+			android:textStyle="bold"
+			android:id="@+id/textView2" />
+		<EditText
+			android:text="0"
+			android:inputType="numberSigned"
+			android:layout_width="80dp"
+			android:layout_marginBottom="-10dp"
+			android:id="@+id/et_tsumikomiWork_card"
+			android:focusable="false" />
+		<TextView
+			android:text="ばら"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_marginRight="10dp"
+			android:layout_marginBottom="-10dp"
+			android:textSize="23sp"
+			android:textStyle="bold"
+			android:id="@+id/textView2" />
+		<EditText
+			android:text="0"
+			android:inputType="numberSigned"
+			android:layout_width="80dp"
+			android:layout_marginBottom="-10dp"
+			android:id="@+id/et_tsumikomiWork_bara"
+			android:focusable="false" />
+		<TextView
+			android:text="その他"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_marginRight="10dp"
+			android:textSize="23sp"
+			android:textStyle="bold"
+			android:id="@+id/textView2" />
+		<EditText
+			android:text="0"
+			android:inputType="numberSigned"
+			android:layout_width="80dp"
+			android:id="@+id/et_tsumikomiWork_sonota"
+			android:focusable="false" />
+	</GridLayout>
+	<GridLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
+		android:columnCount="2">
+		<com.beardedhen.androidbootstrap.BootstrapButton
+			style="@style/wrapping_button"
+			android:text="完了"
+			android:id="@+id/completeButton"
+			android:layout_width="130dp"
+			android:layout_height="wrap_content"
+			android:textSize="20dp"
+			android:layout_gravity="center"
+			android:layout_marginRight="0dp"
+			app:bootstrapBrand="primary"
+			app:bootstrapSize="xl"
+			app:roundedCorners="true" />
+		<com.beardedhen.androidbootstrap.BootstrapButton
+			style="@style/wrapping_button"
+			android:text="移動"
+			android:id="@+id/idouButton"
+			android:layout_width="130dp"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="0dp"
+			android:textSize="20dp"
+			android:layout_gravity="center"
+			app:bootstrapBrand="primary"
+			app:bootstrapSize="xl"
+			app:roundedCorners="true" />
+	</GridLayout>
 </LinearLayout>

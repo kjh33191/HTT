@@ -5,6 +5,7 @@ using Android.OS;
 using Android.Preferences;
 using Android.Views;
 using Android.Widget;
+using HHT.Resources.DataHelper;
 using HHT.Resources.Model;
 
 namespace HHT
@@ -43,8 +44,33 @@ namespace HHT
             string soukoCd = prefs.GetString("souko_cd", "");
             string kitakuCd = prefs.GetString("kitaku_cd", "");
             string syuka_date = prefs.GetString("syuka_date", "");
-            
-            vendorList = WebService.RequestKosu190(); ;
+
+            if (prefs.GetBoolean("kounaiFlag", true))
+            {
+                vendorList = WebService.RequestKosu190(); ;
+            }
+            else
+            {
+                vendorList = new List<KOSU190>();
+                List<MateFile> mateList = new MateFileHelper().SelectAll();
+
+                string tempVendorCd = "";
+
+                foreach (MateFile mfile in mateList)
+                {
+                   // ベンダーに紐づくマテハン情報も複数持つので、ベンダーコードで分ける
+                    if (tempVendorCd != mfile.vendor_cd)
+                    {
+                        tempVendorCd = mfile.vendor_cd;
+
+                        KOSU190 kosu190 = new KOSU190();
+                        kosu190.vendor_cd = mfile.vendor_cd;
+                        kosu190.vendor_nm = mfile.vendor_nm;
+                        
+                        vendorList.Add(kosu190);
+                    }
+                }
+            }
 
             if (vendorList.Count > 0)
             {
@@ -67,6 +93,7 @@ namespace HHT
         {
             var item = vendorList[e.Position];
 
+            editor.PutBoolean("searchFlag", true);
             editor.PutString("vendor_cd", item.vendor_cd);
             editor.PutString("vendor_nm", item.vendor_nm);
             editor.Apply();

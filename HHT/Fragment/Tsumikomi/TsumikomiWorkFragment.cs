@@ -25,7 +25,7 @@ namespace HHT
 
         private View view;
         private EditText etKosu, etCarLabel, etCarry, etKargo, etCard, etBara, etSonata;
-        private BootstrapButton btnIdou;
+        private BootstrapButton _CompleteButton,  _IdouButton;
         private string kansen_kbn;
 
         private string souko_cd, kitaku_cd, syuka_date, tokuisaki_cd, todokesaki_cd, bin_no, course;
@@ -55,8 +55,12 @@ namespace HHT
             etBara = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_bara);
             etSonata = view.FindViewById<EditText>(Resource.Id.et_tsumikomiWork_sonota);
 
-            btnIdou = view.FindViewById<BootstrapButton>(Resource.Id.et_tsumikomiWork_idou);
-            btnIdou.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment)); };
+            _CompleteButton = view.FindViewById<BootstrapButton>(Resource.Id.completeButton);
+            _CompleteButton.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiPassFragment)); };
+            _CompleteButton.Enabled = false;
+
+            _IdouButton = view.FindViewById<BootstrapButton>(Resource.Id.idouButton);
+            _IdouButton.Click += delegate { StartFragment(FragmentManager, typeof(TsumikomiIdouMenuFragment)); };
             
             souko_cd = prefs.GetString("souko_cd", "");
             kitaku_cd = prefs.GetString("kitaku_cd", "");
@@ -113,7 +117,7 @@ namespace HHT
 
                             //	正常登録
                             carLabelInputMode = true;
-                            btnIdou.Enabled = false;
+                            _IdouButton.Enabled = false;
                             etCarLabel.SetBackgroundColor(Android.Graphics.Color.Yellow);
                             etKosu.SetBackgroundColor(Android.Graphics.Color.White);
                         }
@@ -175,40 +179,54 @@ namespace HHT
                             {
                                 if (resultCode == 2)
                                 {
-                                    var okFlag = await DialogAsync.Show(Activity, "確認", "積込可能な商品があります。\n積込みを完了\nしますか？");
                                     carLabelInputMode = false;
 
-                                    ShowDialog("確認", "積込可能な商品があります。\n積込みを完了\nしますか？", () => {
-                                        carLabelInputMode = true;
-
-                                        Log.Debug(TAG, "CreateTsumiFiles Start");
-
-                                        CreateTsumiFiles();
-
-                                        Log.Debug(TAG, "CreateTsumiFiles End");
-
-                                        //配車テーブルの該当コースの各数量を実績数で更新する
-                                        var updateResult = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "210" : "314", param);
-
-                                        if (updateResult.poRet == "0" || updateResult.poRet == "99")
+                                    ShowDialog("確認", "積込可能な商品があります。\n積込みを完了\nしますか？", (flag) => {
+                                        if (flag)
                                         {
-                                            //editor.PutBoolean("tenpo_zan_flg", updateResult.poRet == "99" ? true : false);
-                                            //editor.Apply();
-                                            //StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
-                                            Activity.RunOnUiThread(() =>
-                                            {
-                                                //	正常登録
-                                                ShowDialog("報告", "積込検品が\n完了しました。", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
-                                            });
+                                            carLabelInputMode = true;
 
+                                            Log.Debug(TAG, "CreateTsumiFiles Start");
+
+                                            CreateTsumiFiles();
+
+                                            Log.Debug(TAG, "CreateTsumiFiles End");
+
+                                            //配車テーブルの該当コースの各数量を実績数で更新する
+                                            var updateResult = WebService.CallTumiKomiProc(kansen_kbn == "0" ? "210" : "314", param);
+
+                                            if (updateResult.poRet == "0" || updateResult.poRet == "99")
+                                            {
+                                                //editor.PutBoolean("tenpo_zan_flg", updateResult.poRet == "99" ? true : false);
+                                                //editor.Apply();
+                                                //StartFragment(FragmentManager, typeof(TsumikomiCompleteFragment));
+                                                Activity.RunOnUiThread(() =>
+                                                {
+                                                    //	正常登録
+                                                    ShowDialog("報告", "積込検品が\n完了しました。", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
+                                                });
+
+                                            }
+                                            else
+                                            {
+                                                ShowDialog("エラー", "表示データがありません", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
+                                                return;
+                                            }
                                         }
                                         else
                                         {
-                                            ShowDialog("エラー", "表示データがありません", () => { FragmentManager.PopBackStack(FragmentManager.GetBackStackEntryAt(0).Id, 0); });
-                                            return;
+                                            GetTenpoMatehanInfo();
+
+                                            etKosu.SetBackgroundColor(Android.Graphics.Color.Yellow);
+                                            etCarLabel.SetBackgroundColor(Android.Graphics.Color.White);
+
+                                            etKosu.Text = "";
+                                            etCarLabel.Text = "";
+
+                                            carLabelInputMode = false;
                                         }
+                                        
                                     });
-                                    
                                 }
                                 else
                                 {
@@ -244,7 +262,22 @@ namespace HHT
                         {
                             // scan_flg = true	//スキャン済みフラグ
                             // iniZero(4), Return("sagyou5")
-                            carLabelInputMode = false;
+                            
+                            GetTenpoMatehanInfo();
+
+                            Activity.RunOnUiThread(() =>
+                            {
+                                etKosu.SetBackgroundColor(Android.Graphics.Color.Yellow);
+                                etCarLabel.SetBackgroundColor(Android.Graphics.Color.White);
+
+                                etKosu.Text = "";
+                                etCarLabel.Text = "";
+
+                                carLabelInputMode = false;
+
+                                _CompleteButton.Enabled = true;
+
+                            });
                         }
                     }
                     catch
@@ -333,7 +366,7 @@ namespace HHT
             if (carLabelInputMode)
             {
                 CancelTsumiKomi();
-                btnIdou.Enabled = true;
+                _IdouButton.Enabled = true;
                 etKosu.Text = "0";
                 etKosu.SetBackgroundColor(Android.Graphics.Color.Yellow);
                 etCarLabel.SetBackgroundColor(Android.Graphics.Color.White);
@@ -409,7 +442,7 @@ namespace HHT
             
             // VENDOR FILE
             string nohin_date = DateTime.Now.ToString("yyyyMMdd");
-            List<MateFile> mateFile = WebService.RequestTumikomi260(souko_cd, kitaku_cd, syuka_date, nohin_date, bin_no, course);
+            List<MateFile> mateFile = WebService.RequestTumikomi260();
             MateFileHelper mateFileHelper = new MateFileHelper();
             mateFileHelper.DeleteAll();
             mateFileHelper.InsertAll(mateFile);

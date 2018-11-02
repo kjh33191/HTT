@@ -51,7 +51,7 @@ namespace HHT
             button.Click += delegate {
                 if (null != Dismissed)
                     Dismissed(this, new DialogEventArgs {
-                        Text = "Test"
+                        Text = "true"
                     });
                 Dismiss();
             };
@@ -59,6 +59,10 @@ namespace HHT
             BootstrapButton cancelButton = view.FindViewById<BootstrapButton>(Resource.Id.cancelButton);
             cancelButton.BootstrapBrand = DefaultBootstrapBrand.Regular;
             cancelButton.Click += delegate {
+                Dismissed(this, new DialogEventArgs
+                {
+                    Text = "false"
+                });
                 Dismiss();
             };
 

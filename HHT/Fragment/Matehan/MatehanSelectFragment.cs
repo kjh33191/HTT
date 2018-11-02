@@ -183,22 +183,43 @@ namespace HHT
 
                     if (etKasidatuTarget.HasFocus)
                     {
-                        if (data.Length < 12)
+                        try
                         {
-                            ShowDialog("エラー", "コースNoがみつかりません。", () => {});
-                        }
-                        else
-                        {
-                            
-                            try
+                            if(data.Length > 0)
                             {
-                                // ShowConfirmMessage();
-                            }
-                            catch
-                            {
-                                ShowDialog("エラー", "コースNoがみつかりません。", () => { });
-                            }
+                                etKasidatuTarget.Text = data;
 
+                                string vendorNm = WebService.RequestMate010(data);
+                                if (vendorNm == "")
+                                {
+                                    ShowDialog("報告", "貸出先コードが見つかりません。", () => {
+                                        etKasidatuTarget.Text = "";
+                                        etKasidatuTarget.RequestFocus();
+                                    });
+                                }
+                                else
+                                {
+                                    string message = "貸出日：" + etKasidatuDate.Text;
+                                    message += "\n" + "貸出先：" + etKasidatuTarget.Text;
+                                    message += "\n" + "貸出名：\n" + vendorNm;
+                                    message += "\n\n" + "よろしいですか？";
+
+                                    ShowDialog("確認", message, () => {
+                                        editor.PutString("vendor_cd", etKasidatuTarget.Text);
+                                        editor.PutString("vendor_nm", vendorNm);
+                                        editor.PutString("kasidasi_date", etKasidatuDate.Text.Replace("/", ""));
+
+                                        editor.Apply();
+
+                                        StartFragment(FragmentManager, typeof(MatehanWorkFragment));
+
+                                    });
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            ShowDialog("エラー", "貸出先コードが見つかりません。", () => { });
                         }
                     }
                     

@@ -5,13 +5,14 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical|left"
     android:layout_marginLeft="20dp"
-    android:layout_marginRight="20dp"
-    android:layout_marginBottom="30dp">
+    android:layout_marginRight="20dp">
     <Button
-        android:text="1:貸出登録"
+        android:text="1. 貸出登録"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:textSize="27sp"
         android:textStyle="bold"
+				android:paddingStart="20dp"
+	    android:textAlignment="textStart"
         android:id="@+id/btn_mateMenu_kasidatu" />
 </LinearLayout>

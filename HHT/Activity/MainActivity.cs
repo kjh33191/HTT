@@ -159,6 +159,7 @@ namespace HHT
 
                         // Enable Scanner
                         mBarcodeScanner.Claim();
+
                     }
                 }
             }

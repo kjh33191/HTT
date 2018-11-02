@@ -75,10 +75,10 @@ namespace HHT
         private List<KOSU060> GetTokuisakiMasterInfo()
         {
             List<KOSU060> resultList = new List<KOSU060>(); ;
-            string soukoCd = prefs.GetString("souko_cd", "108");
-            string kitakuCd = prefs.GetString("kitaku_cd", "2");
-            string syuka_date = prefs.GetString("syuka_date", "20180320");
-            string bin_no = prefs.GetString("bin_no", "1");
+            string soukoCd = prefs.GetString("souko_cd", "");
+            string kitakuCd = prefs.GetString("kitaku_cd", "");
+            string syuka_date = prefs.GetString("syuka_date", "");
+            string bin_no = prefs.GetString("bin_no", "");
             
             if (kosuMenuflag == (int)Const.KOSU_MENU.TODOKE)
             {
@@ -104,7 +104,7 @@ namespace HHT
             editor.PutString("vendor_cd", "");
             editor.PutString("vendor_nm", "");
             editor.PutString("start_vendor_cd", "");
-
+            
             editor.Apply();
 
             StartFragment(FragmentManager, typeof(KosuWorkFragment));

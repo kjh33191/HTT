@@ -119,5 +119,26 @@ namespace HHT
             };
         }
 
+        public void ShowDialog(string title, string body, Action<bool> callback)
+        {
+            Bundle bundle = new Bundle();
+            bundle.PutString("title", title);
+            bundle.PutString("body", body);
+
+            CustomDialogFragment dialog = new CustomDialogFragment { Arguments = bundle };
+            dialog.Cancelable = false;
+            dialog.Show(FragmentManager, "");
+            dialog.Dismissed += (s, e) => {
+                if(e.Text == "true")
+                {
+                    callback(true);
+                }
+                else
+                {
+                    callback(false);
+                }
+            };
+        }
+        
     }
 }

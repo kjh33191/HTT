@@ -12,6 +12,7 @@ using Android.Preferences;
 using Android.Util;
 using Android.Media;
 using Com.Beardedhen.Androidbootstrap;
+using Android.Content.Res;
 
 namespace HHT
 {
@@ -242,8 +243,27 @@ namespace HHT
                     if (!hasError) {
                         string menu_kbn = prefs.GetString("menu_kbn", "");
 
-                        ToneGenerator toneGen1 = new ToneGenerator(Stream.System, 100);
-                        toneGen1.StartTone(Tone.PropBeep, 1000);
+                        AudioAttributes attributes = new AudioAttributes.Builder()
+                                        .SetUsage(AudioUsageKind.Game)
+                                        .SetContentType(AudioContentType.Sonification)
+                                        .Build();
+
+                        SoundPool soundPool = new SoundPool.Builder()
+                                                            .SetAudioAttributes(attributes)
+                                                            // ストリーム数に応じて
+                                                            .SetMaxStreams(2)
+                                                            .Build();
+
+
+                        //AssetManager assets = this.Activity.Assets;
+
+                        //soundPool = new SoundPool(5, Stream.Ring, 0);
+                        soundPool.Play(soundPool.Load(this.Activity, Resource.Raw.beep, 0), 1.0f, 1.0f, 0, 0, 1);
+
+                        //MediaPlayer mp = MediaPlayer.Create(this.Activity, Resource.Raw.beep);
+                        //mp.Start();
+                        //ToneGenerator toneGen1 = new ToneGenerator(Stream.System, 100);
+                        //toneGen1.StartTone(Tone.PropBeep, 1000);
 
                         try
                         {

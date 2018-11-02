@@ -8,31 +8,39 @@
     android:layout_marginRight="20dp"
     android:layout_marginBottom="30dp">
     <Button
-        android:text="1.メールバッグ納品"
+        android:text="1. メールバッグ納品"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:textSize="27sp"
+		android:paddingStart="20dp"
+	    android:textAlignment="textStart"
+        android:textSize="26sp"
         android:textStyle="bold"
         android:id="@+id/btn_nohinMenu_mailNohin" />
     <Button
-        android:text="2.納品業務"
+        android:text="2. 納品業務"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:textSize="27sp"
         android:textStyle="bold"
+				android:paddingStart="20dp"
+	    android:textAlignment="textStart"
         android:id="@+id/btn_nohinMenu_nohin" />
     <Button
-        android:text="3.回収業務"
+        android:text="3. 回収業務"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:textSize="27sp"
         android:textStyle="bold"
+				android:paddingStart="20dp"
+	    android:textAlignment="textStart"
         android:id="@+id/btn_nohinMenu_kaisyu" />
     <Button
-        android:text="4.メールバッグ回収"
+        android:text="4. メールバッグ回収"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:textSize="27sp"
+        android:textSize="26sp"
         android:textStyle="bold"
+				android:paddingStart="20dp"
+	    android:textAlignment="textStart"
         android:id="@+id/btn_nohinMenu_mailKaisyu" />
 </LinearLayout>

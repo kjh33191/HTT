@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
 using System.Threading;
 using Android.App;
 using Android.Content;
@@ -153,7 +156,7 @@ namespace HHT
                     if (etReceipt.HasFocus)
                     {
                         string barcode_toku_todo = data.Substring(1, 8);
-                        if (barcode_toku_todo[0] != 'J')
+                        if (data[0] != 'J')
                         {
                             ShowDialog("エラー", "受領書ではありません。", () => { etTodokesaki.RequestFocus(); });
                             return;
@@ -165,7 +168,7 @@ namespace HHT
                             return;
                         }
 
-                        etReceipt.Text = barcode_toku_todo;
+                        etReceipt.Text = data;
                         Confirm();
                     }
                 });
@@ -200,7 +203,6 @@ namespace HHT
                             return;
                         }
                         
-
                         // 店舗到着情報を登録する。
                         TenpoArrive tenpoArrive = new TenpoArrive
                         {
@@ -216,6 +218,64 @@ namespace HHT
                             pTodokesakiCD = tsumikomiList[0].todokesaki_cd,
                             pTokuisakiCD = tsumikomiList[0].tokuisaki_cd
                         };
+
+                        //var fileName = Android.OS.Environment.ExternalStorageDirectory + Java.IO.File.Separator + "TenpoNohinInfo.csv";
+                        var fileName = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + Java.IO.File.Separator + "TenpoNohinInfo.csv";
+                        using (var fs = new StreamWriter(fileName, true))
+                        {
+                            
+                            fs.WriteLine(
+                                DateTime.Now.ToString("HHmm")
+                                 + ',' + tsumikomiList[0].kenpin_souko
+                                 + ',' + tsumikomiList[0].kitaku_cd
+                                 + ',' + tsumikomiList[0].syuka_date
+                                 + ',' + tsumikomiList[0].syuka_date
+                                 + ',' + tsumikomiList[0].bin_no
+                                 + ',' + tsumikomiList[0].course
+                                 + ',' + tsumikomiList[0].tokuisaki_cd
+                                 + ',' + tsumikomiList[0].todokesaki_cd
+                                 + ',' + prefs.GetString("terminal_id", "")
+                                 + ',' + "htt");
+
+                            fs.Close();
+
+                            string PureFileName = new FileInfo(fileName).Name;
+                            Uri serverUri = new Uri(String.Format("ftp://192.168.0.19/" + PureFileName));
+
+                            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(serverUri);
+                            request.Method = WebRequestMethods.Ftp.UploadFile;
+                            request.UseBinary = true;
+                            request.UsePassive = false;//true;
+                            request.KeepAlive = false;
+                            request.Timeout = System.Threading.Timeout.Infinite;
+                            request.AuthenticationLevel = System.Net.Security.AuthenticationLevel.None;
+                            //request.Credentials = new NetworkCredential("test", "test");
+
+                            byte[] data = File.ReadAllBytes(fileName);
+                            Stream stream = request.GetRequestStream();
+                            stream.Write(data, 0, data.Length);
+                            stream.Close();
+
+                            /*
+                            FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+
+                            StreamReader sourceStream = new StreamReader(stream);
+                            byte[] fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
+                            sourceStream.Close();
+                            request.ContentLength = data.Length;
+                            */
+
+                            //
+                            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+
+                            //
+                            response.Close();
+                            response.Dispose();
+
+                            
+                        }
+
+                        
 
                         TenpoArriveHelper tenpoArriveHelper = new TenpoArriveHelper();
                         tenpoArriveHelper.Insert(tenpoArrive);

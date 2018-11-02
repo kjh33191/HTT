@@ -39,7 +39,7 @@ namespace HHT
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_tenpoName).Text = item.tokuisaki_rk;
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_berth).Text = item.berth;
             view.FindViewById<TextView>(Resource.Id.txt_adp_todoke_per).Text = item.kosu_sumi + "/" + item.kosu_kei;
-
+            
             BootstrapProgressBar pgBar = view.FindViewById<BootstrapProgressBar>(Resource.Id.txt_adp_todoke_progressbar);
             pgBar.Progress = Convert.ToInt32((double.Parse(item.kosu_sumi) / double.Parse(item.kosu_kei)) * 100);
 

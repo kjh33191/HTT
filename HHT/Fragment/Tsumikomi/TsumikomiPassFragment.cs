@@ -122,8 +122,7 @@ namespace HHT
             new SoFileHelper().Insert(soFile);
             
             // VENDOR FILE
-            string nohin_date = DateTime.Now.ToString("yyyyMMdd");
-            List<MateFile> mateFile = WebService.RequestTumikomi260(souko_cd, kitaku_cd, syuka_date, nohin_date, bin_no, course);
+            List<MateFile> mateFile = WebService.RequestTumikomi260();
             new MateFileHelper().InsertAll(mateFile);
 
             // TOKUISAKI FILE

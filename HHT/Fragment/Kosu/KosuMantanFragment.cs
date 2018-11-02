@@ -83,7 +83,7 @@ namespace HHT
             string venderName = WebService.RequestKosu220(etMantanVendor.Text);
             if (venderName == "")
             {
-                ShowDialog("エラー", "ベンダーコードがみつかりません。", null);
+                ShowDialog("エラー", "ベンダーコードがみつかりません。", () => { });
                 return;
             }
             txtVenderName.Text = venderName;
@@ -181,13 +181,13 @@ namespace HHT
                         }
                         else
                         {
-                            ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                            ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", () => { });
                             return;
                         }
                     }
                     catch
                     {
-                        ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                        ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", () => { });
                         return;
                     }
                 });

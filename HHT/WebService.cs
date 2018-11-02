@@ -1324,7 +1324,7 @@ namespace HHT
             }
         }
 
-        public static List<MateFile> RequestTumikomi260(string kenpin_souko, string kitaku_cd, string syuka_date, string nohin_date, string bin_no, string course)
+        public static List<MateFile> RequestTumikomi260()
         {
             string resultJson = CommonUtils.Post(WEB_SERVICE_URL + TUMIKOMI.TUMIKOMI260, new Dictionary<string, string>());
             ResponseData response = JsonConvert.DeserializeObject<ResponseData>(resultJson);

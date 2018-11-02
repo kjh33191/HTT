@@ -232,7 +232,7 @@ namespace HHT
                         string btvTmp = data.Substring(0, 11);              // 配送日(8桁) + センター(3桁)
                         string btvHaisohDate = btvTmp.Substring(2, 4);      // 配送日(YYMMDD)
                         string btvCenterCd = btvTmp.Substring(6, 3);        // センターコード(3桁)
-                        string btvCourse = data.Substring(11, data.Length); // コース(桁可変) 
+                        string btvCourse = data.Substring(11, data.Length - 11); // コース(桁可変) 
 
                         try
                         {

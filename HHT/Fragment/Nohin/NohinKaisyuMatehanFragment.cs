@@ -25,6 +25,8 @@ namespace HHT
         
         TextView matehan1Nm, matehan2Nm, matehan3Nm, matehan4Nm;
         BootstrapEditText matehan1Su, matehan2Su, matehan3Su, matehan4Su;
+        BootstrapEditText _VendorCdEditText;
+        TextView _VendorNameTextView;
 
         private string motoVendorCd;
 
@@ -47,61 +49,87 @@ namespace HHT
             SetTitle("マテハン回収");
             SetFooterText("");
 
-            TextView vendorNm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_vendorName);
+            _VendorNameTextView = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_vendorName);
             matehan1Nm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_matehan1);
             matehan2Nm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_matehan2);
             matehan3Nm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_matehan3);
             matehan4Nm = view.FindViewById<TextView>(Resource.Id.txt_nohinKaisyuMatehan_matehan4);
-
-            EditText vendorCd = view.FindViewById<EditText>(Resource.Id.et_nohinKaisyuMatehan_vendorCode);
+            
             matehan1Su = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinKaisyuMatehan_matehan1);
             matehan2Su = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinKaisyuMatehan_matehan2);
             matehan3Su = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinKaisyuMatehan_matehan3);
             matehan4Su = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinKaisyuMatehan_matehan4);
 
-            BootstrapButton button1 = view.FindViewById<BootstrapButton>(Resource.Id.btn_nohinKaisyuMatehan_confirm);
-            button1.Click += delegate { ConfirmMatehanKaisyu(); };
+            BootstrapButton _ConfirmButton = view.FindViewById<BootstrapButton>(Resource.Id.btn_nohinKaisyuMatehan_confirm);
+            _ConfirmButton.Click += delegate { ConfirmMatehanKaisyu(); };
 
-            vendorCd.Text = prefs.GetString("mate_vendor_cd", "");
-            vendorNm.Text = prefs.GetString("mate_vendor_nm", "");
-
-            vendorCd.FocusChange += delegate {
-                if (!vendorCd.IsFocused)
-                {
-                    if (vendorCd.Text != "")
-                    {
-                        matehanList = mateFileHelper.SelectByVendorCd(vendorCd.Text);
-
-                        if (matehanList.Count == 0)
-                        {
-                            ShowDialog("エラー", "ベンダーコードが存在しません。", () => { vendorCd.Text = motoVendorCd; vendorCd.RequestFocus(); });
-                            return;
-                        }
-                        else
-                        {
-                            SetMateVendorInfo(vendorCd.Text);
-                            motoVendorCd = vendorCd.Text;
-                            vendorNm.Text = matehanList[0].vendor_nm;
-                            
-                            editor.PutString("mate_vendor_cd", vendorCd.Text);
-                            editor.PutString("mate_vendor_nm", matehanList[0].vendor_nm);
-                            editor.Apply();
-
-                            matehan1Su.RequestFocus();
-
-                        }
-                    }
-                }
+            BootstrapButton _VendorSearchButton = view.FindViewById<BootstrapButton>(Resource.Id.vendorSearch);
+            _VendorSearchButton.Click += delegate {
+                editor.PutBoolean("kounaiFlag", false);
+                editor.Apply();
+                StartFragment(FragmentManager, typeof(KosuVendorAllSearchFragment));
             };
 
-            matehanList = mateFileHelper.SelectByVendorCd(prefs.GetString("mate_vendor_cd", ""));
-            SetMateVendorInfo(prefs.GetString("mate_vendor_cd", ""));
-            motoVendorCd = prefs.GetString("mate_vendor_cd", "");
+            _VendorCdEditText = view.FindViewById<BootstrapEditText>(Resource.Id.et_nohinKaisyuMatehan_vendorCode);
+            _VendorCdEditText.KeyPress += (sender, e) => {
+                if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
+                {
+                    e.Handled = true;
 
-            matehan1Su.RequestFocus();
+                    matehanList = mateFileHelper.SelectByVendorCd(_VendorCdEditText.Text);
+
+                    if (matehanList.Count == 0)
+                    {
+                        ShowDialog("エラー", "ベンダーコードが存在しません。", () => { _VendorCdEditText.Text = motoVendorCd; _VendorCdEditText.RequestFocus(); });
+                        return;
+                    }
+                    else
+                    {
+                        SetMateVendorInfo(_VendorCdEditText.Text);
+                        motoVendorCd = _VendorCdEditText.Text;
+                        _VendorNameTextView.Text = matehanList[0].vendor_nm;
+
+                        editor.PutString("mate_vendor_cd", _VendorCdEditText.Text);
+                        editor.PutString("mate_vendor_nm", matehanList[0].vendor_nm);
+                        editor.Apply();
+                    }
+                }
+                else
+                {
+                    e.Handled = false;
+                }
+            };
             
             return view;
         }
+
+        public override void OnResume()
+        {
+            base.OnResume();
+
+            string vendorCd = prefs.GetString("vendor_cd", "");
+            string vendor_nm = prefs.GetString("vendor_nm", "");
+
+            var searchFlag = prefs.GetBoolean("searchFlag", false);
+            if (searchFlag) // `ベンダー検索画面からの場合
+            {
+                _VendorCdEditText.Text = vendorCd;
+                _VendorNameTextView.Text = vendor_nm;
+            }
+            else
+            {
+                _VendorCdEditText.Text = prefs.GetString("mate_vendor_cd", "");
+                _VendorNameTextView.Text = prefs.GetString("mate_vendor_nm", "");
+            }
+
+            matehanList = mateFileHelper.SelectByVendorCd(_VendorCdEditText.Text);
+            SetMateVendorInfo(prefs.GetString("mate_vendor_cd", ""));
+            motoVendorCd = _VendorCdEditText.Text;
+
+            matehan1Su.RequestFocus();
+            
+        }
+
 
         private void SetMateVendorInfo(string mateVendorCd)
         {

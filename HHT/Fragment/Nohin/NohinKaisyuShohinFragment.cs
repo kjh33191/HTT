@@ -173,7 +173,7 @@ namespace HHT
                         if (btvTokuisaki != prefs.GetString("tokuisaki_cd", "")
                             || btvTodokesaki != prefs.GetString("todokesaki_cd", ""))
                         {
-                            ShowDialog("エラー", "納入先店舗が違います。", null);
+                            ShowDialog("エラー", "納入先店舗が違います。", () => { });
                             return;
                         }
 
@@ -182,12 +182,12 @@ namespace HHT
                         {
                             if (label_flg == "0")
                             {
-                                ShowDialog("報告", "登録済みです。", null);
+                                ShowDialog("報告", "登録済みです。", () => { });
                                 return;
                             }
                             else
                             {
-                                ShowDialog("報告", "未登録です。", null);
+                                ShowDialog("報告", "未登録です。", () => { });
                                 return;
                             }
                         }

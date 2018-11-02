@@ -269,75 +269,79 @@ namespace HHT
                         
                         tvmatehanNm.Text = mfileList[0].category_nm;
                         
-                        switch (tsumikomi.bunrui)
-                        {
-                            case "01": tvCase.Text = (int.Parse(tvCase.Text) + mfileList.Count).ToString(); break;
-                            case "02": tvOricon.Text = (int.Parse(tvOricon.Text) + mfileList.Count).ToString(); break;
-                            case "03": tvSonota.Text = (int.Parse(tvSonota.Text) + mfileList.Count).ToString(); break;
-                            case "04": tvIdo.Text = (int.Parse(tvIdo.Text) + mfileList.Count).ToString(); break;
-                            case "05": tvMail.Text = (int.Parse(tvMail.Text) + mfileList.Count).ToString(); break;
-                            case "06": tvSonota.Text = (int.Parse(tvSonota.Text) + mfileList.Count).ToString(); break;
-                            case "07": tvFuteikei.Text = (int.Parse(tvFuteikei.Text) + mfileList.Count).ToString(); break;
-                            case "08": tvSonota.Text = (int.Parse(tvSonota.Text) + mfileList.Count).ToString(); break;
-                            case "09": tvHansoku.Text = (int.Parse(tvHansoku.Text) + mfileList.Count).ToString(); break;
-                            case "T": tvTc.Text = (int.Parse(tvTc.Text) + mfileList.Count).ToString(); break;
-                            default: tvSonota.Text = (int.Parse(tvSonota.Text) + mfileList.Count).ToString(); break;
-                        }
-
                         int idx = tvTsumidai.Text.IndexOf('/');
                         int tsumidai = (int.Parse(tvTsumidai.Text.Substring(0, idx)) + 1);
-                        tvTsumidai.Text = tsumidai + "/" + matehanCnt;
 
                         // 総個数
                         idx = tvAll.Text.IndexOf('/');
                         ko_su = int.Parse(tvAll.Text.Substring(0, idx)) + mfileList.Count;
-                        tvAll.Text = ko_su + "/" + tsumikomiDataList.Count;
-                        
 
-                        if (ko_su == tsumikomiDataList.Count)
+                        if (ko_su <= tsumikomiDataList.Count)
                         {
-                            // レコード作成用　値取得
-                            SndNohinWork sndNohinWork = new SndNohinWork
+                            // 画面の数字をカウントアップする
+                            tvTsumidai.Text = tsumidai + "/" + matehanCnt;
+                            tvAll.Text = ko_su + "/" + tsumikomiDataList.Count;
+
+                            switch (tsumikomi.bunrui)
                             {
-                                wPackage = "02",
-                                wTerminalID = "432660068", //Handy: serialId
-                                wProgramID = prefs.GetString("program_id", "NOH"), //JOB: program_id
-                                wSagyosyaCD = prefs.GetString("sagyosya", ""),
-                                wSoukoCD = mfileList[0].kenpin_souko,
-                                wHaisoDate = mfileList[0].syuka_date, // noh_syukaDate
-                                wBinNo = mfileList[0].bin_no, //JOB: noh_binNo
-                                wCourse = mfileList[0].course, //noh_course
-                                wDriverCD = mfileList[0].driver_cd, // noh_driverCd
-                                wTokuisakiCD = mfileList[0].tokuisaki_cd, // JOB: noh_tokuisakiCd
-                                wTodokesakiCD = mfileList[0].todokesaki_cd, // JOB: noh_todokesakiCd
-                                wKanriNo = "", // ""
-                                wVendorCd = mfileList[0].vendor_cd, //JOB: vendor_cd
-                                wMateVendorCd = "", // ""
-                                wSyukaDate = mfileList[0].syuka_date, //JOB: haiso_date
-                                wButsuryuNo = "", // ""
-                                wKamotuNo = kamotu_no, //JOB: kamotu_no
-                                wMatehan = mfileList[0].matehan, // JOB: noh_matehan
-                                wMatehanSu = matehanCnt.ToString(), // JOB: tumiko_su
-                                wHHT_no = "11101",
-                                wNohinKbn = "0",
-                                wKaisyuKbn = "",
-                                wTenkanState = "00",
-                                wSakiTokuisakiCD = "", 
-                                wSakiTodokesakiCD = "", 
-                                wNohinDate = prefs.GetString("nohin_date", ""), //FIX:setFixLength(8, JOB: nohin_date)
-                                wNohinTime = prefs.GetString("nohin_time", "") //FIX:setFixLength(4, JOB: nohin_time)
-                            };
-
-                            SndNohinWorkHelper nohinWorkHelper = new SndNohinWorkHelper();
-                            nohinWorkHelper.Insert(sndNohinWork);
-
-                            editor.PutBoolean("nohinWorkEndFlag", true);
-                            editor.Apply();
-
-                            kaizoButton.Visibility = ViewStates.Gone;
-                            nohinWorkButton.Visibility = ViewStates.Visible;
+                                case "01": tvCase.Text = (int.Parse(tvCase.Text) + mfileList.Count).ToString(); break;
+                                case "02": tvOricon.Text = (int.Parse(tvOricon.Text) + mfileList.Count).ToString(); break;
+                                case "03": tvSonota.Text = (int.Parse(tvSonota.Text) + mfileList.Count).ToString(); break;
+                                case "04": tvIdo.Text = (int.Parse(tvIdo.Text) + mfileList.Count).ToString(); break;
+                                case "05": tvMail.Text = (int.Parse(tvMail.Text) + mfileList.Count).ToString(); break;
+                                case "06": tvSonota.Text = (int.Parse(tvSonota.Text) + mfileList.Count).ToString(); break;
+                                case "07": tvFuteikei.Text = (int.Parse(tvFuteikei.Text) + mfileList.Count).ToString(); break;
+                                case "08": tvSonota.Text = (int.Parse(tvSonota.Text) + mfileList.Count).ToString(); break;
+                                case "09": tvHansoku.Text = (int.Parse(tvHansoku.Text) + mfileList.Count).ToString(); break;
+                                case "T": tvTc.Text = (int.Parse(tvTc.Text) + mfileList.Count).ToString(); break;
+                                default: tvSonota.Text = (int.Parse(tvSonota.Text) + mfileList.Count).ToString(); break;
+                            }
                             
-                            return;
+                            if (ko_su == tsumikomiDataList.Count)
+                            {
+                                // レコード作成用　値取得
+                                SndNohinWork sndNohinWork = new SndNohinWork
+                                {
+                                    wPackage = "02",
+                                    wTerminalID = "432660068", //Handy: serialId
+                                    wProgramID = prefs.GetString("program_id", "NOH"), //JOB: program_id
+                                    wSagyosyaCD = prefs.GetString("sagyosya", ""),
+                                    wSoukoCD = mfileList[0].kenpin_souko,
+                                    wHaisoDate = mfileList[0].syuka_date, // noh_syukaDate
+                                    wBinNo = mfileList[0].bin_no, //JOB: noh_binNo
+                                    wCourse = mfileList[0].course, //noh_course
+                                    wDriverCD = mfileList[0].driver_cd, // noh_driverCd
+                                    wTokuisakiCD = mfileList[0].tokuisaki_cd, // JOB: noh_tokuisakiCd
+                                    wTodokesakiCD = mfileList[0].todokesaki_cd, // JOB: noh_todokesakiCd
+                                    wKanriNo = "", // ""
+                                    wVendorCd = mfileList[0].vendor_cd, //JOB: vendor_cd
+                                    wMateVendorCd = "", // ""
+                                    wSyukaDate = mfileList[0].syuka_date, //JOB: haiso_date
+                                    wButsuryuNo = "", // ""
+                                    wKamotuNo = kamotu_no, //JOB: kamotu_no
+                                    wMatehan = mfileList[0].matehan, // JOB: noh_matehan
+                                    wMatehanSu = matehanCnt.ToString(), // JOB: tumiko_su
+                                    wHHT_no = "11101",
+                                    wNohinKbn = "0",
+                                    wKaisyuKbn = "",
+                                    wTenkanState = "00",
+                                    wSakiTokuisakiCD = "",
+                                    wSakiTodokesakiCD = "",
+                                    wNohinDate = prefs.GetString("nohin_date", ""), //FIX:setFixLength(8, JOB: nohin_date)
+                                    wNohinTime = prefs.GetString("nohin_time", "") //FIX:setFixLength(4, JOB: nohin_time)
+                                };
+
+                                SndNohinWorkHelper nohinWorkHelper = new SndNohinWorkHelper();
+                                nohinWorkHelper.Insert(sndNohinWork);
+
+                                editor.PutBoolean("nohinWorkEndFlag", true);
+                                editor.Apply();
+
+                                kaizoButton.Visibility = ViewStates.Gone;
+                                nohinWorkButton.Visibility = ViewStates.Visible;
+
+                                return;
+                            }
                         }
                     } 
                     );

@@ -109,7 +109,11 @@ namespace HHT
                 }
                 */
                 if (errorFlag == false)
+                {
+                    editor.PutBoolean("searchFlag", false);
+                    editor.Apply();
                     StartFragment(FragmentManager, typeof(NohinKaisyuMenuFragment));
+                }
             };
 
             Button button4 = view.FindViewById<Button>(Resource.Id.btn_nohinMenu_mailKaisyu);
@@ -146,11 +150,34 @@ namespace HHT
         {
             if (keycode == Keycode.Num1)
             {
-                StartFragment(FragmentManager, typeof(MatehanSelectFragment));
+                if (prefs.GetBoolean("mailBagFlag", false))
+                {
+                    ShowDialog("報告", "メールバッグ納品処理は終了しています。", () => { });
+                }
+                else
+                {
+                    StartFragment(FragmentManager, typeof(NohinMailBagNohinFragment));
+                }
             }
             else if (keycode == Keycode.Num2)
             {
-                StartFragment(FragmentManager, typeof(MatehanSelectFragment));
+                bool errorFlag = false;
+
+                if (!prefs.GetBoolean("mailBagFlag", false))
+                {
+                    Log.Debug(TAG, "メールバッグ納品処理が終了していません。");
+                    errorFlag = true;
+                    ShowDialog("報告", "メールバッグ納品処理が終了していません。", () => { });
+                }
+                else if (prefs.GetBoolean("nohinWorkEndFlag", false))
+                {
+                    Log.Debug(TAG, "納品処理は終了しています。");
+                    errorFlag = true;
+                    ShowDialog("報告", "納品処理は終了しています。", () => { });
+                }
+
+                if (errorFlag == false)
+                    StartFragment(FragmentManager, typeof(NohinWorkFragment));
             }
             else if (keycode == Keycode.Num3)
             {

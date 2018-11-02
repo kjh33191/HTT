@@ -152,12 +152,12 @@ namespace HHT
                     }
                     else
                     {
-                        ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", null);
+                        ShowDialog("エラー", "更新出来ませんでした。\n管理者に連絡してください。", () => { });
                     }
                 }
                 catch
                 {
-                    ShowDialog("エラー", "満タン処理完了に失敗しました。", null);
+                    ShowDialog("エラー", "満タン処理完了に失敗しました。", () => { });
                     Log.Error(Tag, "満タン処理完了に失敗しました。");
                     return;
                 }
@@ -468,7 +468,7 @@ namespace HHT
                 string errMsg = RequestCancelKamotuScan(GetProcedureParam(""));
                 if (errMsg != "")
                 {
-                    ShowDialog("エラー", errMsg, null);
+                    ShowDialog("エラー", errMsg, ()=> { });
                     return;
                 }
 

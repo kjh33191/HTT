@@ -65,7 +65,7 @@ namespace HHT
         {
             if (etBinNo.Text == "")
             {
-                ShowDialog("エラー", "便番号が入力されていません。", null);
+                ShowDialog("エラー", "便番号が入力されていません。", () => { });
                 Vibrate();
             }
             else
@@ -108,11 +108,11 @@ namespace HHT
                         
                         if (status == 99)
                         {
-                            ShowDialog("エラー", "検品可能なデータがありません。", null);
+                            ShowDialog("エラー", "検品可能なデータがありません。", () => { });
                         }
                         else if (status >= 1)
                         {
-                            ShowDialog("報告", "全ての検品が完了しています。", null);
+                            ShowDialog("報告", "全ての検品が完了しています。", () => { });
                         }
                         else
                         {
@@ -131,7 +131,7 @@ namespace HHT
                     }
                     catch
                     {
-                        ShowDialog("エラー", "検品可能なデータがありません。", null);
+                        ShowDialog("エラー", "検品可能なデータがありません。", () => { });
                     }
                 }
                 );

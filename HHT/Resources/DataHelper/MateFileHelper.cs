@@ -87,6 +87,22 @@ namespace HHT.Resources.DataHelper
             }
         }
 
+        public List<MateFile> SelectAll()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, dbFileName)))
+                {
+                    List<MateFile> mateList = connection.Table<MateFile>().ToList();
 
+                    return mateList;
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                Log.Info("SQLiteEx", ex.Message);
+                return null;
+            }
+        }
     }
 }
